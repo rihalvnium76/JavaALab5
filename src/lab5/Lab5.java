@@ -9,6 +9,7 @@ package lab5;
  *
  * @author rootpack
  */
+import lab5.UI.*;
 public class Lab5 {
 
     /**
@@ -16,6 +17,7 @@ public class Lab5 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        frmLogin.main(null);
     }
     
 }
