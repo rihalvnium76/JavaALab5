@@ -1,2 +1,2 @@
 # testfile
-v6 ZRZR
+v7 ZRZR
