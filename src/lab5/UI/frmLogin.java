@@ -5,10 +5,7 @@
  */
 package lab5.UI;
 
-/**
- *
- * @author rootpack
- */
+/* [1]登录窗口 */
 public class frmLogin extends javax.swing.JFrame {
 
     /**
@@ -53,12 +50,9 @@ public class frmLogin extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            // 窗体显示分隔使用当前系统风格
+            String lookAndFeel = javax.swing.UIManager.getSystemLookAndFeelClassName();
+            javax.swing.UIManager.setLookAndFeel(lookAndFeel);
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(frmLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
