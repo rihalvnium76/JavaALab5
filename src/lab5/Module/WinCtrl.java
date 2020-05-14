@@ -9,14 +9,15 @@ import javax.swing.JTable;
 
 /* 窗体控制类 */
 public class WinCtrl {
-    // 管理员登录/注册用户类型选择
-    public enum UserTypeChoice {
-        COMMON_USER(0), ADMINISTRATOR(1); // 普通用户 管理员
-        private int val;
-        UserTypeChoice(int userType) {
-            val = userType;
-        }
-    }
+    // 界面1所选择的按钮
+    // 值：0 管理员登录 1 注册
+    public static int loginFormSelectedButton;
+    // 要注册的用户类型
+    // 值：0 普通用户 1 管理员
+    public static int registerUserType;
+    // 是否为重设新密码
+    public static boolean isResetPassword;
+
     // 当前登录用户
     public static String currentLoginUser;
 

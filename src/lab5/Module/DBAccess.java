@@ -64,15 +64,15 @@ public class DBAccess {
 
     // TODO 登录校验
     // 参数：用户名，密码
-    // 返回值：正确true，错误false
-    public boolean verifyLogin(String usr, String pwd) {
+    // 返回值：错误0，密码正确且为普通用户1，密码正确且为管理员1
+    public int verifyLogin(String usr, String pwd) {
         // TODO 查询数据请用上述queryDB()和releaseQuery()函数
-        return false;
+        return 0;
     }
     // TODO 注册用户
-    // 参数：用户名，密码，用户类型
+    // 参数：用户名，密码，用户类型(0 普通用户 1 管理员，传Module.WinCtrl.registerUserType的值进来即可)
     // 返回值：正确true，错误false
-    public boolean registerUser(String usr, String pwd, WinCtrl.UserTypeChoice userType) {
+    public boolean registerUser(String usr, String pwd, int userType) {
         // TODO 查询数据请用上述modifyDB()函数
         return false;
     }
