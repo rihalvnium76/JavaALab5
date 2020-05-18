@@ -1,5 +1,5 @@
 # testfile
 v7 ZRZR
-AAA
+AA
 A
 A
