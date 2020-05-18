@@ -5,6 +5,7 @@
  */
 package lab5.Module;
 
+import java.io.*;
 import javax.swing.JTable;
 
 /* 窗体控制类 */
@@ -25,4 +26,16 @@ public class WinCtrl {
     public static void getUserOrder(String usr, JTable jt) {}
     // TODO 从数据库删除指定用户usr的ID为ticketID的指定订单
     public static void removeUserOrder(String usr, String ticketID) {}
+    
+    // 返回res目录路径
+    public static String getResDirPath() throws IOException {
+        // File.separator为路径分隔符
+        String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator;
+        return ret;
+    }
+   // 返回res/image目录路径
+    public static String getImageDirPath() throws IOException {
+        String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator + "image" + File.separator;
+        return ret;
+    }
 }
