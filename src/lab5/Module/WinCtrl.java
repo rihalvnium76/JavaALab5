@@ -23,6 +23,14 @@ public class WinCtrl {
     public static String currentLoginUser;
 
     // TODO 从数据库获取指定用户usr所有的订单并写入到JTable中
+    /*
+        电影票ID(Ticket.TicketID)
+        电影院(Ticket.ScheduleID->TheaterID->TheaterName)
+        场次(Ticket.Schedule->ScheduleTime)
+        座位(第Ticket.Row行 第Ticket.Columns列)
+        价格(Ticket.ScheduleID->MovieID->price)
+        状态(Ticket.Status)
+    */
     public static void getUserOrder(String usr, JTable jt) {}
     // TODO 从数据库删除指定用户usr的ID为ticketID的指定订单
     public static void removeUserOrder(String usr, String ticketID) {}
