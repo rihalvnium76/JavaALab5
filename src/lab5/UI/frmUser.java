@@ -5,14 +5,57 @@
  */
 package lab5.UI;
 
+import java.sql.*;
+import java.util.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import lab5.Module.*;
+
 /* [4]票务查询 */
 public class frmUser extends javax.swing.JFrame {
-
-    /**
-     * Creates new form frmUser
-     */
+    private DBAccess db;
+    
     public frmUser() {
         initComponents();
+        try {
+            db = new DBAccess();
+            loadDataToUI();
+        } catch (ClassNotFoundException | SQLException | IllegalColumnCountException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    // TODO 加载数据库内容
+    // 返回值：0正常
+    private void loadDataToUI() throws SQLException, IllegalColumnCountException {
+        // 全部写入jTable
+        DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
+        
+        dtm.setRowCount(0); // 清空列表
+        ResultSet rs = db.queryDB(
+            "select Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Column, Ticket.Status "+
+            "from Movie, Theater, Schedule, Ticket "+
+            "where Ticket.ScheduleID=Schedule.ScheduleID and Movie.MovieID=Schedule.MovieID and Schedule.TheaterID=Theater.TheaterID");
+        // 表头列数量不正确报错
+        int jtc = jTable1.getColumnCount(), rsc = rs.getMetaData().getColumnCount();
+        if(jtc != 5 || rsc != 6) {
+            db.releaseQuery();
+            throw new IllegalColumnCountException(jtc, rsc);
+        }
+        while(rs.next()) { // 行 不定数
+            Vector<String> v = new Vector<String>();
+            // 电影名 | 放映厅 | 场次 | 座位 | 状态
+            v.add(rs.getString(0));
+            v.add(rs.getString(1));
+            v.add(rs.getTimestamp(2).toString());
+            v.add(rs.getString(3)+"-"+rs.getString(4));
+            v.add(rs.getString(5));
+            dtm.addRow(v);
+        }
+        db.releaseQuery();
+        // TODO 写入查询树JTree
+        // 电影名 - 放映厅 - 场次
+        ;
     }
 
     /**
@@ -126,8 +169,9 @@ public class frmUser extends javax.swing.JFrame {
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("null");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jTree1.setRootVisible(false);
         jScrollPane2.setViewportView(jTree1);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -167,6 +211,11 @@ public class frmUser extends javax.swing.JFrame {
         jMenu1.setText("系统");
 
         jMenuItem1.setText("退出");
+        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuItem1MouseClicked(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuBar1.add(jMenu1);
@@ -174,9 +223,19 @@ public class frmUser extends javax.swing.JFrame {
         jMenu2.setText("个人中心");
 
         jMenuItem2.setText("订单查询");
+        jMenuItem2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuItem2MouseClicked(evt);
+            }
+        });
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("修改密码");
+        jMenuItem3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuItem3MouseClicked(evt);
+            }
+        });
         jMenu2.add(jMenuItem3);
 
         jMenuBar1.add(jMenu2);
@@ -223,6 +282,27 @@ public class frmUser extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
+         // 退出
+        try {
+            db.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem1MouseClicked
+
+    private void jMenuItem3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem3MouseClicked
+        // 修改密码
+        WinCtrl.isResetPassword = false;
+        frmChangePwd.main(null);
+    }//GEN-LAST:event_jMenuItem3MouseClicked
+
+    private void jMenuItem2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem2MouseClicked
+        // 订单查询
+        frmOrderQuery.main(null);
+    }//GEN-LAST:event_jMenuItem2MouseClicked
 
     /**
      * @param args the command line arguments

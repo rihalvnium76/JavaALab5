@@ -13,6 +13,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x9000;&#x51fa;"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuItem1MouseClicked"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -25,11 +28,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x8ba2;&#x5355;&#x67e5;&#x8be2;"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuItem2MouseClicked"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x4fee;&#x6539;&#x5bc6;&#x7801;"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuItem3MouseClicked"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -256,8 +265,9 @@
         <Component class="javax.swing.JTree" name="jTree1">
           <Properties>
             <Property name="model" type="javax.swing.tree.TreeModel" editor="org.netbeans.modules.form.editors2.TreeModelEditor">
-              <TreeModel code=""/>
+              <TreeModel code="null&#xa;&#xa;"/>
             </Property>
+            <Property name="rootVisible" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>
