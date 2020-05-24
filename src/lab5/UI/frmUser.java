@@ -14,6 +14,21 @@ import lab5.Module.*;
 /* [4]票务查询 */
 public class frmUser extends javax.swing.JFrame {
     private DBAccess db;
+    // 电影票完整属性
+    private class TicketItem {
+        // Ticket
+        public String movieID, userID, scheduleID, status;
+        public int row, col;
+        // Theater
+        public String theaterID, theaterName;
+        public int theaterCapacity;
+        // Movie
+        public String movieName, director, mainActors, moviePoster, movieType;        
+        public double price;
+        // Schedule
+        public Timestamp scheduleTime;
+    }
+    private Vector<TicketItem> tickets;
     
     public frmUser() {
         initComponents();
@@ -32,8 +47,9 @@ public class frmUser extends javax.swing.JFrame {
         DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
         
         dtm.setRowCount(0); // 清空列表
+        // TODO 完整获取数据库
         ResultSet rs = db.queryDB(
-            "select Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Column, Ticket.Status "+
+            "select Movie.MovieID, Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Column, Ticket.Status "+
             "from Movie, Theater, Schedule, Ticket "+
             "where Ticket.ScheduleID=Schedule.ScheduleID and Movie.MovieID=Schedule.MovieID and Schedule.TheaterID=Theater.TheaterID");
         // 表头列数量不正确报错

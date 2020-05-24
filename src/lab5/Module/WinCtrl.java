@@ -41,9 +41,13 @@ public class WinCtrl {
         String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator;
         return ret;
     }
-   // 返回res/image目录路径
+    // 返回res/image目录路径
     public static String getImageDirPath() throws IOException {
         String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator + "image" + File.separator;
         return ret;
     }
+
+    // 传递给[5]电影详细信息窗口的选择的电影的ID
+    public static String selectedMovie = null;
+    
 }
