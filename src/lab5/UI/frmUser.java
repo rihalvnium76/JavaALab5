@@ -92,6 +92,11 @@ public class frmUser extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("查询"));
 
@@ -303,6 +308,16 @@ public class frmUser extends javax.swing.JFrame {
         // 订单查询
         frmOrderQuery.main(null);
     }//GEN-LAST:event_jMenuItem2MouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        try {
+            db.close();
+            System.exit(0);
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
