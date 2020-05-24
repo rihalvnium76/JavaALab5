@@ -5,7 +5,7 @@
  */
 package lab5.UI;
 import java.sql.*;
-import java.util.Vector;
+import java.util.*;
 import lab5.Module.*;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 /* [8]后台管理界面 */
 public class frmManager extends javax.swing.JFrame {
     private DBAccess db;
+    private HashMap<String, String> movieList;
 
     public frmManager() {
         initComponents();
@@ -26,41 +27,50 @@ public class frmManager extends javax.swing.JFrame {
         }
     }
 
-    // TODO 加载数据库内容
+    // 加载数据库内容
     private void loadDataToUI() throws SQLException, IllegalColumnCountException {
         // 写入jTable
         DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
         
         dtm.setRowCount(0); // 清空列表
         ResultSet rs = db.queryDB(
-            "select Ticket.TicketID, Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Column, Ticket.Price, Ticket.Status "+
+            "select Ticket.TicketID, Movie.MovieID, Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Col, Ticket.Price, Ticket.Status "+
             "from Movie, Theater, Schedule, Ticket "+
             "where Ticket.ScheduleID=Schedule.ScheduleID and Movie.MovieID=Schedule.MovieID and Schedule.TheaterID=Theater.TheaterID");
         // 表头列数量不正确报错
-        int jtc = jTable1.getColumnCount(), rsc = rs.getMetaData().getColumnCount();
-        if(jtc != 7 || rsc != 8) {
+        int jtc = ((DefaultTableModel)jTable1.getModel()).getColumnCount(), rsc = rs.getMetaData().getColumnCount();
+        if(jtc != 8 || rsc != jtc+1) {
             db.releaseQuery();
             throw new IllegalColumnCountException(jtc, rsc);
         }
         while(rs.next()) { // 行 不定数
             Vector<String> v = new Vector<String>();
-            // 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
-            v.add(rs.getString(0));
-            v.add(rs.getString(1));
-            v.add(rs.getString(2));
-            v.add(rs.getTimestamp(3).toString());
-            v.add(rs.getString(4)+"-"+rs.getString(5));
-            v.add(String.valueOf(rs.getDouble(6)));
-            v.add(rs.getString(7));
+            // 电影票ID | 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
+            v.add(rs.getString(0)); // TicketID
+            v.add(rs.getString(1)); // MovieID
+            v.add(rs.getString(2)); // MovieName
+            v.add(rs.getString(3)); // TheaterName
+            v.add(rs.getTimestamp(4).toString()); // ScheduleTime
+            v.add(rs.getString(5)+"-"+rs.getString(6)); // Row Col
+            v.add(String.valueOf(rs.getDouble(7))); // Price
+            v.add(rs.getString(8)); // Status
             dtm.addRow(v);
         }
         db.releaseQuery();
-        // 写入jList
-        rs = db.queryDB("select Movie.MovieName from Movie");
+        // 写入jList和HaspMap
+        rs = db.queryDB("select Movie.MovieID, Movie.MovieName from Movie");
         DefaultListModel<String> dlm = (DefaultListModel<String>)jList1.getModel();
-        dlm.removeAllElements(); // 清空列表
-        while(rs.next())
-            dlm.addElement(rs.getString(0));
+        // 清空列表
+        dlm.removeAllElements();
+        if(movieList==null)
+            movieList = new HashMap<String, String>();
+        else
+            movieList.clear();
+        while(rs.next()) {
+            String id = rs.getString(0), name = rs.getString(1);
+            dlm.addElement(id + "|" + name);
+            movieList.put(id, name);
+        }
         db.releaseQuery();
     }
     /**
@@ -101,6 +111,8 @@ public class frmManager extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
         jTextField7 = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jTextField8 = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "已购", "未购" }));
@@ -111,21 +123,28 @@ public class frmManager extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 818, Short.MAX_VALUE)
+            .addGap(0, 961, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 485, Short.MAX_VALUE)
+            .addGap(0, 517, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("电影信息管理", jPanel1);
 
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jList1MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jList1);
 
-        jLabel1.setText("批量添加电影票:");
+        jLabel1.setText("批量添加电影票: (输入完电影ID按回车自动获取电影名)");
 
         jLabel2.setText("电影名");
+
+        jTextField1.setEditable(false);
 
         jLabel3.setText("放映厅名");
 
@@ -150,15 +169,22 @@ public class frmManager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
+                "电影票ID", "电影ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jTable1.setColumnSelectionAllowed(true);
@@ -166,7 +192,7 @@ public class frmManager extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(6).setCellEditor(new DefaultCellEditor(jComboBox1));
+            jTable1.getColumnModel().getColumn(7).setCellEditor(new DefaultCellEditor(jComboBox1));
         }
 
         jButton1.setText("批量添加");
@@ -199,6 +225,15 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel10.setText("电影ID");
 
+        jTextField7.setToolTipText("");
+        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField7ActionPerformed(evt);
+            }
+        });
+
+        jLabel11.setText("电影票ID起始值");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -211,6 +246,7 @@ public class frmManager extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -222,83 +258,89 @@ public class frmManager extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel1)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
-                                .addGap(21, 21, 21)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(35, 35, 35)
-                                        .addComponent(jLabel5)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGap(146, 146, 146)
-                                                .addComponent(jLabel8)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGap(37, 37, 37)
-                                                .addComponent(jButton1)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jButton2)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jButton3)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jButton4))))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(75, 75, 75)
-                                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel7))))
-                            .addComponent(jLabel9))
-                        .addGap(0, 6, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel8))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton4)
+                                .addGap(6, 6, 6))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(1, 1, 1)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel10)
                                 .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel2)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel9))
+                                .addComponent(jLabel2))
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(13, 13, 13)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jButton1)
                                 .addComponent(jButton2)
                                 .addComponent(jButton3)
                                 .addComponent(jButton4)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -308,11 +350,11 @@ public class frmManager extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 818, Short.MAX_VALUE)
+            .addGap(0, 961, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 485, Short.MAX_VALUE)
+            .addGap(0, 517, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("用户管理", jPanel3);
@@ -331,46 +373,134 @@ public class frmManager extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+        // 按回车获取电影名
+        jTextField1.setText(movieList.get(jTextField7.getText().trim()));
+    }//GEN-LAST:event_jTextField7ActionPerformed
+
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         // 刷新
         try {
             loadDataToUI();
-        } catch (SQLException | IllegalColumnCountException ex) {
-            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException | IllegalColumnCountException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton4MouseClicked
+
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // TODO 保存
+        // 注意String->Timestamp时间格式
+        Connection ct = db.getConnection();
+        try{
+            PreparedStatement pst = ct.prepareStatement("insert into Ticket values(?,?,?,?,?,?)"),
+                pstSch = ct.prepareStatement("insert into Schedule values(?,?,?,?)"),
+                pstTh = ct.prepareStatement("select TheaterID from Theater where TheaterName=?");
+            try {
+                DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
+                ct.setAutoCommit(false); // 手动提交事务
+
+                // 清空表
+                db.modifyDB("delete from Ticket");
+                db.modifyDB("delete from Schedule");
+                int schID = 0; // New ScheduleID
+                // 上次MovieID TheaterID ScheduleTime，与当前都相同则视为同一Schedule
+                String lastMovieID = "", lastTheater = "", lastSchTime = "";
+
+                for(int i=0, rc=dtm.getRowCount(); i<rc; ++i) {
+                    // 清除参数
+                    pst.clearParameters();
+                    pstSch.clearParameters();
+                    pstTh.clearParameters();
+
+                    pst.setString(1, dtm.getValueAt(i, 0).toString()); // TicketID
+                    pst.setString(2, "0"); // UserID
+                    /* Seat */
+                    String seat = dtm.getValueAt(i, 4).toString();
+                    int delim = seat.indexOf('-'), x = Integer.parseInt(seat.substring(0, delim)), y = Integer.parseInt(seat.substring(delim+1));
+                    pst.setString(3, String.valueOf(x)); // Seat Row
+                    pst.setString(4, String.valueOf(y)); // Seat Col
+                    /* New Schedule */
+                    // 当前
+                    String curMovieID = dtm.getValueAt(i, 2).toString(), curTheater = dtm.getValueAt(i, 3).toString(), curScheTime = dtm.getValueAt(i, 4).toString();
+                    if(!(curMovieID.equals(lastMovieID) && curTheater.equals(lastTheater) && curScheTime.equals(lastSchTime)))
+                        // 不同Schedule，schID+1
+                        ++schID;
+                    pstSch.setString(1, String.valueOf(schID)); // ScheduleID
+                    pstSch.setString(2, curScheTime); // ScheduleTime
+                    pstSch.setString(3, dtm.getValueAt(i, 1).toString().trim()); // MovieID
+                    /* -find TheaterID- */
+                    pstTh.setString(1, dtm.getValueAt(i, 3).toString().trim()); // TheaterName
+                    ResultSet rsTh = pstTh.executeQuery();
+                    if(rsTh.next()) {
+                        pstSch.setString(4, rsTh.getString(1)); // TheaterID
+                        rsTh.close();
+                    } else {
+                        rsTh.close();
+                        throw new IllegalArgumentException("无效放映厅ID");
+                    }
+                    pstSch.executeUpdate(); // register new Schedule
+
+                    pst.setString(5, String.valueOf(schID)); // ScheduleID
+
+                    pst.setString(6, dtm.getValueAt(i, 6).toString()); // Status
+                    pst.executeUpdate();
+                }
+                ct.commit(); // 一切正常 提交
+            } catch (SQLException | IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                ct.rollback(); // 回滚
+            } finally {
+                ct.setAutoCommit(true);
+                pst.close();
+                pstSch.close();
+                pstTh.close();
+            }
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // 删除
         DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
         for(int i : jTable1.getSelectedRows())
-            if(i>0) dtm.removeRow(i);
+        if(i>0) dtm.removeRow(i);
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // 批量添加
-        int row = Integer.parseInt(jTextField5.getText()), col = Integer.parseInt(jTextField4.getText());
-        if(row>0 && col>0) {
-            DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-            for(int i=0; i<row; ++i)
-                for(int j=0; j<col; ++j)
-                    // 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
+        try {
+            int row = Integer.parseInt(jTextField5.getText()), col = Integer.parseInt(jTextField4.getText()), st = Integer.parseInt(jTextField8.getText());
+            String movieName = movieList.get(jTextField7.getText().trim());
+            if(row>0 && col>0 && movieName!=null) {
+                DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
+                for(int i=0; i<row; ++i)
+                    for(int j=0; j<col; ++j)
+                    // 电影票ID | 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
                     dtm.addRow(new String[] {
-                        jTextField7.getText(),
-                        jTextField1.getText(),
-                        jTextField2.getText(),
-                        jTextField3.getText(),
+                        String.valueOf(st++),
+                        jTextField7.getText().trim(),
+                        movieName,
+                        jTextField2.getText().trim(),
+                        jTextField3.getText().trim(),
                         i + "-" + j,
-                        jTextField6.getText(),
+                        jTextField6.getText().trim(),
                         "未购"
                     });
+            } else
+                throw new IllegalArgumentException();
+        } catch(IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "输入信息有误", "错误", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton1MouseClicked
 
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
-        // TODO 保存
-        // 注意String->Timestamp时间格式
-    }//GEN-LAST:event_jButton3MouseClicked
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+        // 将电影ID和电影名填写进批量添加
+        String val = jList1.getSelectedValue().trim();
+        int delim = val.indexOf('|');
+        jTextField7.setText(val.substring(0, delim));
+        jTextField1.setText(val.substring(delim+1));
+    }//GEN-LAST:event_jList1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -393,6 +523,7 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -416,5 +547,6 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
+    private javax.swing.JTextField jTextField8;
     // End of variables declaration//GEN-END:variables
 }

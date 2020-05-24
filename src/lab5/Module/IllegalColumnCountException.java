@@ -6,7 +6,7 @@
 
 package lab5.Module;
 
-public class IllegalColumnCountException extends Exception {
+public class IllegalColumnCountException extends IllegalArgumentException {
     private int jtc, rsc;
     public IllegalColumnCountException(int jtColumn, int rsColumn) {
         jtc = jtColumn; rsc = rsColumn;
