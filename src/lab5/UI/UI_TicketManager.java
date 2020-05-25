@@ -232,7 +232,22 @@ public class UI_TicketManager {
     }
     // TODO 保存一项
     public void SaveItem() {
-        //
+        /// 预处理新建表需求 ///
+        String newTicketID, newScheduleID, newTheaterID;
+        Connection ct = db.getConnection();
+        try {
+            if(ckbNewTheater.isSelected()) {
+                //
+            }
+            if(ckbNewSchedule.isSelected()) {
+                //
+            }
+            if(ckbNewTicket.isSelected()) {
+                PreparedStatement pstCrTk = ct.prepareStatement("insert into ");
+            }
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
     }
     // TODO 批量添加电影票
     public void AddBatch() {}

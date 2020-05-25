@@ -193,7 +193,7 @@ public class frmManager_2 extends javax.swing.JFrame {
         jTextArea1.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText("说明：\n批量添加：批量添加共N行N列的票\n新建：勾上后将会在相应的数据库表中添加新的一项，ID自动分配");
+        jTextArea1.setText("说明：\n批量添加：批量添加共N行N列的票，需要填写电影票ID，表示以该ID起，顺序添加电影票\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）");
         jTextArea1.setBorder(null);
         jScrollPane2.setViewportView(jTextArea1);
 
@@ -431,24 +431,15 @@ public class frmManager_2 extends javax.swing.JFrame {
         ticketManager.loadData();
     }//GEN-LAST:event_btnReloadMouseClicked
 
-    private void ckbNewTicketItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTicketItemStateChanged
-        // 新建电影票
-        cmbTicketID.setEnabled(evt.getStateChange()==ItemEvent.SELECTED? false: true);
-    }//GEN-LAST:event_ckbNewTicketItemStateChanged
-
     private void ckbStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbStatusItemStateChanged
         // 票已售？
         if(evt.getStateChange()==ItemEvent.DESELECTED)
             cmbCustomer.setSelectedIndex(0);
     }//GEN-LAST:event_ckbStatusItemStateChanged
 
-    private void ckbNewScheduleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewScheduleItemStateChanged
-        // 新建计划
-        cmbScheduleID.setEnabled(evt.getStateChange()==ItemEvent.SELECTED? false: true);
-    }//GEN-LAST:event_ckbNewScheduleItemStateChanged
-
     private void ckbNewTheaterItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTheaterItemStateChanged
         // 新建放映厅
+        cmbTheater.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
         tfThCapacity.setEnabled(evt.getStateChange()==ItemEvent.SELECTED);
     }//GEN-LAST:event_ckbNewTheaterItemStateChanged
 
@@ -461,6 +452,16 @@ public class frmManager_2 extends javax.swing.JFrame {
         }
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void ckbNewTicketItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTicketItemStateChanged
+        // 新建电影票
+        cmbTicketID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
+    }//GEN-LAST:event_ckbNewTicketItemStateChanged
+
+    private void ckbNewScheduleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewScheduleItemStateChanged
+        // 新建计划
+        cmbScheduleID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
+    }//GEN-LAST:event_ckbNewScheduleItemStateChanged
 
     /**
      * @param args the command line arguments
