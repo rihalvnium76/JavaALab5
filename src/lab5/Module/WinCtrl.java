@@ -7,6 +7,10 @@ package lab5.Module;
 
 import java.io.*;
 import javax.swing.JTable;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 /* 窗体控制类 */
 public class WinCtrl {
@@ -19,7 +23,7 @@ public class WinCtrl {
     // 是否为重设新密码
     public static boolean isResetPassword;
 
-    // 当前登录用户
+    // 当前登录用户名
     public static String currentLoginUser;
 
     // TODO 从数据库获取指定用户usr所有的订单并写入到JTable中
@@ -50,4 +54,18 @@ public class WinCtrl {
     // 传递给[5]电影详细信息窗口的选择的电影的ID
     public static String selectedMovie = null;
     
+    /* JTree操作函数 */
+    // 添加结点
+    public static void addTreeNode(JTree tree, DefaultMutableTreeNode selNode, String nodeName) {
+        if(selNode==null) return;
+        DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        model.insertNodeInto(new DefaultMutableTreeNode(nodeName), selNode, selNode.getChildCount());
+    }
+    // 获取选中结点
+    public static DefaultMutableTreeNode getSelectedNode(JTree tree) {
+        return (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+    }
+    // 修改结点
+    // 删除结点
+    // 查找结点
 }

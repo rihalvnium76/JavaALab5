@@ -21,7 +21,7 @@ public class frmUser extends javax.swing.JFrame {
         public int row, col;
         // Theater
         public String theaterID, theaterName;
-        public int theaterCapacity;
+        //public int theaterCapacity;
         // Movie
         public String movieName, director, mainActors, moviePoster, movieType;        
         public double price;
@@ -43,6 +43,10 @@ public class frmUser extends javax.swing.JFrame {
     // TODO 加载数据库内容
     // 返回值：0正常
     private void loadDataToUI() throws SQLException, IllegalColumnCountException {
+        // TODO 载入JTree
+        // JTable在JTree选择后再载入
+        //
+        //-----------------------
         // 全部写入jTable
         DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
         

@@ -474,6 +474,8 @@ public class frmManager extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // 批量添加
+        // BUG 没考虑到电影院容量
+        // BUG 重构吧
         try {
             int row = Integer.parseInt(jTextField5.getText()), col = Integer.parseInt(jTextField4.getText()), st = Integer.parseInt(jTextField8.getText());
             String movieName = movieList.get(jTextField7.getText().trim());
