@@ -6,10 +6,13 @@
 package lab5.Module;
 
 import java.io.*;
+import java.util.Enumeration;
+
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /* 窗体控制类 */
@@ -56,16 +59,47 @@ public class WinCtrl {
     
     /* JTree操作函数 */
     // 添加结点
-    public static void addTreeNode(JTree tree, DefaultMutableTreeNode selNode, String nodeName) {
-        if(selNode==null) return;
+    public static DefaultMutableTreeNode addTreeNode(JTree tree, DefaultMutableTreeNode selNode, String nodeName) {
+        if(selNode==null) return null;
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-        model.insertNodeInto(new DefaultMutableTreeNode(nodeName), selNode, selNode.getChildCount());
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeName);
+        model.insertNodeInto(newNode, selNode, selNode.getChildCount());
+        return newNode;
     }
     // 获取选中结点
-    public static DefaultMutableTreeNode getSelectedNode(JTree tree) {
+    public static DefaultMutableTreeNode getSelectedTreeNode(JTree tree) {
         return (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
     }
     // 修改结点
+    public static void setTreeNodeText(DefaultMutableTreeNode node, String str) {
+        node.setUserObject(str);
+    }
     // 删除结点
+    public static void deleteTreeNode(JTree tree, DefaultMutableTreeNode selNode) {
+        ((DefaultTreeModel)tree.getModel()).removeNodeFromParent(selNode);
+    }
     // 查找结点
+    public static DefaultMutableTreeNode searchTreeNode(JTree tree, String nodeStr) {
+        DefaultMutableTreeNode ret;
+        DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        // 获取根节点
+        DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)model.getRoot();
+        // 枚举
+        Enumeration e = rootNode.breadthFirstEnumeration();
+        while(e.hasMoreElements()) {
+            ret = (DefaultMutableTreeNode) e.nextElement();
+            if(nodeStr.equals(ret.getUserObject().toString()))
+                return ret;
+        }
+        return null;
+    }
+    // 展开父节点
+    public static void unfoldTreeNode(JTree tree, DefaultMutableTreeNode node) {
+        // 获取从根节点导到指定结点的所有结点
+        TreeNode[] nodes = ((DefaultTreeModel)tree.getModel()).getPathToRoot(node);
+        // 使用指定的结点数组创建TreePath
+        TreePath path = new TreePath(nodes);
+        // 显示指定的TreePath
+        tree.scrollPathToVisible(path);
+    }
 }

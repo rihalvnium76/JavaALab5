@@ -51,8 +51,8 @@ public class DBAccess {
     }
     // 释放临时的Statement和ResultSet对象
     public void releaseQuery() throws SQLException {
-        if(rs!=null) rs.close();
-        if(st!=null) st.close();
+        if(rs!=null) { rs.close(); rs = null; }
+        if(st!=null) { st.close(); st = null; }
     }
     // 执行sql修改语句，返回值为受影响的行数
     public int modifyDB(String sql) throws SQLException {
