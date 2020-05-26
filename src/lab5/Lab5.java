@@ -1,7 +1,6 @@
 package lab5;
 
 import lab5.UI.*;
-import java.io.*;
 public class Lab5 {
     public static void setUIStyle(String frmName) {
         // 窗体显示分隔使用当前系统风格

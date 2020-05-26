@@ -1,6 +1,5 @@
 package lab5.UI;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -20,7 +19,7 @@ public class UI_TicketManager {
     private JComboBox<String> cmbTicketID, cmbCustomer, cmbScheduleID, cmbMovie, cmbTheater;
     private JCheckBox ckbNewTicket, ckbStatus, ckbNewSchedule, ckbNewTheater;
     private JTextField tfRow, tfCol, tfThCapacity, tfPrice, tfScheduleTime;
-    private JButton btnAddBatch, btnSave, btnDelete, btnReload;
+    //private JButton btnAddBatch, btnSave, btnDelete, btnReload;
     private JTable tbTicketList;
     // 数据库访问
     private DBAccess db;
@@ -88,12 +87,12 @@ public class UI_TicketManager {
         this.tfScheduleTime = tfScheduleTime;
     }
 
-    public void bindButton(JButton btnAddBatch, JButton btnSave, JButton btnDelete, JButton btnReload) {
+    /*public void bindButton(JButton btnAddBatch, JButton btnSave, JButton btnDelete, JButton btnReload) {
         this.btnAddBatch = btnAddBatch;
         this.btnSave = btnSave;
         this.btnDelete = btnDelete;
         this.btnReload = btnReload;
-    }
+    }*/
 
     public void bindTable(JTable tbTicketList) {
         this.tbTicketList = tbTicketList;

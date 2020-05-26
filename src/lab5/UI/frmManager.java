@@ -27,7 +27,6 @@ public class frmManager extends javax.swing.JFrame {
         }
         /* 电影票管理 */
         ticketManager = new UI_TicketManager(db);
-        ticketManager.bindButton(btnAddBatch, btnSave, btnDelete, btnReload);
         ticketManager.bindCheckBox(ckbNewTicket, ckbStatus, ckbNewSchedule, ckbNewTheater);
         ticketManager.bindCombox(cmbTicketID, cmbCustomer, cmbScheduleID, cmbMovie, cmbTheater);
         ticketManager.bindTextField(tfRow, tfCol, tfThCapacity, tfPrice, tfScheduleTime);
