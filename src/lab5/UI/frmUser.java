@@ -49,22 +49,22 @@ public class frmUser extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        btnClear = new javax.swing.JButton();
+        btnQuery = new javax.swing.JButton();
+        tfQueryMovie = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        lbPoster = new javax.swing.JLabel();
+        btnDetail = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        taMovieInfo = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
+        treeNavi = new javax.swing.JTree();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
+        tbMovieList = new javax.swing.JTable();
+        btnBook = new javax.swing.JButton();
+        lbSurplus = new javax.swing.JLabel();
+        btnCancelSel = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -81,9 +81,19 @@ public class frmUser extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("查询"));
 
-        jButton2.setText("清空");
+        btnClear.setText("清空");
+        btnClear.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnClearMouseClicked(evt);
+            }
+        });
 
-        jButton1.setText("查询");
+        btnQuery.setText("查询");
+        btnQuery.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnQueryMouseClicked(evt);
+            }
+        });
 
         jLabel2.setText("电影名");
 
@@ -95,13 +105,13 @@ public class frmUser extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnQuery)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2))
+                        .addComponent(btnClear))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(tfQueryMovie, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -110,40 +120,45 @@ public class frmUser extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfQueryMovie, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnQuery)
+                    .addComponent(btnClear))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("电影简介"));
 
-        jLabel1.setText("[封面]");
+        lbPoster.setText("[封面]");
 
-        jButton3.setText("详细信息");
+        btnDetail.setText("详细信息");
+        btnDetail.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDetailMouseClicked(evt);
+            }
+        });
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setBackground(new java.awt.Color(240, 240, 240));
-        jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
-        jTextArea1.setRows(5);
-        jTextArea1.setText("电影名：\n导演：\n主要演员：\n类型：\n价格：");
-        jTextArea1.setBorder(null);
-        jScrollPane1.setViewportView(jTextArea1);
+        taMovieInfo.setEditable(false);
+        taMovieInfo.setBackground(new java.awt.Color(240, 240, 240));
+        taMovieInfo.setColumns(20);
+        taMovieInfo.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
+        taMovieInfo.setRows(5);
+        taMovieInfo.setText("电影名：\n导演：\n主要演员：\n类型：\n价格：");
+        taMovieInfo.setBorder(null);
+        jScrollPane1.setViewportView(taMovieInfo);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton3))
+                        .addComponent(btnDetail))
                     .addComponent(jScrollPane1)))
         );
         jPanel2Layout.setVerticalGroup(
@@ -151,16 +166,16 @@ public class frmUser extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3))
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnDetail))
+            .addComponent(lbPoster, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("null");
-        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        jTree1.setRootVisible(false);
-        jScrollPane2.setViewportView(jTree1);
+        treeNavi.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        treeNavi.setRootVisible(false);
+        jScrollPane2.setViewportView(treeNavi);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbMovieList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -183,16 +198,26 @@ public class frmUser extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setColumnSelectionAllowed(true);
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane3.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tbMovieList.setColumnSelectionAllowed(true);
+        tbMovieList.getTableHeader().setReorderingAllowed(false);
+        jScrollPane3.setViewportView(tbMovieList);
+        tbMovieList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        jButton4.setText("订票");
+        btnBook.setText("订票");
+        btnBook.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBookMouseClicked(evt);
+            }
+        });
 
-        jLabel3.setText("剩余票数：");
+        lbSurplus.setText("剩余票数：");
 
-        jButton5.setText("取消选择");
+        btnCancelSel.setText("取消选择");
+        btnCancelSel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancelSelMouseClicked(evt);
+            }
+        });
 
         jMenu1.setText("系统");
 
@@ -239,11 +264,11 @@ public class frmUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
+                        .addComponent(lbSurplus)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4)
+                        .addComponent(btnBook)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5))
+                        .addComponent(btnCancelSel))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE))
                 .addContainerGap())
@@ -256,9 +281,9 @@ public class frmUser extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4)
-                    .addComponent(jLabel3)
-                    .addComponent(jButton5))
+                    .addComponent(btnBook)
+                    .addComponent(lbSurplus)
+                    .addComponent(btnCancelSel))
                 .addGap(2, 2, 2))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -300,6 +325,27 @@ public class frmUser extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
+    private void btnQueryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQueryMouseClicked
+        // TODO 电影名查询
+    }//GEN-LAST:event_btnQueryMouseClicked
+
+    private void btnClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseClicked
+        // TODO 清空
+    }//GEN-LAST:event_btnClearMouseClicked
+
+    private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
+        // TODO 详细信息
+    }//GEN-LAST:event_btnDetailMouseClicked
+
+    private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
+        // TODO 订票
+    }//GEN-LAST:event_btnBookMouseClicked
+
+    private void btnCancelSelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelSelMouseClicked
+        // 取消选择
+        tbMovieList.clearSelection();
+    }//GEN-LAST:event_btnCancelSelMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -314,14 +360,12 @@ public class frmUser extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton btnBook;
+    private javax.swing.JButton btnCancelSel;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnDetail;
+    private javax.swing.JButton btnQuery;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -333,9 +377,11 @@ public class frmUser extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTree jTree1;
+    private javax.swing.JLabel lbPoster;
+    private javax.swing.JLabel lbSurplus;
+    private javax.swing.JTextArea taMovieInfo;
+    private javax.swing.JTable tbMovieList;
+    private javax.swing.JTextField tfQueryMovie;
+    private javax.swing.JTree treeNavi;
     // End of variables declaration//GEN-END:variables
 }
