@@ -4,75 +4,39 @@
  * and open the template in the editor.
  */
 package lab5.UI;
-import java.sql.*;
-import java.util.*;
-import lab5.Module.*;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
-/* [8]后台管理界面 */
+import java.awt.event.ItemEvent;
+import java.sql.*;
+import javax.swing.JOptionPane;
+
+import lab5.Module.*;
+
+// [8]后台管理界面
 public class frmManager extends javax.swing.JFrame {
-    private DBAccess db;
-    private HashMap<String, String> movieList;
+    private DBAccess db; // 数据库访问对象
+    private UI_TicketManager ticketManager;
 
     public frmManager() {
         initComponents();
+        this.setTitle("后台管理系统 - 管理员：" + WinCtrl.currentLoginUser);
         try {
             db = new DBAccess();
-            loadDataToUI();
-        } catch (ClassNotFoundException | SQLException | IllegalColumnCountException ex) {
-            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            this.dispose(); // 退出窗体
         }
+        /* 电影票管理 */
+        ticketManager = new UI_TicketManager(db);
+        ticketManager.bindButton(btnAddBatch, btnSave, btnDelete, btnReload);
+        ticketManager.bindCheckBox(ckbNewTicket, ckbStatus, ckbNewSchedule, ckbNewTheater);
+        ticketManager.bindCombox(cmbTicketID, cmbCustomer, cmbScheduleID, cmbMovie, cmbTheater);
+        ticketManager.bindTextField(tfRow, tfCol, tfThCapacity, tfPrice, tfScheduleTime);
+        ticketManager.bindTable(tbTicketList);
+        ticketManager.initComponents(); // 初始化控件
+        ticketManager.loadData(); // 载入数据
+        /* 电影票管理 */
     }
 
-    // 加载数据库内容
-    private void loadDataToUI() throws SQLException, IllegalColumnCountException {
-        // 写入jTable
-        DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-        
-        dtm.setRowCount(0); // 清空列表
-        ResultSet rs = db.queryDB(
-            "select Ticket.TicketID, Movie.MovieID, Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Col, Ticket.Price, Ticket.Status "+
-            "from Movie, Theater, Schedule, Ticket "+
-            "where Ticket.ScheduleID=Schedule.ScheduleID and Movie.MovieID=Schedule.MovieID and Schedule.TheaterID=Theater.TheaterID");
-        // 表头列数量不正确报错
-        int jtc = ((DefaultTableModel)jTable1.getModel()).getColumnCount(), rsc = rs.getMetaData().getColumnCount();
-        if(jtc != 8 || rsc != jtc+1) {
-            db.releaseQuery();
-            throw new IllegalColumnCountException(jtc, rsc);
-        }
-        while(rs.next()) { // 行 不定数
-            Vector<String> v = new Vector<String>();
-            // 电影票ID | 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
-            v.add(rs.getString(0)); // TicketID
-            v.add(rs.getString(1)); // MovieID
-            v.add(rs.getString(2)); // MovieName
-            v.add(rs.getString(3)); // TheaterName
-            v.add(rs.getTimestamp(4).toString()); // ScheduleTime
-            v.add(rs.getString(5)+"-"+rs.getString(6)); // Row Col
-            v.add(String.valueOf(rs.getDouble(7))); // Price
-            v.add(rs.getString(8)); // Status
-            dtm.addRow(v);
-        }
-        db.releaseQuery();
-        // 写入jList和HaspMap
-        rs = db.queryDB("select Movie.MovieID, Movie.MovieName from Movie");
-        DefaultListModel<String> dlm = (DefaultListModel<String>)jList1.getModel();
-        // 清空列表
-        dlm.removeAllElements();
-        if(movieList==null)
-            movieList = new HashMap<String, String>();
-        else
-            movieList.clear();
-        while(rs.next()) {
-            String id = rs.getString(0), name = rs.getString(1);
-            dlm.addElement(id + "|" + name);
-            movieList.put(id, name);
-        }
-        db.releaseQuery();
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -82,42 +46,47 @@ public class frmManager extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jComboBox1 = new javax.swing.JComboBox<>();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        ckbNewTicket = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        cmbTicketID = new javax.swing.JComboBox<>();
+        cmbCustomer = new javax.swing.JComboBox<>();
+        ckbStatus = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        cmbScheduleID = new javax.swing.JComboBox<>();
+        ckbNewSchedule = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
+        tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        cmbTheater = new javax.swing.JComboBox<>();
+        ckbNewTheater = new javax.swing.JCheckBox();
+        cmbMovie = new javax.swing.JComboBox<>();
+        lbThCapacity = new javax.swing.JLabel();
+        tfThCapacity = new javax.swing.JTextField();
+        btnAddBatch = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnReload = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
+        tfPrice = new javax.swing.JTextField();
+        jPanel6 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbTicketList = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "已购", "未购" }));
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -128,60 +97,254 @@ public class frmManager extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 961, Short.MAX_VALUE)
+            .addGap(0, 1016, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 517, Short.MAX_VALUE)
+            .addGap(0, 544, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("电影信息管理", jPanel1);
+        jTabbedPane1.addTab("电影信息管理功能", jPanel1);
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jList1MouseClicked(evt);
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("修改电影票信息【记得校验放映厅容量，可以强行添加】"));
+
+        jLabel1.setText("电影票ID");
+
+        ckbNewTicket.setText("新建");
+        ckbNewTicket.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ckbNewTicketItemStateChanged(evt);
             }
         });
-        jScrollPane2.setViewportView(jList1);
 
-        jLabel1.setText("批量添加电影票: (输入完电影ID按回车自动获取电影名)");
+        jLabel2.setText("购票人");
 
-        jLabel2.setText("电影名");
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
+        cmbCustomer.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbCustomerItemStateChanged(evt);
+            }
+        });
 
-        jTextField1.setEditable(false);
+        ckbStatus.setText("票已售");
+        ckbStatus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ckbStatusItemStateChanged(evt);
+            }
+        });
 
-        jLabel3.setText("放映厅名");
+        jLabel3.setText("座位");
 
-        jLabel4.setText("场次");
+        jLabel4.setText("行");
 
-        jTextField3.setText("yyyy-mm-dd hh:mm:ss");
-        jTextField3.setToolTipText("格式：yyyy-mm-dd hh:mm:ss");
+        jLabel5.setText("列");
 
-        jLabel5.setText("座位");
-        jLabel5.setToolTipText("总共N行N列");
+        jLabel6.setText("计划ID");
 
-        jLabel6.setText("行");
+        ckbNewSchedule.setText("新建");
+        ckbNewSchedule.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ckbNewScheduleItemStateChanged(evt);
+            }
+        });
 
-        jLabel7.setText("列");
+        jLabel7.setText("场次");
 
-        jLabel8.setText("价格");
+        tfScheduleTime.setText("yyyy-mm-dd hh:mm:ss");
+        tfScheduleTime.setToolTipText("格式：yyyy-mm-dd hh:mm:ss");
 
-        jLabel9.setText("电影票列表:");
+        jLabel8.setText("电影");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel9.setText("放映厅");
+
+        ckbNewTheater.setText("新建");
+        ckbNewTheater.setToolTipText("格式：放映厅ID|放映厅名");
+        ckbNewTheater.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ckbNewTheaterItemStateChanged(evt);
+            }
+        });
+
+        lbThCapacity.setText("放映厅容量");
+
+        btnAddBatch.setText("批量添加");
+        btnAddBatch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAddBatchMouseClicked(evt);
+            }
+        });
+
+        btnSave.setText("保存");
+        btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSaveMouseClicked(evt);
+            }
+        });
+
+        btnDelete.setText("删除");
+        btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDeleteMouseClicked(evt);
+            }
+        });
+
+        btnReload.setText("刷新列表");
+        btnReload.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReloadMouseClicked(evt);
+            }
+        });
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setBackground(new java.awt.Color(240, 240, 240));
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
+        jTextArea1.setLineWrap(true);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("说明：\n批量添加：批量添加共N行N列的票，需要填写电影票ID，表示以该ID起，顺序添加电影票（ID必须为整数）\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）");
+        jTextArea1.setBorder(null);
+        jScrollPane2.setViewportView(jTextArea1);
+
+        jLabel10.setText("价格");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(ckbNewTicket)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(cmbCustomer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ckbStatus))
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(tfScheduleTime, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(cmbScheduleID, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                            .addComponent(tfRow, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jLabel4)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(tfCol, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5)
+                                        .addComponent(ckbNewSchedule))))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(cmbTheater, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ckbNewTheater))
+                            .addComponent(cmbMovie, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(lbThCapacity)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(btnAddBatch)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSave)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDelete)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnReload)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(ckbNewTicket)
+                    .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(cmbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ckbStatus))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(tfRow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(tfCol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(cmbScheduleID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ckbNewSchedule))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
+                    .addComponent(tfScheduleTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(cmbMovie, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(cmbTheater, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ckbNewTheater))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbThCapacity)
+                    .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10)
+                    .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAddBatch)
+                    .addComponent(btnSave)
+                    .addComponent(btnDelete)
+                    .addComponent(btnReload))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("数据库电影表列表"));
+
+        tbTicketList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "电影票ID", "电影ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
+                "电影票ID", "电影名", "放映厅3", "场次", "座位", "价格", "状态"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, true, true, true, true
+                false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -192,52 +355,21 @@ public class frmManager extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setColumnSelectionAllowed(true);
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(7).setCellEditor(new DefaultCellEditor(jComboBox1));
-        }
+        tbTicketList.setColumnSelectionAllowed(true);
+        tbTicketList.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tbTicketList);
+        tbTicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        jButton1.setText("批量添加");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-
-        jButton2.setText("删除");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-
-        jButton3.setText("保存");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
-            }
-        });
-
-        jButton4.setText("刷新");
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton4MouseClicked(evt);
-            }
-        });
-
-        jLabel10.setText("电影ID");
-
-        jTextField7.setToolTipText("");
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
-            }
-        });
-
-        jLabel11.setText("电影票ID起始值");
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -245,124 +377,35 @@ public class frmManager extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8))
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton4)
-                                .addGap(6, 6, 6))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(1, 1, 1)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel10)
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel2))
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(13, 13, 13)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButton1)
-                                .addComponent(jButton2)
-                                .addComponent(jButton3)
-                                .addComponent(jButton4)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        jTabbedPane1.addTab("电影票管理", jPanel2);
+        jTabbedPane1.addTab("电影票管理功能", jPanel2);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 961, Short.MAX_VALUE)
+            .addGap(0, 1016, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 517, Short.MAX_VALUE)
+            .addGap(0, 544, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("用户管理", jPanel3);
+        jTabbedPane1.addTab("用户信息管理", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -378,152 +421,69 @@ public class frmManager extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
-        // 按回车获取电影名
-        jTextField1.setText(movieList.get(jTextField7.getText().trim()));
-    }//GEN-LAST:event_jTextField7ActionPerformed
-
-    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
-        // 刷新
-        try {
-            loadDataToUI();
-        } catch (SQLException | IllegalColumnCountException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jButton4MouseClicked
-
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
-        // TODO 保存
-        // 注意String->Timestamp时间格式
-        Connection ct = db.getConnection();
-        try{
-            PreparedStatement pst = ct.prepareStatement("insert into Ticket values(?,?,?,?,?,?)"),
-                pstSch = ct.prepareStatement("insert into Schedule values(?,?,?,?)"),
-                pstTh = ct.prepareStatement("select TheaterID from Theater where TheaterName=?");
-            try {
-                DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-                ct.setAutoCommit(false); // 手动提交事务
-
-                // 清空表
-                db.modifyDB("delete from Ticket");
-                db.modifyDB("delete from Schedule");
-                int schID = 0; // New ScheduleID
-                // 上次MovieID TheaterID ScheduleTime，与当前都相同则视为同一Schedule
-                String lastMovieID = "", lastTheater = "", lastSchTime = "";
-
-                for(int i=0, rc=dtm.getRowCount(); i<rc; ++i) {
-                    // 清除参数
-                    pst.clearParameters();
-                    pstSch.clearParameters();
-                    pstTh.clearParameters();
-
-                    pst.setString(1, dtm.getValueAt(i, 0).toString()); // TicketID
-                    pst.setString(2, "0"); // UserID
-                    /* Seat */
-                    String seat = dtm.getValueAt(i, 4).toString();
-                    int delim = seat.indexOf('-'), x = Integer.parseInt(seat.substring(0, delim)), y = Integer.parseInt(seat.substring(delim+1));
-                    pst.setString(3, String.valueOf(x)); // Seat Row
-                    pst.setString(4, String.valueOf(y)); // Seat Col
-                    /* New Schedule */
-                    // 当前
-                    String curMovieID = dtm.getValueAt(i, 2).toString(), curTheater = dtm.getValueAt(i, 3).toString(), curScheTime = dtm.getValueAt(i, 4).toString();
-                    if(!(curMovieID.equals(lastMovieID) && curTheater.equals(lastTheater) && curScheTime.equals(lastSchTime)))
-                        // 不同Schedule，schID+1
-                        ++schID;
-                    pstSch.setString(1, String.valueOf(schID)); // ScheduleID
-                    pstSch.setString(2, curScheTime); // ScheduleTime
-                    pstSch.setString(3, dtm.getValueAt(i, 1).toString().trim()); // MovieID
-                    /* -find TheaterID- */
-                    pstTh.setString(1, dtm.getValueAt(i, 3).toString().trim()); // TheaterName
-                    ResultSet rsTh = pstTh.executeQuery();
-                    if(rsTh.next()) {
-                        pstSch.setString(4, rsTh.getString(1)); // TheaterID
-                        rsTh.close();
-                    } else {
-                        rsTh.close();
-                        throw new IllegalArgumentException("无效放映厅ID");
-                    }
-                    pstSch.executeUpdate(); // register new Schedule
-
-                    pst.setString(5, String.valueOf(schID)); // ScheduleID
-
-                    pst.setString(6, dtm.getValueAt(i, 6).toString()); // Status
-                    pst.executeUpdate();
-                }
-                ct.commit(); // 一切正常 提交
-            } catch (SQLException | IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-                ct.rollback(); // 回滚
-            } finally {
-                ct.setAutoCommit(true);
-                pst.close();
-                pstSch.close();
-                pstTh.close();
-            }
-        } catch(SQLException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jButton3MouseClicked
-
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        // 删除
-        DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-        for(int i : jTable1.getSelectedRows())
-        if(i>0) dtm.removeRow(i);
-    }//GEN-LAST:event_jButton2MouseClicked
-
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void btnAddBatchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddBatchMouseClicked
         // 批量添加
-        // BUG 没考虑到电影院容量
-        // BUG 重构吧
-        try {
-            int row = Integer.parseInt(jTextField5.getText()), col = Integer.parseInt(jTextField4.getText()), st = Integer.parseInt(jTextField8.getText());
-            String movieName = movieList.get(jTextField7.getText().trim());
-            if(row>0 && col>0 && movieName!=null) {
-                DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-                for(int i=0; i<row; ++i)
-                    for(int j=0; j<col; ++j)
-                    // 电影票ID | 电影ID | 电影名 | 放映厅 | 场次 | 座位 | 价格 | 状态
-                    dtm.addRow(new String[] {
-                        String.valueOf(st++),
-                        jTextField7.getText().trim(),
-                        movieName,
-                        jTextField2.getText().trim(),
-                        jTextField3.getText().trim(),
-                        i + "-" + j,
-                        jTextField6.getText().trim(),
-                        "未购"
-                    });
-            } else
-                throw new IllegalArgumentException();
-        } catch(IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "输入信息有误", "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jButton1MouseClicked
+        ticketManager.addBatch();
+    }//GEN-LAST:event_btnAddBatchMouseClicked
 
-    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
-        // 将电影ID和电影名填写进批量添加
-        String val = jList1.getSelectedValue().trim();
-        int delim = val.indexOf('|');
-        jTextField7.setText(val.substring(0, delim));
-        jTextField1.setText(val.substring(delim+1));
-    }//GEN-LAST:event_jList1MouseClicked
+    private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
+        // 保存
+        ticketManager.saveItem();
+    }//GEN-LAST:event_btnSaveMouseClicked
+
+    private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
+        // 删除
+        ticketManager.deleteItem();
+    }//GEN-LAST:event_btnDeleteMouseClicked
+
+    private void btnReloadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReloadMouseClicked
+        // 刷新列表
+        ticketManager.loadData();
+    }//GEN-LAST:event_btnReloadMouseClicked
+
+    private void ckbStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbStatusItemStateChanged
+        // 票已售？
+        if(evt.getStateChange()==ItemEvent.DESELECTED)
+            cmbCustomer.setSelectedIndex(0);
+    }//GEN-LAST:event_ckbStatusItemStateChanged
+
+    private void ckbNewTheaterItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTheaterItemStateChanged
+        // 新建放映厅
+        cmbTheater.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
+        tfThCapacity.setEnabled(evt.getStateChange()==ItemEvent.SELECTED);
+    }//GEN-LAST:event_ckbNewTheaterItemStateChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // 窗体关闭
         try {
             db.close();
-            System.exit(0);
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
+        this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void ckbNewTicketItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTicketItemStateChanged
+        // 新建电影票
+        cmbTicketID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
+    }//GEN-LAST:event_ckbNewTicketItemStateChanged
+
+    private void ckbNewScheduleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewScheduleItemStateChanged
+        // 新建计划
+        cmbScheduleID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
+    }//GEN-LAST:event_ckbNewScheduleItemStateChanged
+
+    private void cmbCustomerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCustomerItemStateChanged
+        // 购票人改变
+        if(cmbCustomer.getSelectedIndex()>0)
+            ckbStatus.setSelected(true);
+    }//GEN-LAST:event_cmbCustomerItemStateChanged
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        lab5.Lab5.setUIStyle();
+        lab5.Lab5.setUIStyle(frmManager.class.getName());
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -533,14 +493,21 @@ public class frmManager extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton btnAddBatch;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnReload;
+    private javax.swing.JButton btnSave;
+    private javax.swing.JCheckBox ckbNewSchedule;
+    private javax.swing.JCheckBox ckbNewTheater;
+    private javax.swing.JCheckBox ckbNewTicket;
+    private javax.swing.JCheckBox ckbStatus;
+    private javax.swing.JComboBox<String> cmbCustomer;
+    private javax.swing.JComboBox<String> cmbMovie;
+    private javax.swing.JComboBox<String> cmbScheduleID;
+    private javax.swing.JComboBox<String> cmbTheater;
+    private javax.swing.JComboBox<String> cmbTicketID;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -549,21 +516,21 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel lbThCapacity;
+    private javax.swing.JTable tbTicketList;
+    private javax.swing.JTextField tfCol;
+    private javax.swing.JTextField tfPrice;
+    private javax.swing.JTextField tfRow;
+    private javax.swing.JTextField tfScheduleTime;
+    private javax.swing.JTextField tfThCapacity;
     // End of variables declaration//GEN-END:variables
 }

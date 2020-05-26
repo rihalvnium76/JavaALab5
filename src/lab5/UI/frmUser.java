@@ -34,48 +34,9 @@ public class frmUser extends javax.swing.JFrame {
         initComponents();
         try {
             db = new DBAccess();
-            loadDataToUI();
-        } catch (ClassNotFoundException | SQLException | IllegalColumnCountException ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    
-    // TODO 加载数据库内容
-    // 返回值：0正常
-    private void loadDataToUI() throws SQLException, IllegalColumnCountException {
-        // TODO 载入JTree
-        // JTable在JTree选择后再载入
-        //
-        //-----------------------
-        // 全部写入jTable
-        DefaultTableModel dtm = (DefaultTableModel)jTable1.getModel();
-        
-        dtm.setRowCount(0); // 清空列表
-        // TODO 完整获取数据库
-        ResultSet rs = db.queryDB(
-            "select Movie.MovieID, Movie.MovieName, Theater.TheaterName, Schedule.ScheduleTime, Ticket.Row, Ticket.Column, Ticket.Status "+
-            "from Movie, Theater, Schedule, Ticket "+
-            "where Ticket.ScheduleID=Schedule.ScheduleID and Movie.MovieID=Schedule.MovieID and Schedule.TheaterID=Theater.TheaterID");
-        // 表头列数量不正确报错
-        int jtc = jTable1.getColumnCount(), rsc = rs.getMetaData().getColumnCount();
-        if(jtc != 5 || rsc != 6) {
-            db.releaseQuery();
-            throw new IllegalColumnCountException(jtc, rsc);
-        }
-        while(rs.next()) { // 行 不定数
-            Vector<String> v = new Vector<String>();
-            // 电影名 | 放映厅 | 场次 | 座位 | 状态
-            v.add(rs.getString(0));
-            v.add(rs.getString(1));
-            v.add(rs.getTimestamp(2).toString());
-            v.add(rs.getString(3)+"-"+rs.getString(4));
-            v.add(rs.getString(5));
-            dtm.addRow(v);
-        }
-        db.releaseQuery();
-        // TODO 写入查询树JTree
-        // 电影名 - 放映厅 - 场次
-        ;
     }
 
     /**
@@ -315,7 +276,7 @@ public class frmUser extends javax.swing.JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
-        System.exit(0);
+        this.dispose();
     }//GEN-LAST:event_jMenuItem1MouseClicked
 
     private void jMenuItem3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem3MouseClicked
@@ -333,17 +294,17 @@ public class frmUser extends javax.swing.JFrame {
         // 窗体关闭
         try {
             db.close();
-            System.exit(0);
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
+        this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        lab5.Lab5.setUIStyle();
+        lab5.Lab5.setUIStyle(frmUser.class.getName());
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

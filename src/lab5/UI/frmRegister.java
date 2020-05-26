@@ -117,7 +117,7 @@ public class frmRegister extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        lab5.Lab5.setUIStyle();
+        lab5.Lab5.setUIStyle(frmRegister.class.getName());
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
