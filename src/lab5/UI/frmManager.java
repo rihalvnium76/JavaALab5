@@ -52,8 +52,8 @@ public class frmManager extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         ckbNewTicket = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<>();
-        cmbCustomer = new javax.swing.JComboBox<>();
+        cmbTicketID = new javax.swing.JComboBox<String>();
+        cmbCustomer = new javax.swing.JComboBox<String>();
         ckbStatus = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
@@ -61,15 +61,15 @@ public class frmManager extends javax.swing.JFrame {
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<>();
+        cmbScheduleID = new javax.swing.JComboBox<String>();
         ckbNewSchedule = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<>();
+        cmbTheater = new javax.swing.JComboBox<String>();
         ckbNewTheater = new javax.swing.JCheckBox();
-        cmbMovie = new javax.swing.JComboBox<>();
+        cmbMovie = new javax.swing.JComboBox<String>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnAddBatch = new javax.swing.JButton();
@@ -84,6 +84,14 @@ public class frmManager extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -118,7 +126,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
         cmbCustomer.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbCustomerItemStateChanged(evt);
@@ -393,15 +401,70 @@ public class frmManager extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("电影票管理功能", jPanel2);
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "用户名", "密码"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable1);
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "电影票ID", "电影ID", "电影名", "放映厅", "场次", "座位", "价格"
+            }
+        ));
+        jScrollPane4.setViewportView(jTable2);
+
+        jButton1.setText("重置密码");
+
+        jButton2.setText("删除账户");
+
+        jButton3.setText("查询订单");
+
+        jButton4.setText("删除订单");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1016, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 876, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton2)
+                            .addComponent(jButton3)
+                            .addComponent(jButton4)
+                            .addComponent(jButton1))
+                        .addGap(0, 11, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 544, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("用户信息管理", jPanel3);
@@ -505,6 +568,10 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbScheduleID;
     private javax.swing.JComboBox<String> cmbTheater;
     private javax.swing.JComboBox<String> cmbTicketID;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -522,7 +589,11 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel lbThCapacity;
     private javax.swing.JTable tbTicketList;
