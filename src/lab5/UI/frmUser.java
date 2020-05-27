@@ -516,12 +516,16 @@ public class frmUser extends javax.swing.JFrame {
 
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         // 详细信息
-        loadIntroduction(null, tbMovieList.getSelectedRow());
+        WinCtrl.currentSelectedMovieID = dataList.get(tbMovieList.getSelectedRow()).movieID;
+        // 显示frmMovieInfo
+        frmMovieInfo.main(null);
     }//GEN-LAST:event_btnDetailMouseClicked
 
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
         // 订票
         bookTicket();
+        DBItem r = dataList.get(tbMovieList.getSelectedRow());
+        loadDataToTable(r.movieName, r.theaterName, r.scheduleTime.toString());
     }//GEN-LAST:event_btnBookMouseClicked
 
     private void btnCancelSelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelSelMouseClicked

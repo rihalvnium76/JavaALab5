@@ -17,6 +17,11 @@ import javax.swing.tree.TreePath;
 
 /* 窗体控制类 */
 public class WinCtrl {
+
+    /*
+        状态公共变量区
+    */
+
     // 界面1所选择的按钮
     // 值：0 管理员登录 1 注册
     public static int loginFormSelectedButton;
@@ -29,13 +34,12 @@ public class WinCtrl {
     // 当前登录用户名
     public static String currentLoginUser;
 
-    // NOTICE 【注意】不建议在此处实现代码，该功能的实现参考UI_TicketManager.java
-    // TODO 从数据库获取指定用户usr所有的订单并写入到JTable中
-    /*@Deprecated
-    public static void getUserOrder(String usr, JTable jt) {}*/
-    // TODO 从数据库删除指定用户usr的ID为ticketID的指定订单
-    /*@Deprecated
-    public static void removeUserOrder(String usr, String ticketID) {}*/
+    // 当前选择的要查看详细信息的电影的ID
+    public static String currentSelectedMovieID;
+
+    /*
+        功能函数区
+    */
     
     // 返回res目录路径
     public static String getResDirPath() throws IOException {
@@ -48,9 +52,6 @@ public class WinCtrl {
         String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator + "image" + File.separator;
         return ret;
     }
-
-    // 传递给[5]电影详细信息窗口的选择的电影的ID
-    public static String selectedMovie = null;
     
     /* JTree操作函数 */
     // 添加结点
