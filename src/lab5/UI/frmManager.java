@@ -53,8 +53,8 @@ public class frmManager extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         ckbNewTicket = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<String>();
-        cmbCustomer = new javax.swing.JComboBox<String>();
+        cmbTicketID = new javax.swing.JComboBox<>();
+        cmbCustomer = new javax.swing.JComboBox<>();
         ckbStatus = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
@@ -62,15 +62,15 @@ public class frmManager extends javax.swing.JFrame {
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<String>();
+        cmbScheduleID = new javax.swing.JComboBox<>();
         ckbNewSchedule = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<String>();
+        cmbTheater = new javax.swing.JComboBox<>();
         ckbNewTheater = new javax.swing.JCheckBox();
-        cmbMovie = new javax.swing.JComboBox<String>();
+        cmbMovie = new javax.swing.JComboBox<>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnAddBatch = new javax.swing.JButton();
@@ -127,7 +127,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
         cmbCustomer.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbCustomerItemStateChanged(evt);
@@ -174,6 +174,8 @@ public class frmManager extends javax.swing.JFrame {
         });
 
         lbThCapacity.setText("放映厅容量");
+
+        tfThCapacity.setEnabled(false);
 
         btnAddBatch.setText("批量添加");
         btnAddBatch.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -539,8 +541,8 @@ public class frmManager extends javax.swing.JFrame {
 
     private void cmbCustomerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCustomerItemStateChanged
         // 购票人改变
-        if(cmbCustomer.getSelectedIndex()>0)
-            ckbStatus.setSelected(true);
+        //if(cmbCustomer.getSelectedIndex()>0)
+        ckbStatus.setSelected(cmbCustomer.getSelectedIndex()>0);
     }//GEN-LAST:event_cmbCustomerItemStateChanged
 
     /**

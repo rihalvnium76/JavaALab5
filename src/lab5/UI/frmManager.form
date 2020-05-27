@@ -408,6 +408,9 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="tfThCapacity">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnAddBatch">
                   <Properties>

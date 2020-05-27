@@ -53,7 +53,7 @@ public class frmUser extends javax.swing.JFrame {
         try {
             db = new DBAccess();
         } catch (ClassNotFoundException | SQLException e) {
-            // JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(1); // 退出
         }
@@ -105,7 +105,8 @@ public class frmUser extends javax.swing.JFrame {
             }
             pst.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -144,7 +145,8 @@ public class frmUser extends javax.swing.JFrame {
             rs.close();
             pst.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         } catch(IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, "场次格式错误，应为yyyy-mm-dd hh:mm:ss", "错误", JOptionPane.ERROR_MESSAGE);
         }
@@ -154,7 +156,7 @@ public class frmUser extends javax.swing.JFrame {
     // movieName 按电影名查询
     // index 表索引->dataList->movieID
     void loadIntroduction(String movieName, Integer index) {
-        if(movieName==null && index==null) return;
+        if((movieName==null && index==null) || index<0) return;
         String[] intro = new String[6]; // 电影名 导演 主演 类型 价格 图片
         String val = movieName!=null? movieName: dataList.get(index).movieID;
 
@@ -172,7 +174,8 @@ public class frmUser extends javax.swing.JFrame {
             rs.close();
             pst.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             return;
         }
 
@@ -187,7 +190,8 @@ public class frmUser extends javax.swing.JFrame {
         try {
             WinCtrl.setLabelImage(lbPoster, WinCtrl.getImageDirPath() + File.separator + intro[5]);
         } catch(IOException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -210,7 +214,8 @@ public class frmUser extends javax.swing.JFrame {
             }
             pst.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -518,7 +523,9 @@ public class frmUser extends javax.swing.JFrame {
 
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         // 详细信息
-        WinCtrl.currentSelectedMovieID = dataList.get(tbMovieList.getSelectedRow()).movieID;
+        int i = tbMovieList.getSelectedRow();
+        if(i==-1) return;
+        WinCtrl.currentSelectedMovieID = dataList.get(i).movieID;
         // 显示frmMovieInfo
         frmMovieInfo.main(null);
     }//GEN-LAST:event_btnDetailMouseClicked
@@ -526,7 +533,9 @@ public class frmUser extends javax.swing.JFrame {
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
         // 订票
         bookTicket();
-        DBItem r = dataList.get(tbMovieList.getSelectedRow());
+        int i = tbMovieList.getSelectedRow();
+        if(i==-1) return;
+        DBItem r = dataList.get(i);
         loadDataToTable(r.movieName, r.theaterName, r.scheduleTime.toString());
     }//GEN-LAST:event_btnBookMouseClicked
 
@@ -546,7 +555,7 @@ public class frmUser extends javax.swing.JFrame {
             case 2:
                 schedule = (String)node.getUserObject();
                 movieName = (String)((DefaultMutableTreeNode)node.getParent()).getUserObject();
-                schInfo = schedule.split("|", 2);
+                schInfo = schedule.split("\\|", 2);
                 break;
             default: return;
         }

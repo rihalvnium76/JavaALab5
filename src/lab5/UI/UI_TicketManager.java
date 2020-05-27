@@ -30,7 +30,7 @@ public class UI_TicketManager {
         public int row, col;
         public String scheduleID, movieID, movieName, theaterID, theaterName;
         public int thCapacity;
-        public double price;
+        public float price;
         public Timestamp scheduleTime;
         public String status;
 
@@ -47,7 +47,7 @@ public class UI_TicketManager {
                 case 8: theaterID = (String)value; break;
                 case 9: theaterName = (String)value; break;
                 case 10: thCapacity = (Integer)value; break;
-                case 11: price = (Double)value; break;
+                case 11: price = (Float)value; break;
                 case 12: scheduleTime = (Timestamp)value; break;
                 case 13: status = (String)value; break;
                 default: throw new IndexOutOfBoundsException("DBItem无效索引: "+index);
@@ -159,7 +159,8 @@ public class UI_TicketManager {
             pstQuery.close();
             rs = null;
         } catch (SQLException | IndexOutOfBoundsException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            // JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             ((DefaultTableModel)tbTicketList.getModel()).setRowCount(0); // 清空列表防止ArrayList空指针访问
             return;
         }
@@ -183,7 +184,7 @@ public class UI_TicketManager {
 
         String[] sqls = new String[] {
             "select TicketID from Ticket",
-            "select Ticket.UserID, Users.LoginName from Ticket, Users where Ticket.UserID=Users.UserID",
+            "select Users.LoginName from Users",
             "select ScheduleID from Schedule",
             "select movieID, movieName from Movie",
             "select TheaterID, TheaterName from Theater"
@@ -205,18 +206,19 @@ public class UI_TicketManager {
                 int cc = rs.getMetaData().getColumnCount();
                 while(rs.next())
                     if(cc==2)
-                        cmbs[i].addItem(rs.getString(0) + "|" + rs.getString(1));
+                        cmbs[i].addItem(rs.getString(1) + "|" + rs.getString(2));
                     else if(cc==1)
-                        cmbs[i].addItem(rs.getString(0));
+                        cmbs[i].addItem(rs.getString(1));
                     else {
                         db.releaseQuery();
                         throw new IllegalArgumentException("数据库查询结果总列数不合法: " + cc);
                     }
                 db.releaseQuery();
             }
-        } catch(SQLException | IllegalArgumentException e) {
+        } catch(IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            return;
+        } catch(SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -232,18 +234,19 @@ public class UI_TicketManager {
             pstDel.executeUpdate();
             pstDel.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             return;
         }
         dtm.removeRow(r);
         dataList.remove(r);
     }
-    // 保存一项
+    // BUG 保存一项
     public void saveItem() {
         // 预处理新建表需求 //
         String newTicketID = cmbTicketID.getSelectedItem().toString().trim(),
             newScheduleID = cmbScheduleID.getSelectedItem().toString().trim();
-        String[] newTheater = cmbTheater.getSelectedItem().toString().trim().split("|", 2);
+        String[] newTheater = cmbTheater.getSelectedItem().toString().trim().split("\\|", 2);
         Connection ct = db.getConnection();
         try {
             // 新放映厅
@@ -252,7 +255,9 @@ public class UI_TicketManager {
                 pstCrTh = ct.prepareStatement("insert into Theater values(?,?,?)");
             else {
                 pstCrTh = ct.prepareStatement("update Theater set TheaterID=?, TheaterName=?, Capacity=? where TheaterID=?");
-                pstCrTh.setString(4, dataList.get(tbTicketList.getSelectedRow()).theaterID); // 原剧院ID
+                int i = tbTicketList.getSelectedRow();
+                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
+                pstCrTh.setString(4, dataList.get(i).theaterID); // 原剧院ID
             }
             pstCrTh.setString(1, newTheater[0]);
             pstCrTh.setString(2, newTheater[1]);
@@ -260,17 +265,19 @@ public class UI_TicketManager {
             pstCrTh.executeUpdate();
             pstCrTh.close();
 
-            // 新计划
+            // BUG 新计划
             PreparedStatement pstCrSch;
             if(ckbNewSchedule.isSelected())
                 pstCrSch = ct.prepareStatement("insert into Schedule values(?,?,?,?)");
             else {
                 pstCrSch = ct.prepareStatement("update Schedule set ScheduleID=?, ScheduleTime=?, MovieID=?, TheaterID=? where TheaterID=?");
-                pstCrSch.setString(5, dataList.get(tbTicketList.getSelectedRow()).scheduleID); // 原计划IDＩＤ
+                int i = tbTicketList.getSelectedRow();
+                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
+                pstCrSch.setString(5, dataList.get(i).scheduleID); // 原计划ID
             }
             pstCrSch.setString(1, newScheduleID);
             pstCrSch.setTimestamp(2, Timestamp.valueOf(tfScheduleTime.getText().trim()));
-            pstCrSch.setString(3, cmbMovie.getSelectedItem().toString().trim().split("|", 2)[0]); // 电影ID
+            pstCrSch.setString(3, cmbMovie.getSelectedItem().toString().trim().split("\\|", 2)[0]); // 电影ID
             pstCrSch.setString(4, newTheater[0]);
             pstCrSch.executeUpdate();
             pstCrSch.close();
@@ -296,18 +303,20 @@ public class UI_TicketManager {
                 pstCrTk.setString(7,  dataList.get(tbTicketList.getSelectedRow()).ticketID);
             }
             pstCrTk.setString(1, newTicketID);
-            pstCrTk.setString(2, cmbCustomer.getSelectedItem().toString().trim().split("|", 2)[0]); // UserID
+            pstCrTk.setString(2, cmbCustomer.getSelectedItem().toString().trim().split("\\|", 2)[0]); // UserID
             pstCrTk.setInt(3, Integer.parseInt(tfRow.getText().toString().trim()));
             pstCrTk.setInt(4, Integer.parseInt(tfCol.getText().toString().trim()));
             pstCrTk.setString(5, newScheduleID);
             pstCrTk.setString(6, (ckbStatus.isSelected()? "已购": "未购"));
             pstCrTk.executeUpdate();
             pstCrTk.close();
-        } catch(SQLException | IndexOutOfBoundsException e) {
+        } catch(IndexOutOfBoundsException e) {
             JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            return;
         } catch(IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, "场次输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
+        } catch(SQLException e) {
+            e.printStackTrace();
+        } finally {
             return;
         }
     }
@@ -316,7 +325,7 @@ public class UI_TicketManager {
         // 预处理新建表需求 //
         String newTicketID = cmbTicketID.getSelectedItem().toString().trim(),
             newScheduleID = cmbScheduleID.getSelectedItem().toString().trim();
-        String[] newTheater = cmbTheater.getSelectedItem().toString().trim().split("|", 2);
+        String[] newTheater = cmbTheater.getSelectedItem().toString().trim().split("\\|", 2);
         Connection ct = db.getConnection();
         try {
             // 新放映厅
@@ -325,7 +334,9 @@ public class UI_TicketManager {
                 pstCrTh = ct.prepareStatement("insert into Theater values(?,?,?)");
             else {
                 pstCrTh = ct.prepareStatement("update Theater set TheaterID=?, TheaterName=?, Capacity=? where TheaterID=?");
-                pstCrTh.setString(4, dataList.get(tbTicketList.getSelectedRow()).theaterID); // 原剧院ID
+                int i = tbTicketList.getSelectedRow();
+                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
+                pstCrTh.setString(4, dataList.get(i).theaterID); // 原剧院ID
             }
             pstCrTh.setString(1, newTheater[0]);
             pstCrTh.setString(2, newTheater[1]);
@@ -339,11 +350,13 @@ public class UI_TicketManager {
                 pstCrSch = ct.prepareStatement("insert into Schedule values(?,?,?,?)");
             else {
                 pstCrSch = ct.prepareStatement("update Schedule set ScheduleID=?, ScheduleTime=?, MovieID=?, TheaterID=? where TheaterID=?");
-                pstCrSch.setString(5, dataList.get(tbTicketList.getSelectedRow()).scheduleID); // 原计划IDＩＤ
+                int i = tbTicketList.getSelectedRow();
+                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
+                pstCrSch.setString(5, dataList.get(i).scheduleID); // 原计划ID
             }
             pstCrSch.setString(1, newScheduleID);
             pstCrSch.setTimestamp(2, Timestamp.valueOf(tfScheduleTime.getText().trim()));
-            pstCrSch.setString(3, cmbMovie.getSelectedItem().toString().trim().split("|", 2)[0]); // 电影ID
+            pstCrSch.setString(3, cmbMovie.getSelectedItem().toString().trim().split("\\|", 2)[0]); // 电影ID
             pstCrSch.setString(4, newTheater[0]);
             pstCrSch.executeUpdate();
             pstCrSch.close();
@@ -372,7 +385,7 @@ public class UI_TicketManager {
                     // 新电影票
                     pstCrTk.clearParameters();
                     pstCrTk.setString(1, String.valueOf(iTkID++));
-                    pstCrTk.setString(2, cmbCustomer.getSelectedItem().toString().trim().split("|", 2)[0]); // UserID
+                    pstCrTk.setString(2, cmbCustomer.getSelectedItem().toString().trim().split("\\|", 2)[0]); // UserID
                     pstCrTk.setInt(3, i);
                     pstCrTk.setInt(4, j);
                     pstCrTk.setString(5, newScheduleID);
@@ -383,12 +396,11 @@ public class UI_TicketManager {
             pstChkTk.close();
             pstCrTk.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            return;
+            // JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         } catch(IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, "场次输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        } finally {}
     }
 
 }
