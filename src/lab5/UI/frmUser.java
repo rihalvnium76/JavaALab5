@@ -52,8 +52,9 @@ public class frmUser extends javax.swing.JFrame {
         // 初始化
         try {
             db = new DBAccess();
-        } catch (ClassNotFoundException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        } catch (ClassNotFoundException | SQLException e) {
+            // JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             System.exit(1); // 退出
         }
         dataList = new ArrayList<DBItem>();
@@ -184,11 +185,9 @@ public class frmUser extends javax.swing.JFrame {
             "\n价格：" + intro[4]);
         // 设置图片
         try {
-            ImageIcon image = new ImageIcon(WinCtrl.getImageDirPath() + File.separator + "ctOSx.jpg");
-            image.setImage(image.getImage().getScaledInstance(lbPoster.getWidth(), lbPoster.getHeight(), Image.SCALE_DEFAULT));
-            lbPoster.setIcon(image);
+            WinCtrl.setLabelImage(lbPoster, WinCtrl.getImageDirPath() + File.separator + intro[5]);
         } catch(IOException e) {
-            lbPoster.setText("无图片");
+            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -307,7 +306,8 @@ public class frmUser extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("电影简介"));
 
-        lbPoster.setText("[封面]");
+        lbPoster.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbPoster.setText("无封面");
 
         btnDetail.setText("详细信息");
         btnDetail.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -476,8 +476,9 @@ public class frmUser extends javax.swing.JFrame {
          // 退出
         try {
             db.close();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException e) {
+            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         this.dispose();
     }//GEN-LAST:event_jMenuItem1MouseClicked
@@ -498,7 +499,8 @@ public class frmUser extends javax.swing.JFrame {
         try {
             db.close();
         } catch(SQLException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         this.dispose();
     }//GEN-LAST:event_formWindowClosing

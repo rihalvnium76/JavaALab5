@@ -8,6 +8,9 @@ package lab5.Module;
 import java.io.*;
 import java.util.Enumeration;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -43,7 +46,6 @@ public class WinCtrl {
     
     // 返回res目录路径
     public static String getResDirPath() throws IOException {
-        // File.separator为路径分隔符
         String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator;
         return ret;
     }
@@ -52,8 +54,18 @@ public class WinCtrl {
         String ret = new File("").getCanonicalPath() + File.separator + "res" + File.separator + "image" + File.separator;
         return ret;
     }
-    
+    // 给JLabel设置图片并适配控件大小
+    // 参数：lb JLabel控件
+    //   mgPath 图片路径，使用例：getImageDirPath() + File.separator + 文件名
+    // 说明：File.separator为路径分隔符
+    public static void setLabelImage(JLabel lb, String imgPath) {
+        ImageIcon image = new ImageIcon(imgPath);
+        image.setImage(image.getImage().getScaledInstance(lb.getWidth(), lb.getHeight(), Image.SCALE_DEFAULT));
+        lb.setIcon(image);
+    }
+
     /* JTree操作函数 */
+
     // 添加结点
     public static DefaultMutableTreeNode addTreeNode(JTree tree, DefaultMutableTreeNode selNode, String nodeName) {
         if(selNode==null) return null;
