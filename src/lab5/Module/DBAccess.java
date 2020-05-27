@@ -1,8 +1,37 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+Ticket
+    TicketID(Primary Key)：票名：ID均为数字编号字符串
+    UserID：用户，未购票该值为0
+    Row(int)：行数
+    Col(int)：列数
+    ScheduleID：计划ID
+    Status: 购买状态：值可为“已购”或“未购”
+    Ticket表要加上 UserID varchar(10) foreign key references Users(UserID)
+Theater
+    TheaterID(Primary Key)：放映厅ID
+    TheaterName：放映厅名
+    Capacity(int类型)：容量
+Movie
+    MovieID(Primary Key)：电影ID
+    MovieName：电影名
+    Director: 导演
+    MainActors:主演
+    MoviePoster(varchar(255)类型)：电影海报，图片文件名：
+    值例：xxxx.jpg
+    MovieType：电影类型
+    price(float(2)类型)：价格
+    MovieInfo(text类型): 电影简介
+Users
+    UserID(Primary Key)：用户ID
+    LoginName：登录名
+    Password：密码
+    UserType：用户类型：值可为“普通用户”或“管理员”
+Schedule
+    ScheduleID(Primary Key)：计划ID
+    ScheduleTime(datetime类型)：场次
+    MovieID：电影ID
+    TheaterID：放映厅ID
+*/
 package lab5.Module;
 
 import java.sql.*;

@@ -5,39 +5,217 @@
  */
 package lab5.UI;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+
+import java.awt.Image;
+
 import lab5.Module.*;
 
 /* [4]票务查询 */
 public class frmUser extends javax.swing.JFrame {
     private DBAccess db;
-    // 电影票完整属性
-    private class TicketItem {
-        // Ticket
-        public String movieID, userID, scheduleID, status;
-        public int row, col;
-        // Theater
-        public String theaterID, theaterName;
-        //public int theaterCapacity;
-        // Movie
-        public String movieName, director, mainActors, moviePoster, movieType;        
-        public double price;
-        // Schedule
+    class DBItem {
+        public String ticketID, movieID, movieName, status;
         public Timestamp scheduleTime;
+        public int row, col;
+        public String theaterName, userID, userName;
+
+        public void setValueByIndex(int index, Object value) throws IndexOutOfBoundsException {
+            switch(index) {
+                case 0: ticketID = (String)value; break;
+                case 1: movieID = (String)value; break;
+                case 2: movieName = (String)value; break;
+                case 3: status = (String)value; break;
+                case 4: scheduleTime = (Timestamp)value; break;
+                case 5: row = (Integer)value; break;
+                case 6: col = (Integer)value; break;
+                case 7: theaterName = (String)value; break;
+                case 8: userID = (String)value; break;
+                case 9: userName = (String)value; break;
+                default: throw new IndexOutOfBoundsException("DBItem无效索引: "+index);
+            }
+        }
     }
-    private Vector<TicketItem> tickets;
-    
+    ArrayList<DBItem> dataList;
+
     public frmUser() {
         initComponents();
+        // 初始化
         try {
             db = new DBAccess();
         } catch (ClassNotFoundException | SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            System.exit(1); // 退出
+        }
+        dataList = new ArrayList<DBItem>();
+    }
+
+    // 加载数据到JTree，参数为可选
+    void loadDataToTree(String searchMovie) {
+        class MovieItem {
+            public String movieName, movieID;
+            public MovieItem(String name, String id) {
+                movieName = name; movieID = id;
+            }
+        }
+        Queue<MovieItem> movieList = new LinkedList<MovieItem>();
+        Connection ct = db.getConnection();
+        try {
+            /* 获取电影名列表 */
+            PreparedStatement pst;
+            if(searchMovie==null)
+                pst = ct.prepareStatement("select movieName, movieID from Movie");
+            else {
+                pst = ct.prepareStatement("select movieName, movieID from Movie where movieName like ?");
+                pst.setString(1, "%" + searchMovie + "%"); // 模糊查找
+            }
+            ResultSet rs = pst.executeQuery();
+            while(rs.next())
+                movieList.offer(new MovieItem(rs.getString(1), rs.getString(2)));
+            rs.close();
+            pst.close();
+
+            /* 获取放映厅与场次 */
+            MovieItem curMovie;
+            DefaultTreeModel model = (DefaultTreeModel)treeNavi.getModel();
+            // 获取树根节点
+            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)model.getRoot();
+
+            pst = ct.prepareStatement("select Theater.TheaterName, Schedule.ScheduleTime from Theater, Schedule where Schedule.MovieID=? and Theater.TheaterID=Schedule.TheaterID");
+            while((curMovie = movieList.poll())!=null) {
+                // 写入Tree
+                DefaultMutableTreeNode curMovieNode = WinCtrl.addTreeNode(treeNavi, rootNode, curMovie.movieName);
+                // 查询放映厅+场次 写入Tree
+                pst.clearParameters(); // 清除参数记录
+                pst.setString(1, curMovie.movieID);
+                rs = pst.executeQuery();
+                while(rs.next())
+                    WinCtrl.addTreeNode(treeNavi, curMovieNode, rs.getString(1) + "|" + rs.getTimestamp(2).toString());
+                rs.close();
+            }
+            pst.close();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    // 加载数据到JTable+ArrayList
+    void loadDataToTable(String movieName, String theaterName, String scheduleTime) {
+        Connection ct = db.getConnection();
+        try {
+            PreparedStatement pst = ct.prepareStatement(
+                "select Ticket.TicketID, Movie.MovieID, Movie.MovieName, Ticket.Status, Schedule.ScheduleTime, Ticket.Row, Ticket.Col, Theater.TheaterName, Users.UserID, Users.UserName "+
+                "from Ticket, Schedule, Movie, Theater, Users "+
+                "where Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Schedule.TheaterID=Theater.TheaterID and Ticket.UserID=Users.UserID and "+
+                "Movie.MovieName=?" + (theaterName==null? "": " and Theater.TheaterName=?") + (scheduleTime==null? "": " and Schedule.ScheduleTime=?"));
+            pst.setString(1, movieName);
+            if(theaterName!=null) pst.setString(2, theaterName);
+            if(scheduleTime!=null) pst.setTimestamp(3, Timestamp.valueOf(scheduleTime));
+            ResultSet rs = pst.executeQuery();
+            DefaultTableModel dtm = (DefaultTableModel)tbMovieList.getModel();
+            dtm.setRowCount(0); // 清空表
+            dataList.clear(); // 清空表
+            while(rs.next()) {
+                // ArrayList
+                DBItem r = new DBItem();
+                for(int i=0, cc=rs.getMetaData().getColumnCount(); i<cc; ++i)
+                    r.setValueByIndex(i, rs.getObject(i+1));
+                dataList.add(r);
+
+                // JTable
+                dtm.addRow(new String[] {
+                    r.movieName,
+                    r.theaterName,
+                    r.scheduleTime.toString(),
+                    r.row + "-" + r.col,
+                    r.status
+                });
+            }
+            rs.close();
+            pst.close();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        } catch(IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "场次格式错误，应为yyyy-mm-dd hh:mm:ss", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 加载电影基本信息
+    // movieName 按电影名查询
+    // index 表索引->dataList->movieID
+    void loadIntroduction(String movieName, Integer index) {
+        if(movieName==null && index==null) return;
+        String[] intro = new String[6]; // 电影名 导演 主演 类型 价格 图片
+        String val = movieName!=null? movieName: dataList.get(index).movieID;
+
+        Connection ct = db.getConnection();
+        try {
+            PreparedStatement pst = ct.prepareStatement("select movieName, director, mainActors, movieType, price, moviePoster from movie where " + (movieName!=null? "movieName": "movieID") + "=?");
+            pst.setString(1, val);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next())
+                for(int i=0; i<6; ++i)
+                    if(i==4) // 价格
+                        intro[i] = String.valueOf(rs.getDouble(i));
+                    else
+                        intro[i] = rs.getString(i);
+            rs.close();
+            pst.close();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 写入文本框
+        taMovieInfo.setText(
+            "电影名：" + intro[0] +
+            "\n导演：" + intro[1] +
+            "\n主要演员：" + intro[2] +
+            "\n类型：" + intro[3] +
+            "\n价格：" + intro[4]);
+        // 设置图片
+        try {
+            ImageIcon image = new ImageIcon(WinCtrl.getImageDirPath() + File.separator + "ctOSx.jpg");
+            image.setImage(image.getImage().getScaledInstance(lbPoster.getWidth(), lbPoster.getHeight(), Image.SCALE_DEFAULT));
+            lbPoster.setIcon(image);
+        } catch(IOException e) {
+            lbPoster.setText("无图片");
+        }
+    }
+
+    // 电影票订票
+    void bookTicket() {
+        int[] rows = tbMovieList.getSelectedRows();
+        if(rows.length==0) return;
+        Connection ct = db.getConnection();
+
+        // index(rows)->ArrayList->ticketID->Status
+        try {
+            PreparedStatement pst = ct.prepareStatement("update Ticket set userid=?, status=\'已购\' where ticketid=?");
+            for(int index : rows) {
+                DBItem item = dataList.get(index);
+                if(item.status.equals("已购")) continue;
+                pst.clearParameters();
+                pst.setString(1, item.userID);
+                pst.setString(2, item.ticketID);
+                pst.executeUpdate();
+            }
+            pst.close();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // =========== CUSTOM CODE END =========== //
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -63,7 +241,6 @@ public class frmUser extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tbMovieList = new javax.swing.JTable();
         btnBook = new javax.swing.JButton();
-        lbSurplus = new javax.swing.JLabel();
         btnCancelSel = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -173,6 +350,11 @@ public class frmUser extends javax.swing.JFrame {
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("null");
         treeNavi.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         treeNavi.setRootVisible(false);
+        treeNavi.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                treeNaviValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(treeNavi);
 
         tbMovieList.setModel(new javax.swing.table.DefaultTableModel(
@@ -201,7 +383,7 @@ public class frmUser extends javax.swing.JFrame {
         tbMovieList.setColumnSelectionAllowed(true);
         tbMovieList.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tbMovieList);
-        tbMovieList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tbMovieList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         btnBook.setText("订票");
         btnBook.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -209,8 +391,6 @@ public class frmUser extends javax.swing.JFrame {
                 btnBookMouseClicked(evt);
             }
         });
-
-        lbSurplus.setText("剩余票数：");
 
         btnCancelSel.setText("取消选择");
         btnCancelSel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -264,8 +444,7 @@ public class frmUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbSurplus)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnBook)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelSel))
@@ -282,7 +461,6 @@ public class frmUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBook)
-                    .addComponent(lbSurplus)
                     .addComponent(btnCancelSel))
                 .addGap(2, 2, 2))
             .addGroup(layout.createSequentialGroup()
@@ -326,25 +504,49 @@ public class frmUser extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnQueryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQueryMouseClicked
-        // TODO 电影名查询
+        // 电影名查询
+        loadDataToTree(tfQueryMovie.getText().trim());
     }//GEN-LAST:event_btnQueryMouseClicked
 
     private void btnClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseClicked
-        // TODO 清空
+        // 清空
+        tfQueryMovie.setText(null);
+        loadDataToTree(null);
     }//GEN-LAST:event_btnClearMouseClicked
 
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
-        // TODO 详细信息
+        // 详细信息
+        loadIntroduction(null, tbMovieList.getSelectedRow());
     }//GEN-LAST:event_btnDetailMouseClicked
 
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
-        // TODO 订票
+        // 订票
+        bookTicket();
     }//GEN-LAST:event_btnBookMouseClicked
 
     private void btnCancelSelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelSelMouseClicked
         // 取消选择
         tbMovieList.clearSelection();
     }//GEN-LAST:event_btnCancelSelMouseClicked
+
+    private void treeNaviValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeNaviValueChanged
+        // 树选择改变
+        String movieName = null, schedule = null;
+        String[] schInfo = new String[2];
+        DefaultMutableTreeNode node = WinCtrl.getSelectedTreeNode(treeNavi);
+        switch(node.getLevel()) {
+            case 1:
+                movieName = (String)node.getUserObject(); break;
+            case 2:
+                schedule = (String)node.getUserObject();
+                movieName = (String)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+                schInfo = schedule.split("|", 2);
+                break;
+            default: return;
+        }
+        if(movieName==null) return;
+        loadDataToTable(movieName, schInfo[0], schInfo[1]);
+    }//GEN-LAST:event_treeNaviValueChanged
 
     /**
      * @param args the command line arguments
@@ -378,7 +580,6 @@ public class frmUser extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lbPoster;
-    private javax.swing.JLabel lbSurplus;
     private javax.swing.JTextArea taMovieInfo;
     private javax.swing.JTable tbMovieList;
     private javax.swing.JTextField tfQueryMovie;

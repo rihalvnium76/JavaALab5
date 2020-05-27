@@ -78,9 +78,8 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="lbSurplus" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       <Component id="btnBook" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnCancelSel" min="-2" max="-2" attributes="0"/>
@@ -101,7 +100,6 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnBook" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="lbSurplus" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnCancelSel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
@@ -281,6 +279,9 @@
             </Property>
             <Property name="rootVisible" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="valueChanged" listener="javax.swing.event.TreeSelectionListener" parameters="javax.swing.event.TreeSelectionEvent" handler="treeNaviValueChanged"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -303,7 +304,7 @@
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-              <TableColumnModel selectionModel="1">
+              <TableColumnModel selectionModel="3">
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -346,11 +347,6 @@
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnBookMouseClicked"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="lbSurplus">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x5269;&#x4f59;&#x7968;&#x6570;&#xff1a;"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnCancelSel">
       <Properties>

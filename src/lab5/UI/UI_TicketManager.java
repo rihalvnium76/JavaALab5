@@ -60,6 +60,7 @@ public class UI_TicketManager {
     /* 初始化 */
     public UI_TicketManager(DBAccess db) {
         this.db = db;
+        dataList = new ArrayList<DBItem>();
     }
 
     public void bindCombox(JComboBox<String> cmbTicketID, JComboBox<String> cmbCustomer,
@@ -159,6 +160,7 @@ public class UI_TicketManager {
             rs = null;
         } catch (SQLException | IndexOutOfBoundsException e) {
             JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            ((DefaultTableModel)tbTicketList.getModel()).setRowCount(0); // 清空列表防止ArrayList空指针访问
             return;
         }
 
@@ -309,7 +311,7 @@ public class UI_TicketManager {
             return;
         }
     }
-    // TODO 批量添加电影票
+    // 批量添加电影票
     public void addBatch() {
         // 预处理新建表需求 //
         String newTicketID = cmbTicketID.getSelectedItem().toString().trim(),
@@ -348,11 +350,15 @@ public class UI_TicketManager {
 
             int rmax = Integer.parseInt(tfRow.getText().toString().trim()), cmax = Integer.parseInt(tfCol.getText().toString().trim());
             int iTkID = Integer.parseInt(newTicketID); // 未使用过的电影票ID起始值
+            // 放映厅容量校验
+            PreparedStatement pstChkTk = ct.prepareStatement("select Ticket.TicketID from Ticket, Schedule where Ticket.ShceduleID=Schedule.ShceduleID and Ticket.ShceduleID=? and Schedule.TheaterID=?");
+            // 新电影票
+            PreparedStatement pstCrTk = ct.prepareStatement("insert into Ticket values(?,?,?,?,?,?)");
             endfnc:
             for(int i=1; i<=rmax; ++i) {
                 for(int j=1; j<=cmax; ++j) {
                     // 放映厅容量校验
-                    PreparedStatement pstChkTk = ct.prepareStatement("select Ticket.TicketID from Ticket, Schedule where Ticket.ShceduleID=Schedule.ShceduleID and Ticket.ShceduleID=? and Schedule.TheaterID=?");
+                    pstChkTk.clearParameters();
                     pstChkTk.setString(1, newTicketID);
                     pstChkTk.setString(2, newTheater[0]);
                     ResultSet rs = pstChkTk.executeQuery();
@@ -364,8 +370,7 @@ public class UI_TicketManager {
                         break endfnc;
 
                     // 新电影票
-                    PreparedStatement pstCrTk;
-                    pstCrTk = ct.prepareStatement("insert into Ticket values(?,?,?,?,?,?)");
+                    pstCrTk.clearParameters();
                     pstCrTk.setString(1, String.valueOf(iTkID++));
                     pstCrTk.setString(2, cmbCustomer.getSelectedItem().toString().trim().split("|", 2)[0]); // UserID
                     pstCrTk.setInt(3, i);
@@ -373,9 +378,10 @@ public class UI_TicketManager {
                     pstCrTk.setString(5, newScheduleID);
                     pstCrTk.setString(6, (ckbStatus.isSelected()? "已购": "未购"));
                     pstCrTk.executeUpdate();
-                    pstCrTk.close();
                 }
             }
+            pstChkTk.close();
+            pstCrTk.close();
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             return;

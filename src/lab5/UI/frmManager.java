@@ -23,7 +23,7 @@ public class frmManager extends javax.swing.JFrame {
             db = new DBAccess();
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            this.dispose(); // 退出窗体
+            System.exit(1); // 退出
         }
         /* 电影票管理 */
         ticketManager = new UI_TicketManager(db);
@@ -459,7 +459,7 @@ public class frmManager extends javax.swing.JFrame {
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
         }
-        this.dispose();
+        this.dispose(); // 退出
     }//GEN-LAST:event_formWindowClosing
 
     private void ckbNewTicketItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTicketItemStateChanged
