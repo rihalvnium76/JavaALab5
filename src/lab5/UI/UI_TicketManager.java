@@ -181,6 +181,7 @@ public class UI_TicketManager {
     /*
         ---LOAD CODE---
     */
+    // 写入ArrayList
     private void writeArrayList() throws SQLException {
         ResultSet rs = db.queryDB("select Ticket.TicketID,Ticket.UserID,Ticket.row,ticket.col,ticket.scheduleid,schedule.movieid,movie.moviename,schedule.theaterid,theater.theatername,theater.capacity,movie.price,schedule.scheduletime,ticket.status from ticket,movie,schedule,theater where ticket.scheduleid=schedule.scheduleid and schedule.movieid=movie.movieid and schedule.theaterid=theater.theaterid");
         dataList.clear(); // 清空
@@ -202,6 +203,7 @@ public class UI_TicketManager {
         }
         db.releaseQuery();
     }
+    // 写入JTable
     private void writeTableFromArray() {
         DefaultTableModel dtm = (DefaultTableModel)tbTicketList.getModel();
         dtm.setRowCount(0); // 清空
@@ -216,6 +218,7 @@ public class UI_TicketManager {
                 d.status
             });
     }
+    // 写入JComboBox
     private void writeComboBox() throws SQLException, IllegalArgumentException {
         // clear
         JComboBox<String>[] cmbs = new JComboBox[] {
