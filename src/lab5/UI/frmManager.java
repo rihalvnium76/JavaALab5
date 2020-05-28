@@ -17,7 +17,7 @@ import lab5.Module.*;
 public class frmManager extends javax.swing.JFrame {
     private DBAccess db; // 数据库访问对象
     private UI_TicketManager ticketManager;
-
+    
     public frmManager() {
         initComponents();
         this.setTitle("后台管理系统 - 管理员：" + WinCtrl.currentLoginUser);
@@ -53,21 +53,21 @@ public class frmManager extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<>();
-        cmbCustomer = new javax.swing.JComboBox<>();
+        cmbTicketID = new javax.swing.JComboBox<String>();
+        cmbCustomer = new javax.swing.JComboBox<String>();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<>();
+        cmbScheduleID = new javax.swing.JComboBox<String>();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<>();
-        cmbMovie = new javax.swing.JComboBox<>();
+        cmbTheater = new javax.swing.JComboBox<String>();
+        cmbMovie = new javax.swing.JComboBox<String>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
@@ -77,9 +77,9 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
-        cmbTkIDOperation = new javax.swing.JComboBox<>();
-        cmbSchIDOperation = new javax.swing.JComboBox<>();
-        cmbThOperation = new javax.swing.JComboBox<>();
+        cmbTkIDOperation = new javax.swing.JComboBox<String>();
+        cmbSchIDOperation = new javax.swing.JComboBox<String>();
+        cmbThOperation = new javax.swing.JComboBox<String>();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
@@ -88,10 +88,10 @@ public class frmManager extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        ResetPassword = new javax.swing.JButton();
+        DeleteAccount = new javax.swing.JButton();
+        FindTicket = new javax.swing.JButton();
+        DeleteTicket = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -119,7 +119,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
 
         jLabel3.setText("座位");
 
@@ -170,11 +170,21 @@ public class frmManager extends javax.swing.JFrame {
                 btnSaveMouseClicked(evt);
             }
         });
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("删除");
         btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnDeleteMouseClicked(evt);
+            }
+        });
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
             }
         });
 
@@ -197,21 +207,26 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel10.setText("价格");
 
-        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "修改", "新建" }));
+        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "修改", "新建" }));
         cmbTkIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbTkIDOperationItemStateChanged(evt);
             }
         });
+        cmbTkIDOperation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbTkIDOperationActionPerformed(evt);
+            }
+        });
 
-        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
         cmbSchIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbSchIDOperationItemStateChanged(evt);
             }
         });
 
-        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
         cmbThOperation.setEnabled(false);
         cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -409,18 +424,28 @@ public class frmManager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "电影票ID", "电影ID", "电影名", "放映厅", "场次", "座位", "价格"
+                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格"
             }
         ));
         jScrollPane4.setViewportView(jTable2);
 
-        jButton1.setText("重置密码");
+        ResetPassword.setText("重置密码");
 
-        jButton2.setText("删除账户");
+        DeleteAccount.setText("删除账户");
+        DeleteAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteAccountActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("查询订单");
+        FindTicket.setText("查询订单");
 
-        jButton4.setText("删除订单");
+        DeleteTicket.setText("删除订单");
+        DeleteTicket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteTicketActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -434,10 +459,10 @@ public class frmManager extends javax.swing.JFrame {
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 876, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4)
-                            .addComponent(jButton1))
+                            .addComponent(DeleteAccount)
+                            .addComponent(FindTicket)
+                            .addComponent(DeleteTicket)
+                            .addComponent(ResetPassword))
                         .addGap(0, 11, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -448,13 +473,13 @@ public class frmManager extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(ResetPassword)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(DeleteAccount)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3)
+                        .addComponent(FindTicket)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)))
+                        .addComponent(DeleteTicket)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
                 .addContainerGap())
@@ -585,6 +610,26 @@ public class frmManager extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cmbTheaterItemStateChanged
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void DeleteTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteTicketActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DeleteTicketActionPerformed
+
+    private void DeleteAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteAccountActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DeleteAccountActionPerformed
+
+    private void cmbTkIDOperationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTkIDOperationActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbTkIDOperationActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -599,6 +644,10 @@ public class frmManager extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton DeleteAccount;
+    private javax.swing.JButton DeleteTicket;
+    private javax.swing.JButton FindTicket;
+    private javax.swing.JButton ResetPassword;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnReload;
     private javax.swing.JButton btnSave;
@@ -610,10 +659,6 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbTheater;
     private javax.swing.JComboBox<String> cmbTicketID;
     private javax.swing.JComboBox<String> cmbTkIDOperation;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

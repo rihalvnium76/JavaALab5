@@ -36,7 +36,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
 
             },
             new String [] {
-                "电影票ID", "电影ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
+                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
         jScrollPane1.setViewportView(jTable1);

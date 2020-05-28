@@ -379,6 +379,7 @@
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnSaveMouseClicked"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSaveActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnDelete">
@@ -387,6 +388,7 @@
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnDeleteMouseClicked"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnReload">
@@ -442,6 +444,7 @@
                   </Properties>
                   <Events>
                     <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbTkIDOperationItemStateChanged"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbTkIDOperationActionPerformed"/>
                   </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -597,10 +600,10 @@
                               <Component id="jScrollPane3" min="-2" pref="876" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton4" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="DeleteAccount" min="-2" max="-2" attributes="0"/>
+                                  <Component id="FindTicket" min="-2" max="-2" attributes="0"/>
+                                  <Component id="DeleteTicket" min="-2" max="-2" attributes="0"/>
+                                  <Component id="ResetPassword" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
                           </Group>
@@ -616,13 +619,13 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jScrollPane3" min="-2" pref="215" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <Component id="ResetPassword" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                              <Component id="DeleteAccount" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                              <Component id="FindTicket" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                              <Component id="DeleteTicket" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -679,9 +682,8 @@
                 <Component class="javax.swing.JTable" name="jTable2">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="7" rowCount="0">
+                      <Table columnCount="6" rowCount="0">
                         <Column editable="true" title="&#x7535;&#x5f71;&#x7968;ID" type="java.lang.Object"/>
-                        <Column editable="true" title="&#x7535;&#x5f71;ID" type="java.lang.Object"/>
                         <Column editable="true" title="&#x7535;&#x5f71;&#x540d;" type="java.lang.Object"/>
                         <Column editable="true" title="&#x653e;&#x6620;&#x5385;" type="java.lang.Object"/>
                         <Column editable="true" title="&#x573a;&#x6b21;" type="java.lang.Object"/>
@@ -721,11 +723,6 @@
                           <Editor/>
                           <Renderer/>
                         </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
                       </TableColumnModel>
                     </Property>
                     <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
@@ -735,25 +732,31 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JButton" name="jButton1">
+            <Component class="javax.swing.JButton" name="ResetPassword">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x91cd;&#x7f6e;&#x5bc6;&#x7801;"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton2">
+            <Component class="javax.swing.JButton" name="DeleteAccount">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x5220;&#x9664;&#x8d26;&#x6237;"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DeleteAccountActionPerformed"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton3">
+            <Component class="javax.swing.JButton" name="FindTicket">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x67e5;&#x8be2;&#x8ba2;&#x5355;"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton4">
+            <Component class="javax.swing.JButton" name="DeleteTicket">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x5220;&#x9664;&#x8ba2;&#x5355;"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DeleteTicketActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
