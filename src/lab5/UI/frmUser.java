@@ -58,6 +58,7 @@ public class frmUser extends javax.swing.JFrame {
             System.exit(1); // 退出
         }
         dataList = new ArrayList<DBItem>();
+        loadDataToTree(null);
     }
 
     // 加载数据到JTree，参数为可选

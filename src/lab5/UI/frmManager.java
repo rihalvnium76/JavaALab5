@@ -355,10 +355,8 @@ public class frmManager extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tbTicketList.setColumnSelectionAllowed(true);
         tbTicketList.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbTicketList);
-        tbTicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
