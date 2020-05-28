@@ -7,6 +7,8 @@ package lab5.UI;
 
 import java.awt.event.ItemEvent;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import lab5.Module.*;
@@ -28,8 +30,7 @@ public class frmManager extends javax.swing.JFrame {
         }
         /* 电影票管理 */
         ticketManager = new UI_TicketManager(db);
-        ticketManager.bindCheckBox(ckbNewTicket, ckbStatus, ckbNewSchedule, ckbNewTheater);
-        ticketManager.bindCombox(cmbTicketID, cmbCustomer, cmbScheduleID, cmbMovie, cmbTheater);
+        ticketManager.bindCombox(cmbTicketID, cmbCustomer, cmbScheduleID, cmbMovie, cmbTheater, cmbTkIDOperation, cmbSchIDOperation, cmbThOperation);
         ticketManager.bindTextField(tfRow, tfCol, tfThCapacity, tfPrice, tfScheduleTime);
         ticketManager.bindTable(tbTicketList);
         ticketManager.initComponents(); // 初始化控件
@@ -51,11 +52,9 @@ public class frmManager extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        ckbNewTicket = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         cmbTicketID = new javax.swing.JComboBox<>();
         cmbCustomer = new javax.swing.JComboBox<>();
-        ckbStatus = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -63,17 +62,14 @@ public class frmManager extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         cmbScheduleID = new javax.swing.JComboBox<>();
-        ckbNewSchedule = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         cmbTheater = new javax.swing.JComboBox<>();
-        ckbNewTheater = new javax.swing.JCheckBox();
         cmbMovie = new javax.swing.JComboBox<>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
-        btnAddBatch = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
@@ -81,6 +77,9 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
+        cmbTkIDOperation = new javax.swing.JComboBox<>();
+        cmbSchIDOperation = new javax.swing.JComboBox<>();
+        cmbThOperation = new javax.swing.JComboBox<>();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
@@ -114,32 +113,13 @@ public class frmManager extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("电影信息管理功能", jPanel1);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("修改电影票信息【记得校验放映厅容量，可以强行添加】"));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("修改电影票信息"));
 
         jLabel1.setText("电影票ID");
-
-        ckbNewTicket.setText("新建");
-        ckbNewTicket.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ckbNewTicketItemStateChanged(evt);
-            }
-        });
 
         jLabel2.setText("购票人");
 
         cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
-        cmbCustomer.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbCustomerItemStateChanged(evt);
-            }
-        });
-
-        ckbStatus.setText("票已售");
-        ckbStatus.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ckbStatusItemStateChanged(evt);
-            }
-        });
 
         jLabel3.setText("座位");
 
@@ -149,10 +129,9 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel6.setText("计划ID");
 
-        ckbNewSchedule.setText("新建");
-        ckbNewSchedule.addItemListener(new java.awt.event.ItemListener() {
+        cmbScheduleID.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ckbNewScheduleItemStateChanged(evt);
+                cmbScheduleIDItemStateChanged(evt);
             }
         });
 
@@ -160,29 +139,30 @@ public class frmManager extends javax.swing.JFrame {
 
         tfScheduleTime.setText("yyyy-mm-dd hh:mm:ss");
         tfScheduleTime.setToolTipText("格式：yyyy-mm-dd hh:mm:ss");
+        tfScheduleTime.setEnabled(false);
 
         jLabel8.setText("电影");
 
         jLabel9.setText("放映厅");
 
-        ckbNewTheater.setText("新建");
-        ckbNewTheater.setToolTipText("格式：放映厅ID|放映厅名");
-        ckbNewTheater.addItemListener(new java.awt.event.ItemListener() {
+        cmbTheater.setEnabled(false);
+        cmbTheater.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ckbNewTheaterItemStateChanged(evt);
+                cmbTheaterItemStateChanged(evt);
+            }
+        });
+
+        cmbMovie.setEnabled(false);
+        cmbMovie.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbMovieItemStateChanged(evt);
             }
         });
 
         lbThCapacity.setText("放映厅容量");
 
+        tfThCapacity.setEditable(false);
         tfThCapacity.setEnabled(false);
-
-        btnAddBatch.setText("批量添加");
-        btnAddBatch.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnAddBatchMouseClicked(evt);
-            }
-        });
 
         btnSave.setText("保存");
         btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -211,16 +191,39 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText("说明：\n批量添加：批量添加共N行N列的票，需要填写电影票ID，表示以该ID起，顺序添加电影票（ID必须为整数）\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）");
+        jTextArea1.setText("说明：\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）");
         jTextArea1.setBorder(null);
         jScrollPane2.setViewportView(jTextArea1);
 
         jLabel10.setText("价格");
 
+        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "修改", "新建" }));
+        cmbTkIDOperation.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbTkIDOperationItemStateChanged(evt);
+            }
+        });
+
+        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbSchIDOperation.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbSchIDOperationItemStateChanged(evt);
+            }
+        });
+
+        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbThOperation.setEnabled(false);
+        cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbThOperationItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -235,69 +238,57 @@ public class frmManager extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel4Layout.createSequentialGroup()
-                                        .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbTkIDOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(cmbScheduleID, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                        .addComponent(tfRow, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(ckbNewTicket)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(cmbCustomer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(tfCol, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ckbStatus))
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(tfScheduleTime, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(cmbScheduleID, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                                            .addComponent(tfRow, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(jLabel4)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(tfCol, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel5)
-                                        .addComponent(ckbNewSchedule))))
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(cmbSchIDOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(cmbTheater, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(cmbCustomer, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmbMovie, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(tfScheduleTime, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                                    .addComponent(cmbTheater, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ckbNewTheater))
-                            .addComponent(cmbMovie, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2)
+                                .addComponent(cmbThOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(lbThCapacity)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(btnAddBatch)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSave)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDelete)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnReload)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(lbThCapacity)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnSave)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReload)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(ckbNewTicket)
-                    .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbTkIDOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(cmbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ckbStatus))
+                    .addComponent(cmbCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -309,7 +300,7 @@ public class frmManager extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(cmbScheduleID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ckbNewSchedule))
+                    .addComponent(cmbSchIDOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
@@ -322,7 +313,7 @@ public class frmManager extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(cmbTheater, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ckbNewTheater))
+                    .addComponent(cmbThOperation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbThCapacity)
@@ -331,12 +322,11 @@ public class frmManager extends javax.swing.JFrame {
                     .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAddBatch)
                     .addComponent(btnSave)
                     .addComponent(btnDelete)
                     .addComponent(btnReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -347,11 +337,11 @@ public class frmManager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "电影票ID", "电影名", "放映厅3", "场次", "座位", "价格", "状态"
+                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false
@@ -374,7 +364,7 @@ public class frmManager extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -387,7 +377,7 @@ public class frmManager extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -486,11 +476,6 @@ public class frmManager extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAddBatchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddBatchMouseClicked
-        // 批量添加
-        ticketManager.addBatch();
-    }//GEN-LAST:event_btnAddBatchMouseClicked
-
     private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
         // 保存
         ticketManager.saveItem();
@@ -506,18 +491,6 @@ public class frmManager extends javax.swing.JFrame {
         ticketManager.loadData();
     }//GEN-LAST:event_btnReloadMouseClicked
 
-    private void ckbStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbStatusItemStateChanged
-        // 票已售？
-        if(evt.getStateChange()==ItemEvent.DESELECTED)
-            cmbCustomer.setSelectedIndex(0);
-    }//GEN-LAST:event_ckbStatusItemStateChanged
-
-    private void ckbNewTheaterItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTheaterItemStateChanged
-        // 新建放映厅
-        cmbTheater.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
-        tfThCapacity.setEnabled(evt.getStateChange()==ItemEvent.SELECTED);
-    }//GEN-LAST:event_ckbNewTheaterItemStateChanged
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // 窗体关闭
         try {
@@ -529,21 +502,88 @@ public class frmManager extends javax.swing.JFrame {
         this.dispose(); // 退出
     }//GEN-LAST:event_formWindowClosing
 
-    private void ckbNewTicketItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewTicketItemStateChanged
-        // 新建电影票
-        cmbTicketID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
-    }//GEN-LAST:event_ckbNewTicketItemStateChanged
+    private void cmbTkIDOperationItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbTkIDOperationItemStateChanged
+        // 电影票ID操作
+        cmbTicketID.setEditable(cmbTkIDOperation.getSelectedIndex()==1);
+    }//GEN-LAST:event_cmbTkIDOperationItemStateChanged
 
-    private void ckbNewScheduleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ckbNewScheduleItemStateChanged
-        // 新建计划
-        cmbScheduleID.setEditable(evt.getStateChange()==ItemEvent.SELECTED);
-    }//GEN-LAST:event_ckbNewScheduleItemStateChanged
+    private void cmbSchIDOperationItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbSchIDOperationItemStateChanged
+        // 计划操作
+        switch(cmbSchIDOperation.getSelectedIndex()) {
+            case 0:
+                cmbScheduleID.setEditable(false);
+                tfScheduleTime.setEnabled(false);
+                cmbMovie.setEnabled(false);
+                cmbTheater.setEnabled(false);
+                cmbThOperation.setEnabled(false);
+                tfThCapacity.setEnabled(false);
+                break;
+            case 1:
+                cmbScheduleID.setEditable(false);
+                tfScheduleTime.setEnabled(true);
+                cmbMovie.setEnabled(true);
+                cmbTheater.setEnabled(true);
+                cmbThOperation.setEnabled(true);
+                tfThCapacity.setEnabled(true);
+                break;
+            case 2:
+                cmbScheduleID.setEditable(true);
+                tfScheduleTime.setEnabled(true);
+                cmbMovie.setEnabled(true);
+                cmbTheater.setEnabled(true);
+                cmbThOperation.setEnabled(true);
+                tfThCapacity.setEnabled(true);
+                break;
+        }
+    }//GEN-LAST:event_cmbSchIDOperationItemStateChanged
 
-    private void cmbCustomerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCustomerItemStateChanged
-        // 购票人改变
-        //if(cmbCustomer.getSelectedIndex()>0)
-        ckbStatus.setSelected(cmbCustomer.getSelectedIndex()>0);
-    }//GEN-LAST:event_cmbCustomerItemStateChanged
+    private void cmbThOperationItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbThOperationItemStateChanged
+        // 放映厅操作
+        switch(cmbThOperation.getSelectedIndex()) {
+            case 0:
+                cmbTheater.setEditable(false);
+                tfThCapacity.setEditable(false);
+                break;
+            case 1:
+                cmbTheater.setEditable(false);
+                tfThCapacity.setEditable(true);
+                break;
+            case 2:
+                cmbTheater.setEditable(true);
+                tfThCapacity.setEditable(true);
+                break;
+        }
+    }//GEN-LAST:event_cmbThOperationItemStateChanged
+
+    private void cmbScheduleIDItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbScheduleIDItemStateChanged
+        try {
+            // 计划ID改变
+            if(cmbScheduleID.getSelectedIndex()>=0)
+                ticketManager.loadSchedule();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_cmbScheduleIDItemStateChanged
+
+    private void cmbMovieItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbMovieItemStateChanged
+        try {
+            // 电影改变
+            if(cmbMovie.getSelectedIndex()>=0)
+                ticketManager.loadMovie();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_cmbMovieItemStateChanged
+
+    private void cmbTheaterItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbTheaterItemStateChanged
+        try {
+            // 放映厅改变
+            if(cmbTheater.getSelectedIndex()>=0)
+                ticketManager.loadTheater();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_cmbTheaterItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -559,19 +599,17 @@ public class frmManager extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAddBatch;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnReload;
     private javax.swing.JButton btnSave;
-    private javax.swing.JCheckBox ckbNewSchedule;
-    private javax.swing.JCheckBox ckbNewTheater;
-    private javax.swing.JCheckBox ckbNewTicket;
-    private javax.swing.JCheckBox ckbStatus;
     private javax.swing.JComboBox<String> cmbCustomer;
     private javax.swing.JComboBox<String> cmbMovie;
+    private javax.swing.JComboBox<String> cmbSchIDOperation;
     private javax.swing.JComboBox<String> cmbScheduleID;
+    private javax.swing.JComboBox<String> cmbThOperation;
     private javax.swing.JComboBox<String> cmbTheater;
     private javax.swing.JComboBox<String> cmbTicketID;
+    private javax.swing.JComboBox<String> cmbTkIDOperation;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

@@ -76,7 +76,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel4" min="-2" pref="443" max="-2" attributes="0"/>
+                      <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel6" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -101,7 +101,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="&#x4fee;&#x6539;&#x7535;&#x5f71;&#x7968;&#x4fe1;&#x606f;&#x3010;&#x8bb0;&#x5f97;&#x6821;&#x9a8c;&#x653e;&#x6620;&#x5385;&#x5bb9;&#x91cf;&#xff0c;&#x53ef;&#x4ee5;&#x5f3a;&#x884c;&#x6dfb;&#x52a0;&#x3011;"/>
+                    <TitledBorder title="&#x4fee;&#x6539;&#x7535;&#x5f71;&#x7968;&#x4fe1;&#x606f;"/>
                   </Border>
                 </Property>
               </Properties>
@@ -109,6 +109,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jScrollPane2" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
@@ -124,72 +125,57 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Group type="102" attributes="0">
-                                                  <Component id="cmbTicketID" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <Component id="cmbTicketID" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="cmbTkIDOperation" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="cmbScheduleID" alignment="0" max="32767" attributes="0"/>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="tfRow" min="-2" pref="46" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="ckbNewTicket" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                              </Group>
-                                              <Component id="cmbCustomer" max="32767" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="ckbStatus" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="tfScheduleTime" alignment="0" max="32767" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="cmbScheduleID" alignment="0" max="32767" attributes="0"/>
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <Component id="tfRow" min="-2" pref="46" max="-2" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="tfCol" min="-2" pref="46" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="ckbNewSchedule" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="tfCol" min="-2" pref="46" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                      </Group>
-                                      <Group type="102" attributes="0">
-                                          <Component id="cmbTheater" min="-2" pref="296" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="ckbNewTheater" min="-2" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cmbSchIDOperation" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
-                                      <Component id="cmbMovie" min="-2" pref="296" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="cmbCustomer" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="cmbMovie" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="tfScheduleTime" alignment="0" pref="265" max="32767" attributes="0"/>
+                                              <Component id="cmbTheater" max="32767" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="cmbThOperation" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                               </Group>
-                              <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="lbThCapacity" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="tfThCapacity" min="-2" pref="57" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="tfPrice" min="-2" pref="57" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" attributes="0">
-                                          <Component id="btnAddBatch" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="btnSave" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="btnDelete" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="btnReload" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="lbThCapacity" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="tfThCapacity" min="-2" pref="57" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="tfPrice" min="-2" pref="57" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Component id="btnSave" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnDelete" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnReload" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -198,14 +184,13 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ckbNewTicket" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cmbTicketID" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cmbTkIDOperation" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cmbCustomer" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ckbStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -219,7 +204,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cmbScheduleID" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ckbNewSchedule" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cmbSchIDOperation" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -235,7 +220,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cmbTheater" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ckbNewTheater" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cmbThOperation" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -246,13 +231,12 @@
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="btnAddBatch" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnSave" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnReload" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" pref="184" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" pref="185" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -263,14 +247,6 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="&#x7535;&#x5f71;&#x7968;ID"/>
                   </Properties>
-                </Component>
-                <Component class="javax.swing.JCheckBox" name="ckbNewTicket">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x65b0;&#x5efa;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ckbNewTicketItemStateChanged"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel2">
                   <Properties>
@@ -295,20 +271,9 @@
                       </StringArray>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbCustomerItemStateChanged"/>
-                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
-                </Component>
-                <Component class="javax.swing.JCheckBox" name="ckbStatus">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x7968;&#x5df2;&#x552e;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ckbStatusItemStateChanged"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel3">
                   <Properties>
@@ -340,17 +305,12 @@
                       <StringArray count="0"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbScheduleIDItemStateChanged"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
-                </Component>
-                <Component class="javax.swing.JCheckBox" name="ckbNewSchedule">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x65b0;&#x5efa;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ckbNewScheduleItemStateChanged"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel7">
                   <Properties>
@@ -361,6 +321,7 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="yyyy-mm-dd hh:mm:ss"/>
                     <Property name="toolTipText" type="java.lang.String" value="&#x683c;&#x5f0f;&#xff1a;yyyy-mm-dd hh:mm:ss"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel8">
@@ -378,26 +339,25 @@
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="0"/>
                     </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbTheaterItemStateChanged"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
-                </Component>
-                <Component class="javax.swing.JCheckBox" name="ckbNewTheater">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x65b0;&#x5efa;"/>
-                    <Property name="toolTipText" type="java.lang.String" value="&#x683c;&#x5f0f;&#xff1a;&#x653e;&#x6620;&#x5385;ID|&#x653e;&#x6620;&#x5385;&#x540d;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="ckbNewTheaterItemStateChanged"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JComboBox" name="cmbMovie">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="0"/>
                     </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbMovieItemStateChanged"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
@@ -409,16 +369,9 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="tfThCapacity">
                   <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
-                </Component>
-                <Component class="javax.swing.JButton" name="btnAddBatch">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x6279;&#x91cf;&#x6dfb;&#x52a0;"/>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnAddBatchMouseClicked"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnSave">
                   <Properties>
@@ -463,7 +416,7 @@
                         </Property>
                         <Property name="lineWrap" type="boolean" value="true"/>
                         <Property name="rows" type="int" value="5"/>
-                        <Property name="text" type="java.lang.String" value="&#x8bf4;&#x660e;&#xff1a;&#xa;&#x6279;&#x91cf;&#x6dfb;&#x52a0;&#xff1a;&#x6279;&#x91cf;&#x6dfb;&#x52a0;&#x5171;N&#x884c;N&#x5217;&#x7684;&#x7968;&#xff0c;&#x9700;&#x8981;&#x586b;&#x5199;&#x7535;&#x5f71;&#x7968;ID&#xff0c;&#x8868;&#x793a;&#x4ee5;&#x8be5;ID&#x8d77;&#xff0c;&#x987a;&#x5e8f;&#x6dfb;&#x52a0;&#x7535;&#x5f71;&#x7968;&#xff08;ID&#x5fc5;&#x987b;&#x4e3a;&#x6574;&#x6570;&#xff09;&#xa;&#x65b0;&#x5efa;&#xff1a;&#x52fe;&#x4e0a;&#x540e;&#x5c06;&#x4f1a;&#x5728;&#x76f8;&#x5e94;&#x7684;&#x6570;&#x636e;&#x5e93;&#x8868;&#x4e2d;&#x6dfb;&#x52a0;&#x65b0;&#x7684;&#x4e00;&#x9879;&#xff0c;ID&#x9700;&#x8981;&#x662f;&#x6570;&#x636e;&#x5e93;&#x6ca1;&#x6709;&#x7684;ID&#xff0c;&#x5426;&#x5219;&#x4f1a;&#x6dfb;&#x52a0;&#x5931;&#x8d25;&#xa;&#xff08;&#x7279;&#x522b;&#x8bf4;&#x660e;&#xff1a;&#x65b0;&#x5efa;&#x653e;&#x6620;&#x5385;&#x586b;&#x5199;&#x7684;&#x4fe1;&#x606f;&#x7684;&#x683c;&#x5f0f;&#x4e3a;&#xff1a;&#xa;  &#x653e;&#x6620;&#x5385;ID|&#x653e;&#x6620;&#x5385;&#x540d; &#xff09;"/>
+                        <Property name="text" type="java.lang.String" value="&#x8bf4;&#x660e;&#xff1a;&#xa;&#x65b0;&#x5efa;&#xff1a;&#x52fe;&#x4e0a;&#x540e;&#x5c06;&#x4f1a;&#x5728;&#x76f8;&#x5e94;&#x7684;&#x6570;&#x636e;&#x5e93;&#x8868;&#x4e2d;&#x6dfb;&#x52a0;&#x65b0;&#x7684;&#x4e00;&#x9879;&#xff0c;ID&#x9700;&#x8981;&#x662f;&#x6570;&#x636e;&#x5e93;&#x6ca1;&#x6709;&#x7684;ID&#xff0c;&#x5426;&#x5219;&#x4f1a;&#x6dfb;&#x52a0;&#x5931;&#x8d25;&#xa;&#xff08;&#x7279;&#x522b;&#x8bf4;&#x660e;&#xff1a;&#x65b0;&#x5efa;&#x653e;&#x6620;&#x5385;&#x586b;&#x5199;&#x7684;&#x4fe1;&#x606f;&#x7684;&#x683c;&#x5f0f;&#x4e3a;&#xff1a;&#xa;  &#x653e;&#x6620;&#x5385;ID|&#x653e;&#x6620;&#x5385;&#x540d; &#xff09;"/>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="null"/>
                         </Property>
@@ -477,6 +430,57 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="tfPrice">
+                </Component>
+                <Component class="javax.swing.JComboBox" name="cmbTkIDOperation">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="&#x4fee;&#x6539;"/>
+                        <StringItem index="1" value="&#x65b0;&#x5efa;"/>
+                      </StringArray>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbTkIDOperationItemStateChanged"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="cmbSchIDOperation">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="&#x4ec5;&#x9009;&#x62e9;"/>
+                        <StringItem index="1" value="&#x4fee;&#x6539;"/>
+                        <StringItem index="2" value="&#x65b0;&#x5efa;"/>
+                      </StringArray>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbSchIDOperationItemStateChanged"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JComboBox" name="cmbThOperation">
+                  <Properties>
+                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                      <StringArray count="3">
+                        <StringItem index="0" value="&#x4ec5;&#x9009;&#x62e9;"/>
+                        <StringItem index="1" value="&#x4fee;&#x6539;"/>
+                        <StringItem index="2" value="&#x65b0;&#x5efa;"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cmbThOperationItemStateChanged"/>
+                  </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -492,7 +496,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" pref="525" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="542" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -515,10 +519,10 @@
                           <Table columnCount="7" rowCount="0">
                             <Column editable="false" title="&#x7535;&#x5f71;&#x7968;ID" type="java.lang.String"/>
                             <Column editable="false" title="&#x7535;&#x5f71;&#x540d;" type="java.lang.String"/>
-                            <Column editable="false" title="&#x653e;&#x6620;&#x5385;3" type="java.lang.String"/>
+                            <Column editable="false" title="&#x653e;&#x6620;&#x5385;" type="java.lang.String"/>
                             <Column editable="false" title="&#x573a;&#x6b21;" type="java.lang.String"/>
                             <Column editable="false" title="&#x5ea7;&#x4f4d;" type="java.lang.String"/>
-                            <Column editable="false" title="&#x4ef7;&#x683c;" type="java.lang.Double"/>
+                            <Column editable="false" title="&#x4ef7;&#x683c;" type="java.lang.Float"/>
                             <Column editable="false" title="&#x72b6;&#x6001;" type="java.lang.String"/>
                           </Table>
                         </Property>

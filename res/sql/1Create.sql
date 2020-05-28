@@ -6,6 +6,7 @@ create database MovieDB on (
 	maxsize=100,
 	filegrowth=1
 )
+go
 
 --创建表
 use MovieDB
@@ -14,7 +15,7 @@ create table Users (
 	UserID varchar(10) primary key,
 	LoginName varchar(20),
 	Password varchar(20),
-	UserType varchar(10) check(UserType='普通用户' or UserType='管理员')
+	UserType varchar(10) check(UserType='普通用户' or UserType='管理员' or UserType is null)
 )
 create table Movie (
 	MovieID varchar(10) primary key,
@@ -39,7 +40,7 @@ create table Schedule (
 )
 create table Ticket (
 	TicketID varchar(10) primary key,
-	UserID varchar(10) foreign key references Users(UserID),
+	UserID varchar(10) foreign key references Users(UserID) null,
 	Row int,
 	Col int,
 	ScheduleID varchar(10) foreign key references Schedule(ScheduleID),

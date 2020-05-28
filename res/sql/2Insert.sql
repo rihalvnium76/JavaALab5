@@ -62,8 +62,9 @@ insert into Schedule values ('计划ID','yyyy-mm-dd hh:mm:ss','电影ID','放映厅ID')
 /*
 	写入测试用户
 */
-insert into Users values ('0','guest','10086','普通用户')
-insert into Users values ('1','admin','10000','管理员')
+insert into Users values ('0','???',NULL,NULL) 
+insert into Users values ('1','guest','10000','普通用户')
+insert into Users values ('2','admin','10086','管理员')
 
 /*
 	写入电影票
