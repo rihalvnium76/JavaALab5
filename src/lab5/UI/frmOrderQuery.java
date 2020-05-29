@@ -39,7 +39,10 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
+        jTable1.setColumnSelectionAllowed(true);
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
+        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jButton1.setText("刷新");
 
