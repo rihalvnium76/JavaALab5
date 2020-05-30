@@ -5,9 +5,17 @@
  */
 package lab5.UI;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
+import lab5.Module.DBAccess;
+import lab5.Module.WinCtrl;
+
 /* [6]个人订单查询 */
 public class frmOrderQuery extends javax.swing.JFrame {
-
+    private DBAccess db; // 数据库访问对象
     /**
      * Creates new form frmOrderQuery
      */
@@ -25,13 +33,12 @@ public class frmOrderQuery extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        TicketList = new javax.swing.JTable();
+        Unsubscribe = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TicketList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -39,14 +46,22 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
-        jTable1.setColumnSelectionAllowed(true);
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        TicketList.setColumnSelectionAllowed(true);
+        TicketList.getTableHeader().setReorderingAllowed(false);
+        TicketList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TicketListMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(TicketList);
+        TicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        jButton1.setText("刷新");
-
-        jButton2.setText("退订");
+        Unsubscribe.setText("退订");
+        Unsubscribe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UnsubscribeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -57,9 +72,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(Unsubscribe)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -67,9 +80,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                .addComponent(Unsubscribe)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -77,6 +88,53 @@ public class frmOrderQuery extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void TicketListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TicketListMouseClicked
+        //显示当前登录用户的订单
+        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        int r = TicketList.getSelectedRow();
+        try {
+            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.ScheduleID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
+            pstQue.setObject(1, WinCtrl.currentLoginUser);
+            //执行查询 SQL 语句，返回查询的结果集         
+            ResultSet rs = pstQue.executeQuery( ); 
+            while(rs.next()){
+                Vector v=new Vector();
+                v.add(rs.getObject(1));
+                v.add(rs.getObject(2));
+                v.add(rs.getObject(3));
+                v.add(rs.getObject(4));
+                v.add(rs.getObject(5)+ "-" +rs.getObject(6));
+                v.add(rs.getObject(7));
+                v.add(rs.getObject(8));
+                dtm.addRow(v);
+            }
+            rs.close();
+            pstQue.executeUpdate();
+            pstQue.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+    }//GEN-LAST:event_TicketListMouseClicked
+
+    private void UnsubscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UnsubscribeActionPerformed
+        //退订按钮
+        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        int r = TicketList.getSelectedRow();
+        try {
+            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+            pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
+            pstDel.executeUpdate();
+            pstDel.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+        dtm.removeRow(r);
+    }//GEN-LAST:event_UnsubscribeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -92,9 +150,8 @@ public class frmOrderQuery extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JTable TicketList;
+    private javax.swing.JButton Unsubscribe;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

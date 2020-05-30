@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
+import lab5.Module.DBAccess;
 
 import lab5.Module.*;
 
@@ -19,7 +20,6 @@ import lab5.Module.*;
 public class frmManager extends javax.swing.JFrame {
     private DBAccess db; // 数据库访问对象
     private UI_TicketManager ticketManager;
-    private UI_UsersInfoManager usersInfoManager;
     
     public frmManager() {
         initComponents();
@@ -45,19 +45,16 @@ public class frmManager extends javax.swing.JFrame {
     
     
     public void initTable(){ 
+        //将数据库中的用户显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)UsersList.getModel();
             try {
+            DBAccess db=new DBAccess();
             Statement sta=db.getConnection().createStatement();
-            String sql="select Loginname from Users";
+            String sql="select * from Users";
             ResultSet rs=sta.executeQuery(sql);
             while(rs.next()){
                 Vector v=new Vector();
-                v.add(rs.getString(1));
                 v.add(rs.getString(2));
-                v.add(rs.getString(3));
-                v.add(rs.getString(4));
-                v.add(rs.getString(5));
-                v.add(rs.getString(6));
                 dtm.addRow(v);
                 } 
                 rs.close();
@@ -79,6 +76,8 @@ public class frmManager extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTextField1 = new javax.swing.JTextField();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -116,16 +115,18 @@ public class frmManager extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        UsersList = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
         TicketList = new javax.swing.JTable();
         ResetPassword = new javax.swing.JButton();
         DeleteAccount = new javax.swing.JButton();
-        FindTicket = new javax.swing.JButton();
         DeleteTicket = new javax.swing.JButton();
-        SaveAccount = new javax.swing.JButton();
-        SaveTicket = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        UsersList = new javax.swing.JTable();
+
+        jTextField1.setText("jTextField1");
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -138,11 +139,11 @@ public class frmManager extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1016, Short.MAX_VALUE)
+            .addGap(0, 1049, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 544, Short.MAX_VALUE)
+            .addGap(0, 639, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("电影信息管理功能", jPanel1);
@@ -380,7 +381,7 @@ public class frmManager extends javax.swing.JFrame {
                     .addComponent(btnDelete)
                     .addComponent(btnReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -416,11 +417,11 @@ public class frmManager extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -446,30 +447,12 @@ public class frmManager extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("电影票管理功能", jPanel2);
 
-        UsersList.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "用户名"
-            }
-        ));
-        UsersList.setColumnSelectionAllowed(true);
-        UsersList.getTableHeader().setReorderingAllowed(false);
-        UsersList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                UsersListMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(UsersList);
-        UsersList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
         TicketList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格"
+                "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
         TicketList.setColumnSelectionAllowed(true);
@@ -496,8 +479,6 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        FindTicket.setText("查询订单");
-
         DeleteTicket.setText("删除订单");
         DeleteTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -505,9 +486,41 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        SaveAccount.setText("保存账户");
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("数据库用户列表"));
 
-        SaveTicket.setText("保存订单");
+        UsersList.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "用户名"
+            }
+        ));
+        UsersList.setColumnSelectionAllowed(true);
+        UsersList.getTableHeader().setReorderingAllowed(false);
+        UsersList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                UsersListMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(UsersList);
+        UsersList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3)
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 16, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -516,18 +529,15 @@ public class frmManager extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1021, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 876, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(DeleteAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(FindTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(DeleteTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ResetPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(SaveAccount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(SaveTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 11, Short.MAX_VALUE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ResetPassword, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(DeleteAccount, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(DeleteTicket, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(32, 32, 32)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -535,21 +545,15 @@ public class frmManager extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(ResetPassword)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(DeleteAccount)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(SaveAccount)
+                        .addComponent(ResetPassword)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(FindTicket)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(DeleteTicket)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(SaveTicket)))
+                        .addComponent(DeleteTicket))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -559,11 +563,15 @@ public class frmManager extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 671, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -683,11 +691,37 @@ public class frmManager extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void DeleteTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteTicketActionPerformed
-        // TODO add your handling code here:
+        //删除订单
+        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        int r = TicketList.getSelectedRow();
+        try {
+            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+            pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
+            pstDel.executeUpdate();
+            pstDel.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+        dtm.removeRow(r);
     }//GEN-LAST:event_DeleteTicketActionPerformed
 
     private void DeleteAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteAccountActionPerformed
-       
+        //删除账户
+        DefaultTableModel dtm = (DefaultTableModel) UsersList.getModel();
+        int r = UsersList.getSelectedRow();
+        try {
+            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Users where LoginName=?");
+            pstDel.setObject(1, UsersList.getValueAt(r, 0)); 
+            pstDel.executeUpdate();
+            pstDel.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+        dtm.removeRow(r);
     }//GEN-LAST:event_DeleteAccountActionPerformed
 
     private void cmbTkIDOperationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTkIDOperationActionPerformed
@@ -706,16 +740,41 @@ public class frmManager extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbCustomerActionPerformed
 
-    private void UsersListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsersListMouseClicked
-        DefaultTableModel dtm=(DefaultTableModel)UsersList.getModel();
-        //定义变量row为鼠标点击的行数。
-        int row=UsersList.getSelectedRow();
-        
-    }//GEN-LAST:event_UsersListMouseClicked
-
     private void ResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResetPasswordActionPerformed
-        // TODO add your handling code here:
+        //重置密码
+        WinCtrl.isResetPassword = true;
+        frmChangePwd.main(null);
     }//GEN-LAST:event_ResetPasswordActionPerformed
+
+    private void UsersListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsersListMouseClicked
+        //点击用户名，获得该用户的订单信息
+        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        int r = UsersList.getSelectedRow();
+        try {
+            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.ScheduleID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
+            pstQue.setObject(1, UsersList.getValueAt(r, 0));
+            //执行查询 SQL 语句，返回查询的结果集         
+            ResultSet rs = pstQue.executeQuery( ); 
+            while(rs.next()){
+                Vector v=new Vector();
+                v.add(rs.getObject(1));
+                v.add(rs.getObject(2));
+                v.add(rs.getObject(3));
+                v.add(rs.getObject(4));
+                v.add(rs.getObject(5)+ "-" +rs.getObject(6));
+                v.add(rs.getObject(7));
+                v.add(rs.getObject(8));
+                dtm.addRow(v);
+            }
+            rs.close();
+            pstQue.executeUpdate();
+            pstQue.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+    }//GEN-LAST:event_UsersListMouseClicked
 
     /**
      * @param args the command line arguments
@@ -733,10 +792,7 @@ public class frmManager extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DeleteAccount;
     private javax.swing.JButton DeleteTicket;
-    private javax.swing.JButton FindTicket;
     private javax.swing.JButton ResetPassword;
-    private javax.swing.JButton SaveAccount;
-    private javax.swing.JButton SaveTicket;
     private javax.swing.JTable TicketList;
     private javax.swing.JTable UsersList;
     private javax.swing.JButton btnDelete;
@@ -760,10 +816,12 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -771,6 +829,7 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lbThCapacity;
     private javax.swing.JTable tbTicketList;
     private javax.swing.JTextField tfCol;
