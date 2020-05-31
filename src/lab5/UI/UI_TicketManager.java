@@ -102,7 +102,10 @@ public class UI_TicketManager {
                     DBItem item = dataList.get(row);
                     // 载入ComboBox
                     cmbTicketID.setSelectedItem(item.ticketID);
-                    cmbCustomer.setSelectedItem(item.userID + "|" + item.userName);
+                    if(item.userID == null)
+                        cmbCustomer.setSelectedItem("无"); // NOTCIE
+                    else
+                        cmbCustomer.setSelectedItem(item.userID + "|" + item.userName);
                     cmbScheduleID.setSelectedItem(item.scheduleID);
                     cmbMovie.setSelectedItem(item.movieID + "|" + item.movieName);
                     cmbTheater.setSelectedItem(item.theaterID + "|" + item.theaterName);
@@ -283,6 +286,8 @@ public class UI_TicketManager {
             pstDel.setString(1, dataList.get(r).ticketID);
             pstDel.executeUpdate();
             pstDel.close();
+
+            deleteUselessSchedule();
         } catch(SQLException e) {
             //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -291,6 +296,10 @@ public class UI_TicketManager {
         dtm.removeRow(r);
         dataList.remove(r);
         loadData(); // 刷新
+    }
+    // 删除无用计划
+    public void deleteUselessSchedule() throws SQLException {
+        db.modifyDB("delete from Schedule where scheduleid not in (select scheduleid from ticket)");
     }
 
     /*

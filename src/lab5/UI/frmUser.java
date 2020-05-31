@@ -5,18 +5,14 @@
  */
 package lab5.UI;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-
-import java.awt.Image;
 
 import lab5.Module.*;
 
@@ -27,7 +23,9 @@ public class frmUser extends javax.swing.JFrame {
         public String ticketID, movieID, movieName, status;
         public Timestamp scheduleTime;
         public int row, col;
-        public String theaterName, userID, userName;
+        public String theaterName;
+
+        public static final int MAX_INDEX = 7;
 
         public void setValueByIndex(int index, Object value) throws IndexOutOfBoundsException {
             switch(index) {
@@ -39,8 +37,6 @@ public class frmUser extends javax.swing.JFrame {
                 case 5: row = (Integer)value; break;
                 case 6: col = (Integer)value; break;
                 case 7: theaterName = (String)value; break;
-                case 8: userID = (String)value; break;
-                case 9: userName = (String)value; break;
                 default: throw new IndexOutOfBoundsException("DBItem无效索引: "+index);
             }
         }
@@ -50,6 +46,7 @@ public class frmUser extends javax.swing.JFrame {
     public frmUser() {
         initComponents();
         // 初始化
+        dataList = new ArrayList<DBItem>();
         try {
             db = new DBAccess();
         } catch (ClassNotFoundException | SQLException e) {
@@ -57,167 +54,165 @@ public class frmUser extends javax.swing.JFrame {
             e.printStackTrace();
             System.exit(1); // 退出
         }
-        dataList = new ArrayList<DBItem>();
-        loadDataToTree(null);
-    }
-
-    // 加载数据到JTree，参数为可选
-    void loadDataToTree(String searchMovie) {
-        class MovieItem {
-            public String movieName, movieID;
-            public MovieItem(String name, String id) {
-                movieName = name; movieID = id;
-            }
-        }
-        Queue<MovieItem> movieList = new LinkedList<MovieItem>();
-        Connection ct = db.getConnection();
         try {
-            /* 获取电影名列表 */
-            PreparedStatement pst;
-            if(searchMovie==null)
-                pst = ct.prepareStatement("select movieName, movieID from Movie");
-            else {
-                pst = ct.prepareStatement("select movieName, movieID from Movie where movieName like ?");
-                pst.setString(1, "%" + searchMovie + "%"); // 模糊查找
-            }
-            ResultSet rs = pst.executeQuery();
-            while(rs.next())
-                movieList.offer(new MovieItem(rs.getString(1), rs.getString(2)));
-            rs.close();
-            pst.close();
-
-            /* 获取放映厅与场次 */
-            MovieItem curMovie;
-            DefaultTreeModel model = (DefaultTreeModel)treeNavi.getModel();
-            // 获取树根节点
-            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)model.getRoot();
-
-            pst = ct.prepareStatement("select Theater.TheaterName, Schedule.ScheduleTime from Theater, Schedule where Schedule.MovieID=? and Theater.TheaterID=Schedule.TheaterID");
-            while((curMovie = movieList.poll())!=null) {
-                // 写入Tree
-                DefaultMutableTreeNode curMovieNode = WinCtrl.addTreeNode(treeNavi, rootNode, curMovie.movieName);
-                // 查询放映厅+场次 写入Tree
-                pst.clearParameters(); // 清除参数记录
-                pst.setString(1, curMovie.movieID);
-                rs = pst.executeQuery();
-                while(rs.next())
-                    WinCtrl.addTreeNode(treeNavi, curMovieNode, rs.getString(1) + "|" + rs.getTimestamp(2).toString());
-                rs.close();
-            }
-            pst.close();
+            loadMovie();
         } catch(SQLException e) {
-            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
 
-    // 加载数据到JTable+ArrayList
-    void loadDataToTable(String movieName, String theaterName, String scheduleTime) {
-        Connection ct = db.getConnection();
-        try {
-            PreparedStatement pst = ct.prepareStatement(
-                "select Ticket.TicketID, Movie.MovieID, Movie.MovieName, Ticket.Status, Schedule.ScheduleTime, Ticket.Row, Ticket.Col, Theater.TheaterName, Users.UserID, Users.UserName "+
-                "from Ticket, Schedule, Movie, Theater, Users "+
-                "where Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Schedule.TheaterID=Theater.TheaterID and Ticket.UserID=Users.UserID and "+
-                "Movie.MovieName=?" + (theaterName==null? "": " and Theater.TheaterName=?") + (scheduleTime==null? "": " and Schedule.ScheduleTime=?"));
-            pst.setString(1, movieName);
-            if(theaterName!=null) pst.setString(2, theaterName);
-            if(scheduleTime!=null) pst.setTimestamp(3, Timestamp.valueOf(scheduleTime));
+    /*
+        ---LOAD CODE---
+    */
+
+    // load movie data to tree
+
+    void loadMovie() throws SQLException {
+        loadMovie(""); // 模糊搜索 全部
+    }
+    void loadMovie(String searchMovie) throws SQLException {
+        WinCtrl.clearTree(treeNavi); // 清空树
+
+        PreparedStatement pst = db.getConnection().prepareStatement("select movieid,moviename from movie where moviename like ?");
+        pst.setString(1, "%" + searchMovie + "%"); // 模糊搜索
+        ResultSet rs = pst.executeQuery();
+        DefaultMutableTreeNode rootNode = WinCtrl.getTreeRootNode(treeNavi);
+        while(rs.next()) {
+            DefaultMutableTreeNode movieNode = WinCtrl.addTreeNode(treeNavi, rootNode, rs.getString(2)); // movieName
+            loadSchedule(movieNode, rs.getString(1)); // by movieID
+        }
+        rs.close();
+        pst.close();
+    }
+    void loadSchedule(DefaultMutableTreeNode movieNode, String movieID) throws SQLException {
+        PreparedStatement pst = db.getConnection().prepareStatement("select theater.theatername,schedule.scheduletime from schedule,theater,ticket where schedule.theaterid=theater.theaterid and schedule.movieid=? and ticket.scheduleid=schedule.scheduleid");
+        // ticket.scheduleid=schedule.scheduleid : 过滤没有实际安排的计划
+        pst.setString(1, movieID);
+        ResultSet rs = pst.executeQuery();
+        while(rs.next())
+            WinCtrl.addTreeNode(treeNavi, movieNode, rs.getString(1) + "|" + rs.getTimestamp(2).toString()); // theaterName | scheduleTime
+        rs.close();
+        pst.close();
+    }
+
+    // load data to arraylist and table
+
+    class LoadDataToTable {
+        private String movieName, theaterName, scheduleTime;
+
+        public LoadDataToTable(String movieName) throws SQLException {
+            this(movieName, null, null);
+        }
+        public LoadDataToTable(String movieName, String theaterName, String scheduleTime) throws SQLException {
+            this.movieName = movieName;
+            this.theaterName = theaterName;
+            this.scheduleTime = scheduleTime;
+
+            writeArrayList();
+            writeTableFromArray();
+        }
+
+        private void writeArrayList() throws SQLException {
+            boolean scheduleExist = theaterName!=null && scheduleTime!=null;
+            PreparedStatement pst = db.getConnection().prepareStatement("select ticket.ticketid,movie.movieid,movie.moviename,ticket.status,schedule.scheduletime,ticket.row,ticket.col,theater.theaterName from ticket,schedule,movie,theater where ticket.scheduleid=schedule.scheduleid and schedule.movieid=movie.movieid and schedule.theaterid=theater.theaterid and movie.moviename like ?" + (scheduleExist? " and theater.theatername like ? and schedule.scheduletime=?": ""));
+            pst.setString(1, "%" + movieName + "%");
+            if(scheduleExist) {
+                pst.setString(2, theaterName);
+                pst.setTimestamp(3, Timestamp.valueOf(scheduleTime));
+            }
             ResultSet rs = pst.executeQuery();
-            DefaultTableModel dtm = (DefaultTableModel)tbMovieList.getModel();
-            dtm.setRowCount(0); // 清空表
-            dataList.clear(); // 清空表
+            dataList.clear(); // 清空ArrayList
             while(rs.next()) {
-                // ArrayList
-                DBItem r = new DBItem();
-                for(int i=0, cc=rs.getMetaData().getColumnCount(); i<cc; ++i)
-                    r.setValueByIndex(i, rs.getObject(i+1));
-                dataList.add(r);
-
-                // JTable
-                dtm.addRow(new String[] {
-                    r.movieName,
-                    r.theaterName,
-                    r.scheduleTime.toString(),
-                    r.row + "-" + r.col,
-                    r.status
-                });
+                DBItem d = new DBItem();
+                for(int i=0; i<=DBItem.MAX_INDEX; ++i)
+                    d.setValueByIndex(i, rs.getObject(i+1));
+                dataList.add(d);
             }
-            rs.close();
             pst.close();
-        } catch(SQLException e) {
-            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch(IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "场次格式错误，应为yyyy-mm-dd hh:mm:ss", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+        private void writeTableFromArray() throws SQLException {
+            DefaultTableModel model = (DefaultTableModel)tbMovieList.getModel();
+            model.setRowCount(0); // 清空table
+            for(DBItem d : dataList)
+                model.addRow(new Object[] {
+                    d.movieName,
+                    d.theaterName,
+                    d.scheduleTime.toString(),
+                    d.row + "-" + d.col,
+                    d.status
+                });
         }
     }
+    // 根据Tree选择添加数据到Table
+    // 返回值：电影名
+    String loadDataToTable() throws SQLException {
+        LoadDataToTable loadData;
+        DefaultMutableTreeNode selNode = WinCtrl.getSelectedTreeNode(treeNavi);
+        String nodeStr = (String)selNode.getUserObject();
+        if(selNode!=null && nodeStr!=null)
+            switch(selNode.getLevel()) {
+                case 1: // movie only
+                    loadData = new LoadDataToTable(nodeStr);
+                    return nodeStr;
+                case 2: // movie+schedule
+                    String[] sch = nodeStr.split("\\|", 2);
+                    String movName = (String)((DefaultMutableTreeNode)selNode.getParent()).getUserObject();
+                    loadData = new LoadDataToTable(movName, sch[0], sch[1]);
+                    return movName;
+            }
+        return null;
+    }
+    /*
+        ---LOAD CODE END---
+    */
 
-    // 加载电影基本信息
-    // movieName 按电影名查询
-    // index 表索引->dataList->movieID
-    void loadIntroduction(String movieName, Integer index) {
-        if((movieName==null && index==null) || index<0) return;
-        String[] intro = new String[6]; // 电影名 导演 主演 类型 价格 图片
-        String val = movieName!=null? movieName: dataList.get(index).movieID;
+    void writeIntroduction(String movieName) throws SQLException, IOException {
+        PreparedStatement pst = db.getConnection().prepareStatement("select director,mainactors,movietype,price,movieposter from movie where moviename like ?");
+        pst.setString(1, movieName);
+        ResultSet rs = pst.executeQuery();
+        if(rs.next()) {
+            taMovieInfo.setText(
+                "电影名：" + movieName +
+                "\n导演：" + rs.getString(1) +
+                "\n主要演员：" + rs.getString(2) +
+                "\n类型：" + rs.getString(3) +
+                "\n价格：" + String.valueOf(rs.getFloat(4)));
+            WinCtrl.setLabelMoviePoster(lbPoster, rs.getString(5)); // movie poster
+        }
+        pst.close();
+    }
 
-        Connection ct = db.getConnection();
-        try {
-            PreparedStatement pst = ct.prepareStatement("select movieName, director, mainActors, movieType, price, moviePoster from movie where " + (movieName!=null? "movieName": "movieID") + "=?");
-            pst.setString(1, val);
+    String findUserIDByName(String userName) throws SQLException {
+        String ret = null;
+        if(userName!=null) {
+            PreparedStatement pst = db.getConnection().prepareStatement("select userid from users where loginname=?");
+            pst.setString(1, userName);
             ResultSet rs = pst.executeQuery();
-            if(rs.next())
-                for(int i=0; i<6; ++i)
-                    if(i==4) // 价格
-                        intro[i] = String.valueOf(rs.getDouble(i));
-                    else
-                        intro[i] = rs.getString(i);
+            if(rs.next()) ret = rs.getString(1); // userid
             rs.close();
             pst.close();
-        } catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-            return;
         }
-
-        // 写入文本框
-        taMovieInfo.setText(
-            "电影名：" + intro[0] +
-            "\n导演：" + intro[1] +
-            "\n主要演员：" + intro[2] +
-            "\n类型：" + intro[3] +
-            "\n价格：" + intro[4]);
-        // 设置图片
-        try {
-            WinCtrl.setLabelImage(lbPoster, WinCtrl.getImageDirPath() + File.separator + intro[5]);
-        } catch(IOException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+        return ret;
     }
 
     // 电影票订票
-    void bookTicket() {
+    void bookTicket() throws SQLException {
         int[] rows = tbMovieList.getSelectedRows();
         if(rows.length==0) return;
-        Connection ct = db.getConnection();
 
         // index(rows)->ArrayList->ticketID->Status
-        try {
-            PreparedStatement pst = ct.prepareStatement("update Ticket set userid=?, status=\'已购\' where ticketid=?");
-            for(int index : rows) {
-                DBItem item = dataList.get(index);
-                if(item.status.equals("已购")) continue;
+        PreparedStatement pst = db.getConnection().prepareStatement("update Ticket set userid=?, status=? where ticketid=?");
+        for(int index : rows) {
+            DBItem item = dataList.get(index);
+            if(item.status.equals("未购")) {
                 pst.clearParameters();
-                pst.setString(1, item.userID);
-                pst.setString(2, item.ticketID);
+                pst.setString(1, findUserIDByName(WinCtrl.currentLoginUser)); // userid
+                pst.setString(2, "已购");
+                pst.setString(3, item.ticketID);
                 pst.executeUpdate();
             }
-            pst.close();
-        } catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
+        pst.close();
     }
 
     // =========== CUSTOM CODE END =========== //
@@ -254,7 +249,7 @@ public class frmUser extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -408,9 +403,9 @@ public class frmUser extends javax.swing.JFrame {
         jMenu1.setText("系统");
 
         jMenuItem1.setText("退出");
-        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuItem1MouseClicked(evt);
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
             }
         });
         jMenu1.add(jMenuItem1);
@@ -420,17 +415,17 @@ public class frmUser extends javax.swing.JFrame {
         jMenu2.setText("个人中心");
 
         jMenuItem2.setText("订单查询");
-        jMenuItem2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuItem2MouseClicked(evt);
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
             }
         });
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("修改密码");
-        jMenuItem3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuItem3MouseClicked(evt);
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
             }
         });
         jMenu2.add(jMenuItem3);
@@ -478,28 +473,6 @@ public class frmUser extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
-         // 退出
-        try {
-            db.close();
-        } catch (SQLException e) {
-            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-        this.dispose();
-    }//GEN-LAST:event_jMenuItem1MouseClicked
-
-    private void jMenuItem3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem3MouseClicked
-        // 修改密码
-        WinCtrl.isResetPassword = false;
-        frmChangePwd.main(null);
-    }//GEN-LAST:event_jMenuItem3MouseClicked
-
-    private void jMenuItem2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem2MouseClicked
-        // 订单查询
-        frmOrderQuery.main(null);
-    }//GEN-LAST:event_jMenuItem2MouseClicked
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // 窗体关闭
         try {
@@ -513,19 +486,27 @@ public class frmUser extends javax.swing.JFrame {
 
     private void btnQueryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQueryMouseClicked
         // 电影名查询
-        loadDataToTree(tfQueryMovie.getText().trim());
+        try {
+            loadMovie(tfQueryMovie.getText());
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnQueryMouseClicked
 
     private void btnClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseClicked
         // 清空
-        tfQueryMovie.setText(null);
-        loadDataToTree(null);
+        try {
+            tfQueryMovie.setText(null);
+            loadMovie();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnClearMouseClicked
 
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         // 详细信息
         int i = tbMovieList.getSelectedRow();
-        if(i==-1) return;
+        if(i<0) return;
         WinCtrl.currentSelectedMovieID = dataList.get(i).movieID;
         // 显示frmMovieInfo
         frmMovieInfo.main(null);
@@ -533,11 +514,13 @@ public class frmUser extends javax.swing.JFrame {
 
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
         // 订票
-        bookTicket();
-        int i = tbMovieList.getSelectedRow();
-        if(i==-1) return;
-        DBItem r = dataList.get(i);
-        loadDataToTable(r.movieName, r.theaterName, r.scheduleTime.toString());
+        try {
+            bookTicket();
+            loadDataToTable();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
     }//GEN-LAST:event_btnBookMouseClicked
 
     private void btnCancelSelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelSelMouseClicked
@@ -547,22 +530,35 @@ public class frmUser extends javax.swing.JFrame {
 
     private void treeNaviValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeNaviValueChanged
         // 树选择改变
-        String movieName = null, schedule = null;
-        String[] schInfo = new String[2];
-        DefaultMutableTreeNode node = WinCtrl.getSelectedTreeNode(treeNavi);
-        switch(node.getLevel()) {
-            case 1:
-                movieName = (String)node.getUserObject(); break;
-            case 2:
-                schedule = (String)node.getUserObject();
-                movieName = (String)((DefaultMutableTreeNode)node.getParent()).getUserObject();
-                schInfo = schedule.split("\\|", 2);
-                break;
-            default: return;
+        try {
+            String movName = loadDataToTable();
+            if(movName!=null) writeIntroduction(movName);
+        } catch(SQLException | IOException e) {
+            e.printStackTrace();
         }
-        if(movieName==null) return;
-        loadDataToTable(movieName, schInfo[0], schInfo[1]);
     }//GEN-LAST:event_treeNaviValueChanged
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // 退出
+        try {
+            db.close();
+        } catch (SQLException e) {
+            //JOptionPane.showMessageDialog(this, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        this.dispose();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // 订单查询
+        frmOrderQuery.main(null);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // 修改密码
+        WinCtrl.isResetPassword = false;
+        frmChangePwd.main(null);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments

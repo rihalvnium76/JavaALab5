@@ -84,21 +84,21 @@ public class frmManager extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<String>();
-        cmbCustomer = new javax.swing.JComboBox<String>();
+        cmbTicketID = new javax.swing.JComboBox<>();
+        cmbCustomer = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<String>();
+        cmbScheduleID = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<String>();
-        cmbMovie = new javax.swing.JComboBox<String>();
+        cmbTheater = new javax.swing.JComboBox<>();
+        cmbMovie = new javax.swing.JComboBox<>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
@@ -108,9 +108,9 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
-        cmbTkIDOperation = new javax.swing.JComboBox<String>();
-        cmbSchIDOperation = new javax.swing.JComboBox<String>();
-        cmbThOperation = new javax.swing.JComboBox<String>();
+        cmbTkIDOperation = new javax.swing.JComboBox<>();
+        cmbSchIDOperation = new javax.swing.JComboBox<>();
+        cmbThOperation = new javax.swing.JComboBox<>();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
@@ -154,7 +154,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
         cmbCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbCustomerActionPerformed(evt);
@@ -247,7 +247,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel10.setText("价格");
 
-        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "修改", "新建" }));
+        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "修改", "新建" }));
         cmbTkIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbTkIDOperationItemStateChanged(evt);
@@ -259,14 +259,14 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
+        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
         cmbSchIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbSchIDOperationItemStateChanged(evt);
             }
         });
 
-        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
+        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
         cmbThOperation.setEnabled(false);
         cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -381,8 +381,7 @@ public class frmManager extends javax.swing.JFrame {
                     .addComponent(btnDelete)
                     .addComponent(btnReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane2))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("数据库电影表列表"));
@@ -585,6 +584,7 @@ public class frmManager extends javax.swing.JFrame {
     private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
         // 删除
         ticketManager.deleteItem();
+        ticketManager.loadData();
     }//GEN-LAST:event_btnDeleteMouseClicked
 
     private void btnReloadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReloadMouseClicked

@@ -11,7 +11,7 @@ import java.util.Enumeration;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JTable;
+//import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -56,12 +56,18 @@ public class WinCtrl {
     }
     // 给JLabel设置图片并适配控件大小
     // 参数：lb JLabel控件
-    //   mgPath 图片路径，使用例：getImageDirPath() + File.separator + 文件名
+    //   imgPath 图片路径，使用例：getImageDirPath() + File.separator + 文件名
     // 说明：File.separator为路径分隔符
     public static void setLabelImage(JLabel lb, String imgPath) {
         ImageIcon image = new ImageIcon(imgPath);
         image.setImage(image.getImage().getScaledInstance(lb.getWidth(), lb.getHeight(), Image.SCALE_DEFAULT));
         lb.setIcon(image);
+    }
+    // 对JLabel设置电影海报
+    // 参数：lb JLabel控件
+    //   imgName 放在/res/image下的海报图像名
+    public static void setLabelMoviePoster(JLabel lb, String imgName) throws IOException {
+        setLabelImage(lb, getImageDirPath() + File.separator + imgName);
     }
 
     /* JTree操作函数 */
@@ -72,6 +78,11 @@ public class WinCtrl {
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeName);
         model.insertNodeInto(newNode, selNode, selNode.getChildCount());
+        
+        // 展开结点
+        TreeNode[] nodes = model.getPathToRoot(newNode);
+        TreePath path = new TreePath(nodes);
+        tree.scrollPathToVisible(path);
         return newNode;
     }
     // 获取选中结点
@@ -111,5 +122,14 @@ public class WinCtrl {
         TreePath path = new TreePath(nodes);
         // 显示指定的TreePath
         tree.scrollPathToVisible(path);
+    }
+    // 获取根节点
+    public static DefaultMutableTreeNode getTreeRootNode(JTree tree) {
+        return (DefaultMutableTreeNode)((DefaultTreeModel)tree.getModel()).getRoot();
+    }
+    // 清空树
+    public static void clearTree(JTree tree) {
+        getTreeRootNode(tree).removeAllChildren();
+        tree.updateUI();
     }
 }
