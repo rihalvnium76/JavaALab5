@@ -121,10 +121,11 @@ public class frmLogin extends javax.swing.JFrame {
         if(verifyLogin>0){
             lab5.Module.WinCtrl.currentLoginUser=lab5.Module.WinCtrl.currentLoginUser;
             if(verifyLogin==1){
-                
+                new frmUser().setVisible(true);
             }
             else if(verifyLogin==2){
                 lab5.Module.WinCtrl.loginFormSelectedButton = 0;
+                new frmUserTypeChoice().setVisible(true);
             }
         }else{
             JOptionPane.showMessageDialog(this, "密码错误", "错误", JOptionPane.ERROR_MESSAGE);
