@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 package lab5.UI;
+import lab5.Module.*;
+
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /* [1]登录窗口 */
 public class frmLogin extends javax.swing.JFrame {
@@ -11,7 +15,9 @@ public class frmLogin extends javax.swing.JFrame {
     /**
      * Creates new form frmLogin
      */
+    private int verifyLogin;
     public frmLogin() {
+        verifyLogin = 0;
         initComponents();
     }
 
@@ -34,13 +40,35 @@ public class frmLogin extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("登录");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("注册");
         jButton2.setToolTipText("");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("用户名：");
 
         jLabel2.setText("密码：");
+
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
+
+        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -86,11 +114,59 @@ public class frmLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        //登录按钮
+        lab5.Module.WinCtrl.loginFormSelectedButton = 0;
+        if(verifyLogin>0){
+            lab5.Module.WinCtrl.currentLoginUser=lab5.Module.WinCtrl.currentLoginUser;
+            if(verifyLogin==1){
+                new frmUser().setVisible(true);
+            }
+            else if(verifyLogin==2){
+                lab5.Module.WinCtrl.loginFormSelectedButton = 0;
+                new frmUserTypeChoice().setVisible(true);
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "密码错误", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        //注册按钮
+        lab5.Module.WinCtrl.loginFormSelectedButton = 1;
+    }//GEN-LAST:event_jButton2ActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {                                   
+        // 窗口关闭事件	
+        this.dispose();
+    } 
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         lab5.Lab5.setUIStyle(frmLogin.class.getName());
+        try {
+			String lookAndFeel = javax.swing.UIManager.getSystemLookAndFeelClassName();
+			javax.swing.UIManager.setLookAndFeel(lookAndFeel);
+		} catch (ClassNotFoundException ex) {
+			java.util.logging.Logger.getLogger(frmLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (InstantiationException ex) {
+			java.util.logging.Logger.getLogger(frmLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (IllegalAccessException ex) {
+			java.util.logging.Logger.getLogger(frmLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+			java.util.logging.Logger.getLogger(frmLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		}
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
