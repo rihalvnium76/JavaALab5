@@ -45,6 +45,11 @@ public class frmLogin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("登录");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         btnLogin.setText("登录");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
@@ -151,15 +156,17 @@ public class frmLogin extends javax.swing.JFrame {
         frmUserTypeChoice.main(null);
         this.dispose();
     }//GEN-LAST:event_btnRegisterActionPerformed
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {                                   
-        // 窗口关闭事件	
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗口关闭
         try {
             db.close();
         } catch(SQLException e) {
             e.printStackTrace();
         }
         this.dispose();
-    } 
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */

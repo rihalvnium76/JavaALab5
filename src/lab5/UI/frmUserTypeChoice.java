@@ -38,6 +38,11 @@ public class frmUserTypeChoice extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("操作选择");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         btnRight.setText("jButton1");
         btnRight.addActionListener(new java.awt.event.ActionListener() {
@@ -117,6 +122,11 @@ public class frmUserTypeChoice extends javax.swing.JFrame {
                 break;
         }
     }//GEN-LAST:event_btnRightActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
