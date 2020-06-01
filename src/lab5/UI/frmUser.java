@@ -49,15 +49,24 @@ public class frmUser extends javax.swing.JFrame {
         dataList = new ArrayList<DBItem>();
         try {
             db = new DBAccess();
+            Thread t = new LoadMovieThread();
+            t.start();
+            t.join();
         } catch (ClassNotFoundException | SQLException e) {
             //JOptionPane.showMessageDialog(this, ex.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(1); // 退出
-        }
-        try {
-            loadMovie();
-        } catch(SQLException e) {
-            e.printStackTrace();
+        } catch(InterruptedException e) {}
+    }
+
+    private class LoadMovieThread extends Thread {
+        @Override
+        public void run() {
+            try {
+                loadMovie();
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -381,10 +390,8 @@ public class frmUser extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tbMovieList.setColumnSelectionAllowed(true);
         tbMovieList.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tbMovieList);
-        tbMovieList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         btnBook.setText("订票");
         btnBook.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -517,6 +524,7 @@ public class frmUser extends javax.swing.JFrame {
         try {
             bookTicket();
             loadDataToTable();
+            JOptionPane.showMessageDialog(this, "订票完成");
         } catch(SQLException e) {
             e.printStackTrace();
         }

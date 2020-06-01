@@ -48,14 +48,14 @@ public class frmManager extends javax.swing.JFrame {
         //将数据库中的用户显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)UsersList.getModel();
             try {
-            DBAccess db=new DBAccess();
-            Statement sta=db.getConnection().createStatement();
-            String sql="select * from Users";
-            ResultSet rs=sta.executeQuery(sql);
-            while(rs.next()){
-                Vector v=new Vector();
-                v.add(rs.getString(2));
-                dtm.addRow(v);
+                DBAccess db=new DBAccess();
+                Statement sta=db.getConnection().createStatement();
+                String sql="select * from Users";
+                ResultSet rs=sta.executeQuery(sql);
+                while(rs.next()){
+                    Vector<String> v=new Vector<String>();
+                    v.add(rs.getString(2));
+                    dtm.addRow(v);
                 } 
                 rs.close();
                 sta.close();
