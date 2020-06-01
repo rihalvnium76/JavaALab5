@@ -456,7 +456,15 @@ public class frmManager extends javax.swing.JFrame {
             new String [] {
                 "用户名"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         UsersList.setColumnSelectionAllowed(true);
         UsersList.getTableHeader().setReorderingAllowed(false);
         UsersList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -576,7 +584,7 @@ public class frmManager extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1036, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -759,6 +767,7 @@ public class frmManager extends javax.swing.JFrame {
     private void UsersListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsersListMouseClicked
         //点击用户名，获得该用户的订单信息
         DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        dtm.setRowCount(0); // 清空表
         int r = UsersList.getSelectedRow();
         try {
             PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.ScheduleID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
@@ -777,7 +786,6 @@ public class frmManager extends javax.swing.JFrame {
                 dtm.addRow(v);
             }
             rs.close();
-            pstQue.executeUpdate();
             pstQue.close();
         }catch(SQLException e) {
             //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
