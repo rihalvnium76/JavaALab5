@@ -41,6 +41,7 @@ insert into Movie values (
 insert into Theater values ('01','天空厅',100)
 insert into Theater values ('02','海洋厅',100)
 insert into Theater values ('03','茉莉厅',100)
+insert into Theater values ('04','远山厅',200)
 
 --模板
 /*
@@ -53,6 +54,11 @@ insert into Theater values ('ID','放映厅名',100)
 insert into Schedule values ('01','2020-05-31 19:00:00','01','01')
 insert into Schedule values ('02','2020-05-31 20:30:00','02','01')
 insert into Schedule values ('03','2020-06-01 19:00:00','03','02')
+insert into Schedule values ('04','2020-06-01 20:00:00','04','02')
+insert into Schedule values ('05','2020-05-31 19:00:00','01','03')
+insert into Schedule values ('06','2020-05-31 20:30:00','02','03')
+insert into Schedule values ('07','2020-06-01 19:00:00','03','04')
+insert into Schedule values ('08','2020-06-01 20:00:00','04','04')
 
 --模板
 /*
@@ -71,8 +77,13 @@ insert into Users values ('2','admin','10086','管理员')
 */
 insert into Ticket values ('01','0',1,1,'01','未购')
 insert into Ticket values ('02','0',1,1,'01','已购')
+insert into Ticket values ('03',NULL,2,2,'02','未购')
+insert into Ticket values ('04',NULL,2,4,'03','未购')
+insert into Ticket values ('05','1',2,2,'04','已购')
+insert into Ticket values ('06',NULL,2,4,'04','未购')
+insert into Ticket values ('06',NULL,2,6,'04','未购')
 
 --模板
 /*
-insert into Ticket values ('票ID','用户ID',1,1,'计划ID','未购')
+insert into Ticket values ('票ID','用户ID',行,列,'计划ID','未购')
 */
