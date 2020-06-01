@@ -5,14 +5,77 @@
  */
 package lab5.UI;
 
+import lab5.Module.*;
+import java.sql.*;
+
+import javax.swing.JOptionPane;
+
 /* [3]注册窗口 */
 public class frmRegister extends javax.swing.JFrame {
+    private DBAccess db;
+    private String usrTyp;
 
-    /**
-     * Creates new form frmRegister
-     */
     public frmRegister() {
         initComponents();
+        try {
+            db = new DBAccess();
+        } catch(SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        switch(WinCtrl.registerUserType) {
+            case 0: usrTyp = "普通用户"; break;
+            case 1: usrTyp = "管理员"; break;
+            default: usrTyp = "未知类型"; break;
+        }
+        lbUserType.setText("注册用户类型：" + usrTyp);
+    }
+
+    // 注册用户
+    // 返回值：false注册失败，true注册成功
+    private boolean registerUser(String usr, String pwd) throws SQLException {
+        PreparedStatement pst = db.getConnection().prepareStatement("insert into Users values(?,?,?,?)");
+        pst.setString(1, getAvailableUserID()); // UserID
+        pst.setString(2, usr);
+        pst.setString(3, pwd);
+        pst.setString(4, usrTyp); // userType
+        int rs = pst.executeUpdate();
+        pst.close();
+        return rs>0? true: false;
+    }
+    // 获取未使用的userID
+    // 要求：userID全部为数字
+    private String getAvailableUserID() throws SQLException {
+        ResultSet rs = db.queryDB("select userid from users order by userid desc");
+        String lastID = null; // 当前表里最大的ID
+        if(rs.next()) lastID = rs.getString(1);
+        db.releaseQuery();
+        int ret = -1;
+        try {
+            // ID转为整数+1
+            ret = Integer.parseInt(lastID) + 1;
+        } catch(IllegalArgumentException e) {
+            // 表最大ID非整数，无法转化为整数再+1
+            // 则使用当前系统时间取余
+            boolean isLegal = false;
+            while(!isLegal) {
+                ret = (int)(System.currentTimeMillis() % 65536);
+                PreparedStatement pst = db.getConnection().prepareStatement("select userid from users where userid=?");
+                pst.setString(1, String.valueOf(ret));
+                ResultSet rs1 = pst.executeQuery();
+                if(!rs1.next()) isLegal = true; // 确定这个ID没被使用
+                rs1.close();
+                pst.close();
+            }
+        }
+        return String.valueOf(ret);
+    }
+
+    // 销毁窗体
+    void destroy() {
+        try { db.close(); }
+        catch(SQLException e) { e.printStackTrace(); }
+        this.dispose();
     }
 
     /**
@@ -24,23 +87,39 @@ public class frmRegister extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        btnRegister = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
+        lbUserType = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        tfUser = new javax.swing.JTextField();
+        pfPassword = new javax.swing.JPasswordField();
+        pfConfirmPwd = new javax.swing.JPasswordField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("注册");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
-        jButton1.setText("注册");
+        btnRegister.setText("注册");
+        btnRegister.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnRegisterMouseClicked(evt);
+            }
+        });
 
-        jButton2.setText("返回");
+        btnBack.setText("返回");
+        btnBack.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBackMouseClicked(evt);
+            }
+        });
 
-        jLabel1.setText("jLabel1");
+        lbUserType.setText("注册用户类型：");
 
         jLabel2.setText("用户名：");
 
@@ -48,70 +127,94 @@ public class frmRegister extends javax.swing.JFrame {
 
         jLabel4.setText("确认密码：");
 
-        jTextField1.setText("jTextField1");
-
-        jTextField2.setText("jTextField2");
-
-        jTextField3.setText("jTextField3");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(116, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField1))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addGap(10, 10, 10))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField3))))
-                .addGap(22, 22, 22))
+                            .addComponent(pfPassword)
+                            .addComponent(tfUser)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(pfConfirmPwd))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lbUserType, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
+                        .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbUserType, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31)
+                    .addComponent(tfUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(38, 38, 38)
+                    .addComponent(pfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                    .addComponent(pfConfirmPwd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(35, 35, 35))
+                    .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        destroy();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void btnBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackMouseClicked
+        // 返回
+        frmLogin.main(null);
+        destroy();
+    }//GEN-LAST:event_btnBackMouseClicked
+
+    private void btnRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegisterMouseClicked
+        // 注册
+        String[] input = new String[] {
+            tfUser.getText(), // 用户名
+            new String(pfPassword.getPassword()), // 密码
+            new String(pfConfirmPwd.getPassword()) // 确定密码
+        };
+        if(input[1].equals(input[2]) && input[1].length()>3 && input[1].length()<20) {
+            try {
+                boolean rt = registerUser(input[0], input[1]);
+                if(rt) {
+                    JOptionPane.showMessageDialog(this, "注册成功", "注册", JOptionPane.INFORMATION_MESSAGE);
+                    frmLogin.main(null); // 返回
+                    this.dispose();
+                }
+            } catch(SQLException e) {
+                JOptionPane.showMessageDialog(this, "注册失败！该用户名已被注册", "注册", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        } else
+            JOptionPane.showMessageDialog(this, "密码长度要大于3位而小于20位！", "错误", JOptionPane.ERROR_MESSAGE);
+    }//GEN-LAST:event_btnRegisterMouseClicked
 
     /**
      * @param args the command line arguments
@@ -127,14 +230,14 @@ public class frmRegister extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnRegister;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JLabel lbUserType;
+    private javax.swing.JPasswordField pfConfirmPwd;
+    private javax.swing.JPasswordField pfPassword;
+    private javax.swing.JTextField tfUser;
     // End of variables declaration//GEN-END:variables
 }

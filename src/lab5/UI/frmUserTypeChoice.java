@@ -1,18 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package lab5.UI;
+
+import lab5.Module.*;
 
 /* [2]注册用户类型选择窗口 */
 public class frmUserTypeChoice extends javax.swing.JFrame {
 
-    /**
-     * Creates new form frmUserTypeChoice
-     */
+
     public frmUserTypeChoice() {
         initComponents();
+        switch(WinCtrl.loginFormSelectedButton) {
+            case 0: // admin
+                lbText.setText("请选择进入的界面：");
+                btnLeft.setText("用户界面");
+                btnRight.setText("后台界面");
+                break;
+            case 1: // register
+                lbText.setText("请选择注册用户类型：");
+                btnLeft.setText("普通用户");
+                btnRight.setText("管理员");
+                break;
+        }
     }
 
     /**
@@ -24,21 +32,91 @@ public class frmUserTypeChoice extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        btnRight = new javax.swing.JButton();
+        btnLeft = new javax.swing.JButton();
+        lbText = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("操作选择");
+
+        btnRight.setText("jButton1");
+        btnRight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRightActionPerformed(evt);
+            }
+        });
+
+        btnLeft.setText("jButton1");
+        btnLeft.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLeftActionPerformed(evt);
+            }
+        });
+
+        lbText.setText("jLabel1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnLeft, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                        .addComponent(btnRight, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lbText, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnLeft, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRight, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeftActionPerformed
+        // 左边按钮
+        switch(WinCtrl.loginFormSelectedButton) {
+            case 0:
+                // 跳转用户界面
+                frmUser.main(null); // 显示目标窗体
+                this.dispose(); // 关闭当前窗体
+                break;
+            case 1:
+                // 注册普通用户
+                WinCtrl.registerUserType = 0;
+                frmRegister.main(null);
+                this.dispose();
+                break;
+        }
+    }//GEN-LAST:event_btnLeftActionPerformed
+
+    private void btnRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRightActionPerformed
+        // 右边按钮
+        switch(WinCtrl.loginFormSelectedButton) {
+            case 0:
+                // 跳转后台界面
+                frmManager.main(null);
+                this.dispose();
+                break;
+            case 1:
+                // 注册管理员
+                WinCtrl.registerUserType = 1;
+                frmRegister.main(null);
+                this.dispose();
+                break;
+        }
+    }//GEN-LAST:event_btnRightActionPerformed
 
     /**
      * @param args the command line arguments
@@ -54,5 +132,8 @@ public class frmUserTypeChoice extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLeft;
+    private javax.swing.JButton btnRight;
+    private javax.swing.JLabel lbText;
     // End of variables declaration//GEN-END:variables
 }

@@ -6,6 +6,9 @@
 package lab5.Module;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import java.awt.Image;
@@ -68,6 +71,28 @@ public class WinCtrl {
     //   imgName 放在/res/image下的海报图像名
     public static void setLabelMoviePoster(JLabel lb, String imgName) throws IOException {
         setLabelImage(lb, getImageDirPath() + File.separator + imgName);
+    }
+    // 登录校验函数
+    // 参数： 用户名，密码
+    // 返回值：0密码错误，1密码正确且用户是普通用户，2密码正确且用户是管理员，-1密码正确但用户类型未知
+    public static int verifyLogin(String userName, String password) throws SQLException, ClassNotFoundException {
+        DBAccess db = new DBAccess();
+        PreparedStatement pst = db.getConnection().prepareStatement("select UserType from Users where loginName=?,password=?");
+        pst.setString(1, userName);
+        pst.setString(2, password);
+        ResultSet rs = pst.executeQuery();
+        int ret = 0; // 返回值
+        if(rs.next()) { // 校验通过
+            String t = rs.getString(1); // UserType
+            if(t.equals("普通用户"))
+                ret = 1;
+            else if(t.equals("管理员"))
+                ret = 2;
+            else // unknown user type
+                ret = -1;
+        }
+        pst.close();
+        return ret;
     }
 
     /* JTree操作函数 */
