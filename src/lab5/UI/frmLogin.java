@@ -122,14 +122,14 @@ public class frmLogin extends javax.swing.JFrame {
         //登录按钮
         WinCtrl.loginFormSelectedButton = 0;
         String usr = tfUser.getText();
-        if(currentTryCount>3) {
-            JOptionPane.showMessageDialog(this, "密码尝试次数超过3次，拒绝登录", "错误", JOptionPane.ERROR_MESSAGE);
+        if(currentTryCount>=3) {
+            JOptionPane.showMessageDialog(this, "登录尝试次数超过3次，拒绝登录", "错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
             switch(WinCtrl.verifyLogin(usr, new String(pfPassword.getPassword()))) {
                 case 0: // error
-                    JOptionPane.showMessageDialog(this, "密码错误", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "用户名或密码错误", "错误", JOptionPane.ERROR_MESSAGE);
                     ++currentTryCount;
                     break;
                 case 1: // common user
