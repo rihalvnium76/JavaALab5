@@ -13,6 +13,7 @@ import java.util.Enumeration;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 //import javax.swing.JTable;
 import javax.swing.JTree;
