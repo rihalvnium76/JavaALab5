@@ -75,7 +75,6 @@ public class frmRegister extends javax.swing.JFrame {
     void destroy() {
         try { db.close(); }
         catch(SQLException e) { e.printStackTrace(); }
-        frmLogin.main(null);
         this.dispose();
     }
 
