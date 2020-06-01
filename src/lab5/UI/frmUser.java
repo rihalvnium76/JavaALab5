@@ -367,6 +367,7 @@ public class frmUser extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(treeNavi);
 
+        tbMovieList.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         tbMovieList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
