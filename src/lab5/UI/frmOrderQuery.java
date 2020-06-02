@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import lab5.Module.DBAccess;
 import lab5.Module.WinCtrl;
@@ -46,7 +47,6 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
-        TicketList.setColumnSelectionAllowed(true);
         TicketList.getTableHeader().setReorderingAllowed(false);
         TicketList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -54,7 +54,6 @@ public class frmOrderQuery extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(TicketList);
-        TicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         Unsubscribe.setText("退订");
         Unsubscribe.addActionListener(new java.awt.event.ActionListener() {
@@ -123,14 +122,19 @@ public class frmOrderQuery extends javax.swing.JFrame {
         //退订按钮
         DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
         int r = TicketList.getSelectedRow();
-        try {
-            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
-            pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
-            pstDel.executeUpdate();
-            pstDel.close();
-        }catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        if(JOptionPane.showConfirmDialog(null, "是否删除该订单？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+            try {
+                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
+                pstDel.executeUpdate();
+                pstDel.close();
+            }catch(SQLException e) {
+                //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                return;
+            }
+        }
+        else{
             return;
         }
         dtm.removeRow(r);

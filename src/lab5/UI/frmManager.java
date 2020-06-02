@@ -84,21 +84,21 @@ public class frmManager extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<>();
-        cmbCustomer = new javax.swing.JComboBox<>();
+        cmbTicketID = new javax.swing.JComboBox<String>();
+        cmbCustomer = new javax.swing.JComboBox<String>();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<>();
+        cmbScheduleID = new javax.swing.JComboBox<String>();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<>();
-        cmbMovie = new javax.swing.JComboBox<>();
+        cmbTheater = new javax.swing.JComboBox<String>();
+        cmbMovie = new javax.swing.JComboBox<String>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
@@ -108,9 +108,9 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
-        cmbTkIDOperation = new javax.swing.JComboBox<>();
-        cmbSchIDOperation = new javax.swing.JComboBox<>();
-        cmbThOperation = new javax.swing.JComboBox<>();
+        cmbTkIDOperation = new javax.swing.JComboBox<String>();
+        cmbSchIDOperation = new javax.swing.JComboBox<String>();
+        cmbThOperation = new javax.swing.JComboBox<String>();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
@@ -155,7 +155,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
         cmbCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbCustomerActionPerformed(evt);
@@ -248,7 +248,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel10.setText("价格");
 
-        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "修改", "新建" }));
+        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "修改", "新建" }));
         cmbTkIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbTkIDOperationItemStateChanged(evt);
@@ -260,14 +260,14 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
         cmbSchIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbSchIDOperationItemStateChanged(evt);
             }
         });
 
-        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
+        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
         cmbThOperation.setEnabled(false);
         cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -529,10 +529,8 @@ public class frmManager extends javax.swing.JFrame {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ));
-        TicketList.setColumnSelectionAllowed(true);
         TicketList.getTableHeader().setReorderingAllowed(false);
         jScrollPane4.setViewportView(TicketList);
-        TicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         DeleteTicket.setText("删除订单");
         DeleteTicket.addActionListener(new java.awt.event.ActionListener() {
@@ -712,34 +710,44 @@ public class frmManager extends javax.swing.JFrame {
         //删除订单
         DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
         int r = TicketList.getSelectedRow();
-        try {
-            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
-            pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
-            pstDel.executeUpdate();
-            pstDel.close();
-        }catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        if(JOptionPane.showConfirmDialog(null, "是否删除该订单？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+            try {
+                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
+                pstDel.executeUpdate();
+                pstDel.close();
+            }catch(SQLException e) {
+                //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                return;
+            }
+            dtm.removeRow(r);
+        }
+        else{
             return;
         }
-        dtm.removeRow(r);
     }//GEN-LAST:event_DeleteTicketActionPerformed
 
     private void DeleteAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteAccountActionPerformed
         //删除账户
         DefaultTableModel dtm = (DefaultTableModel) UsersList.getModel();
         int r = UsersList.getSelectedRow();
-        try {
-            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Users where LoginName=?");
-            pstDel.setObject(1, UsersList.getValueAt(r, 0)); 
-            pstDel.executeUpdate();
-            pstDel.close();
-        }catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        if(JOptionPane.showConfirmDialog(null, "是否删除该账户？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+            try {
+                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Users where LoginName=?");
+                pstDel.setObject(1, UsersList.getValueAt(r, 0)); 
+                pstDel.executeUpdate();
+                pstDel.close();
+            }catch(SQLException e) {
+                //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                return;
+            }
+            dtm.removeRow(r);
+        }
+        else{
             return;
         }
-        dtm.removeRow(r);
     }//GEN-LAST:event_DeleteAccountActionPerformed
 
     private void cmbTkIDOperationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTkIDOperationActionPerformed
