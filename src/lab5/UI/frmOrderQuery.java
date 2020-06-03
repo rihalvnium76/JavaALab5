@@ -22,6 +22,39 @@ public class frmOrderQuery extends javax.swing.JFrame {
      */
     public frmOrderQuery() {
         initComponents();
+        try {
+            db = new DBAccess();
+        } catch(SQLException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        loadData();
+    }
+    void loadData() {
+        //显示当前登录用户的订单
+        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
+        try {
+            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.TheaterID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
+            WinCtrl.currentLoginUser="???";
+            pstQue.setString(1, WinCtrl.currentLoginUser);
+            //执行查询 SQL 语句，返回查询的结果集         
+            ResultSet rs = pstQue.executeQuery( ); 
+            while(rs.next()){
+                Vector<String> v=new Vector<String>();
+                v.add(rs.getString(1));
+                v.add(rs.getString(2));
+                v.add(rs.getString(3));
+                v.add(String.valueOf(rs.getInt(4)));
+                v.add(rs.getInt(5)+ "-" +rs.getInt(6));
+                v.add(String.valueOf(rs.getFloat(7)));
+                v.add(rs.getString(8));
+                dtm.addRow(v);
+            }
+            rs.close();
+            pstQue.close();
+        }catch(SQLException e) {
+            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -46,7 +79,22 @@ public class frmOrderQuery extends javax.swing.JFrame {
             new String [] {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         TicketList.getTableHeader().setReorderingAllowed(false);
         TicketList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -89,33 +137,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void TicketListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TicketListMouseClicked
-        //显示当前登录用户的订单
-        DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
-        int r = TicketList.getSelectedRow();
-        try {
-            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.ScheduleID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
-            pstQue.setObject(1, WinCtrl.currentLoginUser);
-            //执行查询 SQL 语句，返回查询的结果集         
-            ResultSet rs = pstQue.executeQuery( ); 
-            while(rs.next()){
-                Vector v=new Vector();
-                v.add(rs.getObject(1));
-                v.add(rs.getObject(2));
-                v.add(rs.getObject(3));
-                v.add(rs.getObject(4));
-                v.add(rs.getObject(5)+ "-" +rs.getObject(6));
-                v.add(rs.getObject(7));
-                v.add(rs.getObject(8));
-                dtm.addRow(v);
-            }
-            rs.close();
-            pstQue.executeUpdate();
-            pstQue.close();
-        }catch(SQLException e) {
-            //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-            return;
-        }
+
     }//GEN-LAST:event_TicketListMouseClicked
 
     private void UnsubscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UnsubscribeActionPerformed

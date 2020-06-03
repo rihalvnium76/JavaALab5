@@ -60,13 +60,13 @@
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
               <Table columnCount="7" rowCount="0">
-                <Column editable="true" title="&#x7535;&#x5f71;&#x7968;ID" type="java.lang.Object"/>
-                <Column editable="true" title="&#x7535;&#x5f71;&#x540d;" type="java.lang.Object"/>
-                <Column editable="true" title="&#x653e;&#x6620;&#x5385;" type="java.lang.Object"/>
-                <Column editable="true" title="&#x573a;&#x6b21;" type="java.lang.Object"/>
-                <Column editable="true" title="&#x5ea7;&#x4f4d;" type="java.lang.Object"/>
-                <Column editable="true" title="&#x4ef7;&#x683c;" type="java.lang.Object"/>
-                <Column editable="true" title="&#x72b6;&#x6001;" type="java.lang.Object"/>
+                <Column editable="false" title="&#x7535;&#x5f71;&#x7968;ID" type="java.lang.String"/>
+                <Column editable="false" title="&#x7535;&#x5f71;&#x540d;" type="java.lang.String"/>
+                <Column editable="false" title="&#x653e;&#x6620;&#x5385;" type="java.lang.String"/>
+                <Column editable="false" title="&#x573a;&#x6b21;" type="java.lang.String"/>
+                <Column editable="false" title="&#x5ea7;&#x4f4d;" type="java.lang.String"/>
+                <Column editable="false" title="&#x4ef7;&#x683c;" type="java.lang.String"/>
+                <Column editable="false" title="&#x72b6;&#x6001;" type="java.lang.String"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
