@@ -437,9 +437,9 @@ public class UI_TicketManager {
     // 返回值：未使用的纯数字ticketID
     private int getAvailableTicketID() throws SQLException {
         ResultSet rs = db.queryDB("select ticketID from ticket order by ticketid asc");
-        int ret = 0; // start-id is 1
+        int ret = 1; // start-id is 1
         try {
-            while(rs.next() && ++ret==Integer.parseInt(rs.getString(1)));
+            while(rs.next() && ret==Integer.parseInt(rs.getString(1))) ++ret;
         } catch(IllegalArgumentException e) {
             // 非数字ID跳过
         }
