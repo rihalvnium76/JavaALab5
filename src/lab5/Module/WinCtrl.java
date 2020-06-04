@@ -73,6 +73,11 @@ public class WinCtrl {
     public static void setLabelMoviePoster(JLabel lb, String imgName) throws IOException {
         setLabelImage(lb, getImageDirPath() + File.separator + imgName);
     }
+    // 保证字符串str非null，若为null则转化为""
+    public static String avoidNullString(Object str) {
+        return str==null? "": (String)str;
+    }
+
     // 登录校验函数
     // 参数： 用户名，密码
     // 返回值：0密码错误，1密码正确且用户是普通用户，2密码正确且用户是管理员，-1密码正确但用户类型未知

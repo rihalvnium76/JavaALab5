@@ -26,7 +26,7 @@ public class UI_TicketManager {
         public String ticketID, userID, userName;
         public int row, col;
         public String scheduleID, movieID, movieName, theaterID, theaterName;
-        public int thCapacity;
+        public String thCapacity;
         public float price;
         public Timestamp scheduleTime;
         public String status;
@@ -45,7 +45,7 @@ public class UI_TicketManager {
                 case 7: movieName = (String)value; break;
                 case 8: theaterID = (String)value; break;
                 case 9: theaterName = (String)value; break;
-                case 10: thCapacity = (Integer)value; break;
+                case 10: thCapacity = (String)value; break;  // NOTICE!!!
                 case 11: price = (Float)value; break;
                 case 12: scheduleTime = (Timestamp)value; break;
                 case 13: status = (String)value; break;
@@ -56,7 +56,7 @@ public class UI_TicketManager {
 
     private ArrayList<DBItem> dataList;
 
-    /* 初始化 */
+    /* 初始化与控件绑定 */
     public UI_TicketManager(DBAccess db) {
         this.db = db;
         dataList = new ArrayList<DBItem>();
@@ -113,7 +113,7 @@ public class UI_TicketManager {
                     tfRow.setText(String.valueOf(item.row));
                     tfCol.setText(String.valueOf(item.col));
                     tfScheduleTime.setText(item.scheduleTime.toString());
-                    tfThCapacity.setText(String.valueOf(item.thCapacity));
+                    tfThCapacity.setText(item.thCapacity);
                     tfPrice.setText(String.valueOf(item.price));
                 }
             }
@@ -122,9 +122,8 @@ public class UI_TicketManager {
     // 载入Schedule对应数据
     public void loadSchedule() throws SQLException {
         PreparedStatement pst = db.getConnection().prepareStatement("select scheduletime,movieid,theaterid from Schedule where scheduleid=?");
-        Object t = cmbScheduleID.getSelectedItem();
-        t = t==null?"":t; // avoid NullPointerException
-        pst.setString(1, t.toString());
+        // avoid NullPointerException
+        pst.setString(1, WinCtrl.avoidNullString(cmbScheduleID.getSelectedItem()).toString());
         ResultSet rs = pst.executeQuery();
         if(rs.next()) {
             tfScheduleTime.setText(rs.getTimestamp(1).toString());
@@ -149,9 +148,8 @@ public class UI_TicketManager {
     }
     public void loadTheater() throws SQLException {
         PreparedStatement pst = db.getConnection().prepareStatement("select capacity from theater where theaterid=?");
-        Object t = cmbTheater.getSelectedItem();
-        t = t==null?"":t; // avoid NullPointerException
-        pst.setString(1, t.toString().split("\\|", 2)[0]);
+        // avoid NullPointerException
+        pst.setString(1, WinCtrl.avoidNullString(cmbTheater.getSelectedItem()).toString().split("\\|", 2)[0]);
         ResultSet rs = pst.executeQuery();
         if(rs.next())
             tfThCapacity.setText(rs.getString(1));
@@ -171,9 +169,8 @@ public class UI_TicketManager {
     }
     public void loadMovie() throws SQLException {
         PreparedStatement pst = db.getConnection().prepareStatement("select price from movie where movieid=?");
-        Object t = cmbMovie.getSelectedItem();
-        t = t==null?"":t; // avoid NullPointerException
-        pst.setString(1, t.toString().split("\\|", 2)[0]);
+        // avoid NullPointerException
+        pst.setString(1, WinCtrl.avoidNullString(cmbMovie.getSelectedItem()).toString().split("\\|", 2)[0]);
         ResultSet rs = pst.executeQuery();
         if(rs.next())
             tfPrice.setText(String.valueOf(rs.getFloat(1)));
@@ -273,28 +270,29 @@ public class UI_TicketManager {
     }
 
     /* 事件处理 */
-    // 删除一项
-    public void deleteItem() {
-        int r = tbTicketList.getSelectedRow();
-        if(r<0) {
+    // 删除电影票
+    public void deleteTicket() {
+        int[] rl = tbTicketList.getSelectedRows();
+        if(rl.length==0) {
             JOptionPane.showMessageDialog(null, "请选择要删除的项", "错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
         DefaultTableModel dtm = (DefaultTableModel)tbTicketList.getModel();
         try {
-            PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where ticketID=?");
-            pstDel.setString(1, dataList.get(r).ticketID);
-            pstDel.executeUpdate();
-            pstDel.close();
+            PreparedStatement pst = db.getConnection().prepareStatement("delete from Ticket where ticketID=?");
+            for(int r : rl) {
+                pst.clearParameters();
+                pst.setString(1, dataList.get(r).ticketID);
+                pst.executeUpdate();
 
-            deleteUselessSchedule();
+                deleteUselessSchedule();
+            }
+            pst.close();
         } catch(SQLException e) {
             //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return;
         }
-        dtm.removeRow(r);
-        dataList.remove(r);
         loadData(); // 刷新
     }
     // 删除无用计划
@@ -305,7 +303,7 @@ public class UI_TicketManager {
     /*
         ---SAVE CODE---
     */
-    private void processTicket() throws SQLException, IllegalArgumentException {
+    private void processTicket(int row, int col, String ticketID) throws SQLException, IllegalArgumentException {
         PreparedStatement pst;
         int t;
         switch(cmbTkIDOperation.getSelectedIndex()) {
@@ -313,11 +311,11 @@ public class UI_TicketManager {
                 pst = db.getConnection().prepareStatement("update Ticket set UserID=?,row=?,col=?,scheduleID=?,status=? where ticketID=?");
                 t = cmbCustomer.getSelectedIndex();
                 pst.setString(1, t<1? null: cmbCustomer.getSelectedItem().toString().split("\\|", 2)[0]);
-                pst.setInt(2, Integer.valueOf(tfRow.getText()));
-                pst.setInt(3, Integer.valueOf(tfCol.getText()));
+                pst.setInt(2, row);
+                pst.setInt(3, col);
                 pst.setString(4, cmbScheduleID.getSelectedItem().toString());
-                pst.setString(5,  t<1? "未购": "已购");
-                pst.setString(6, cmbTicketID.getSelectedItem().toString());
+                pst.setString(5,  t<1? "未售": "已售");
+                pst.setString(6, ticketID);
                 pst.executeUpdate();
                 pst.close();
                 pst = db.getConnection().prepareStatement("update Movie set price=? where movieid=?");
@@ -328,13 +326,13 @@ public class UI_TicketManager {
                 break;
             case 1: // insert
                 pst = db.getConnection().prepareStatement("insert into Ticket values(?,?,?,?,?,?)");
-                pst.setString(1, cmbTicketID.getSelectedItem().toString());
+                pst.setString(1, ticketID);
                 t = cmbCustomer.getSelectedIndex();
                 pst.setString(2, t<1? null: cmbCustomer.getSelectedItem().toString().split("\\|", 2)[0]);
-                pst.setInt(3, Integer.valueOf(tfRow.getText()));
-                pst.setInt(4, Integer.valueOf(tfCol.getText()));
+                pst.setInt(3, row);
+                pst.setInt(4, col);
                 pst.setString(5, cmbScheduleID.getSelectedItem().toString());
-                pst.setString(6, t<1? "未购": "已购");
+                pst.setString(6, t<1? "未售": "已售");
                 pst.executeUpdate();
                 pst.close();
                 pst = db.getConnection().prepareStatement("update Movie set price=? where movieid=?");
@@ -343,6 +341,9 @@ public class UI_TicketManager {
                 pst.executeUpdate();
                 pst.close();
         }
+    }
+    private void processTicket() throws SQLException, IllegalArgumentException {
+        processTicket(Integer.valueOf(tfRow.getText()), Integer.valueOf(tfCol.getText()), cmbTicketID.getSelectedItem().toString());
     }
     private void processSchedule() throws SQLException, IllegalArgumentException {
         PreparedStatement pst;
@@ -376,14 +377,14 @@ public class UI_TicketManager {
             case 1: // update
                 // not support to change theater name
                 pst = db.getConnection().prepareStatement("update Theater set Capacity=? where TheaterID=?");
-                pst.setInt(1, Integer.valueOf(tfThCapacity.getText()));
+                pst.setString(1, tfThCapacity.getText());
                 pst.setString(2, t[0]);
                 pst.executeUpdate();
                 pst.close();
                 break;
             case 2: // insert
                 pst = db.getConnection().prepareStatement("insert into Theater values(?,?,?)");
-                pst.setInt(3, Integer.valueOf(tfThCapacity.getText()));
+                pst.setString(3, tfThCapacity.getText());
                 pst.setString(1, t[0]);
                 pst.setString(2, t[1]);
                 pst.executeUpdate();
@@ -391,15 +392,18 @@ public class UI_TicketManager {
                 break;
         }
     }
-    private boolean isTheaterFull() throws SQLException {
+    private boolean isTheaterFull() throws SQLException, IllegalArgumentException {
         PreparedStatement pst = db.getConnection().prepareStatement("select ticketID from ticket where scheduleid=?");
-        pst.setString(1, cmbTheater.getSelectedItem().toString());
+        pst.setString(1, cmbScheduleID.getSelectedItem().toString().split("\\|", 2)[0]);
         ResultSet rs = pst.executeQuery();
         int n = 0;
         while(rs.next()) ++n;
         rs.close();
         pst.close();
-        if(n+1>Integer.valueOf(tfThCapacity.getText()))
+        // maxRow x maxCol
+        String[] maxSeat = tfThCapacity.getText().toLowerCase().split("x", 2);
+        if(maxSeat.length!=2) throw new IllegalArgumentException();
+        if(n+1 > Integer.valueOf(maxSeat[0])*Integer.valueOf(maxSeat[1]))
             return true;
         else
             return false;
@@ -418,95 +422,78 @@ public class UI_TicketManager {
                     return;
             processTicket();
         } catch(IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, "场次/放映厅ID+名字输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "场次/放映厅ID+名字/放映厅规格输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(null, "电影票/计划/放映厅ID已存在，无法新建\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
             //e.printStackTrace();
         }
         loadData(); // 刷新
     }
-    // 批量添加电影票
-    /*public void addBatch() {
-        // 预处理新建表需求 //
-        String newTicketID = cmbTicketID.getSelectedItem().toString().trim(),
-            newScheduleID = cmbScheduleID.getSelectedItem().toString().trim();
-        String[] newTheater = cmbTheater.getSelectedItem().toString().trim().split("\\|", 2);
-        Connection ct = db.getConnection();
+
+    /*
+        ---BATCH CODE---
+    */
+    // 获取未使用的ticketID [code v2]
+    // 返回值：未使用的纯数字ticketID
+    private int getAvailableTicketID() throws SQLException {
+        ResultSet rs = db.queryDB("select ticketID from ticket order by ticketid asc");
+        int ret = 0; // start-id is 1
         try {
-            // 新放映厅
-            PreparedStatement pstCrTh;
-            if(ckbNewTheater.isSelected())
-                pstCrTh = ct.prepareStatement("insert into Theater values(?,?,?)");
-            else {
-                pstCrTh = ct.prepareStatement("update Theater set TheaterID=?, TheaterName=?, Capacity=? where TheaterID=?");
-                int i = tbTicketList.getSelectedRow();
-                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
-                pstCrTh.setString(4, dataList.get(i).theaterID); // 原剧院ID
-            }
-            pstCrTh.setString(1, newTheater[0]);
-            pstCrTh.setString(2, newTheater[1]);
-            pstCrTh.setInt(3, Integer.valueOf(tfThCapacity.getText())); // 容量
-            pstCrTh.executeUpdate();
-            pstCrTh.close();
-
-            // 新计划
-            PreparedStatement pstCrSch;
-            if(ckbNewSchedule.isSelected())
-                pstCrSch = ct.prepareStatement("insert into Schedule values(?,?,?,?)");
-            else {
-                pstCrSch = ct.prepareStatement("update Schedule set ScheduleID=?, ScheduleTime=?, MovieID=?, TheaterID=? where TheaterID=?");
-                int i = tbTicketList.getSelectedRow();
-                if(i==-1) throw new IndexOutOfBoundsException("请先在列表选择要修改的原项目");
-                pstCrSch.setString(5, dataList.get(i).scheduleID); // 原计划ID
-            }
-            pstCrSch.setString(1, newScheduleID);
-            pstCrSch.setTimestamp(2, Timestamp.valueOf(tfScheduleTime.getText().trim()));
-            pstCrSch.setString(3, cmbMovie.getSelectedItem().toString().trim().split("\\|", 2)[0]); // 电影ID
-            pstCrSch.setString(4, newTheater[0]);
-            pstCrSch.executeUpdate();
-            pstCrSch.close();
-
-            int rmax = Integer.parseInt(tfRow.getText().toString().trim()), cmax = Integer.parseInt(tfCol.getText().toString().trim());
-            int iTkID = Integer.parseInt(newTicketID); // 未使用过的电影票ID起始值
-            // 放映厅容量校验
-            PreparedStatement pstChkTk = ct.prepareStatement("select Ticket.TicketID from Ticket, Schedule where Ticket.ScheduleID=Schedule.ScheduleID and Ticket.ScheduleID=? and Schedule.TheaterID=?");
-            // 新电影票
-            PreparedStatement pstCrTk = ct.prepareStatement("insert into Ticket values(?,?,?,?,?,?)");
-            endfnc:
-            for(int i=1; i<=rmax; ++i) {
-                for(int j=1; j<=cmax; ++j) {
-                    // 放映厅容量校验
-                    pstChkTk.clearParameters();
-                    pstChkTk.setString(1, newTicketID);
-                    pstChkTk.setString(2, newTheater[0]);
-                    ResultSet rs = pstChkTk.executeQuery();
-                    int rc = 0;
-                    while(rs.next()) ++rc;
-                    rs.close();
-                    pstChkTk.close();
-                    if(rc+1>Integer.valueOf(tfThCapacity.getText().toString()))
-                        break endfnc;
-
-                    // 新电影票
-                    pstCrTk.clearParameters();
-                    pstCrTk.setString(1, String.valueOf(iTkID++));
-                    String t = cmbCustomer.getSelectedItem().toString().trim().split("\\|", 2)[0];
-                    pstCrTk.setString(2, t=="无"? null: t); // UserID
-                    pstCrTk.setInt(3, i);
-                    pstCrTk.setInt(4, j);
-                    pstCrTk.setString(5, newScheduleID);
-                    pstCrTk.setString(6, (ckbStatus.isSelected()? "已购": "未购"));
-                    pstCrTk.executeUpdate();
-                }
-            }
-            pstChkTk.close();
-            pstCrTk.close();
-        } catch(SQLException e) {
-            // JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            while(rs.next() && ++ret==Integer.parseInt(rs.getString(1)));
         } catch(IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, "场次输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
-        } finally {}
-    }*/
+            // 非数字ID跳过
+        }
+        db.releaseQuery();
+        return ret;
+    }
+    // 检查当前座位的电影票是否存在
+    // 返回值：0不存在 1存在，未售 2存在已售
+    private int ticketExist(int row, int col, String scheduleID) throws SQLException {
+        int ret = 0;
+        PreparedStatement pst = db.getConnection().prepareStatement("select status from ticket where row=? and col=? and scheduleid=?");
+        pst.setInt(1, row);
+        pst.setInt(2, col);
+        pst.setString(3, scheduleID);
+        ResultSet rs = pst.executeQuery();
+        if(rs.next())
+            if(rs.getString(1).equals("已售"))
+                ret = 2;
+            else // 未售
+                ret = 1;
+        rs.close();
+        pst.close();
+        return ret;
+    }
+    /*
+        ---BATCH CODE END---
+    */
+    // 批量填充电影票
+    public void batchFillTicket() {
+        try {
+            processTheater();
+            processSchedule();
+            String[] maxSeat = tfThCapacity.getText().toLowerCase().split("x", 2);
+            if(maxSeat.length!=2) throw new IllegalArgumentException();
+            int maxRow = Integer.valueOf(maxSeat[0]), maxCol = Integer.valueOf(maxSeat[1]);
+            // 购票人全部为null
+            cmbCustomer.setSelectedIndex(0);
+            // 新建电影票模式
+            cmbTkIDOperation.setSelectedIndex(1);
+            // 批量添加
+            for(int i=1; i<=maxRow; ++i)
+                for(int j=1; j<=maxCol; ++j)
+                    if(ticketExist(i, j, cmbScheduleID.getSelectedItem().toString())==0) {
+                        String ticketID = String.valueOf(getAvailableTicketID());
+                        if(ticketID.length()==1) ticketID = "0" + ticketID;
+                        processTicket(i, j, ticketID);
+                    }
+        } catch(IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, "场次/放映厅ID+名字/放映厅规格输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(null, "电影票/计划/放映厅ID已存在，无法新建\n\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        loadData(); // 刷新
+    }
 
 }

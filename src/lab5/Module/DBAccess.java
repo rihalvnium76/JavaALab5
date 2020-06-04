@@ -1,16 +1,17 @@
 /*
 Ticket
     TicketID(Primary Key)：票名：ID均为数字编号字符串
-    UserID：用户，未购票该值为0
+    UserID：用户，未售票该值为0
     Row(int)：行数
     Col(int)：列数
     ScheduleID：计划ID
-    Status: 购买状态：值可为“已购”或“未购”
+    Status: 购买状态：值可为“已售”或“未售”
     Ticket表要加上 UserID varchar(10) foreign key references Users(UserID)
 Theater
     TheaterID(Primary Key)：放映厅ID
     TheaterName：放映厅名
-    Capacity(int类型)：容量
+    Capacity(varchar(20)类型)：容量
+        值格式：最大行数x最大列数
 Movie
     MovieID(Primary Key)：电影ID
     MovieName：电影名
@@ -55,6 +56,7 @@ public class DBAccess {
         ct = DriverManager.getConnection(url,usr,pwd);
     }
     // 创建数据库Connection对象
+    // 使用默认配置连接
     public DBAccess() throws ClassNotFoundException, SQLException {
         this(DEFAULT_DB_URL, DEFAULT_DB_NAME, DEFAULT_DB_USER, DEFAULT_DB_PASSWORD);
     }

@@ -1,3 +1,5 @@
+--Version 2
+
 --创建数据库
 create database MovieDB on (
 	name=MovieDB,
@@ -30,7 +32,7 @@ create table Movie (
 create table Theater (
 	TheaterID varchar(6) primary key,
 	TheaterName varchar(20),
-	Capacity int
+	Capacity varchar(20) -- ROWxCOL
 )
 create table Schedule (
 	ScheduleID varchar(10) primary key,
@@ -44,5 +46,5 @@ create table Ticket (
 	Row int,
 	Col int,
 	ScheduleID varchar(10) foreign key references Schedule(ScheduleID),
-	Status char(4) check(Status='已购' or Status='未购')
+	Status char(4) check(Status='已售' or Status='未售')
 )

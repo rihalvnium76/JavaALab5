@@ -1,3 +1,5 @@
+--Version 2
+
 --写入数据
 use MovieDB
 go
@@ -38,10 +40,11 @@ insert into Movie values (
 /*
 	写入放映厅
 */
-insert into Theater values ('01','天空厅',100)
-insert into Theater values ('02','海洋厅',100)
-insert into Theater values ('03','茉莉厅',100)
-insert into Theater values ('04','远山厅',200)
+insert into Theater values ('01','天空厅','5x5')
+insert into Theater values ('02','海洋厅','5x5')
+insert into Theater values ('03','茉莉厅','5x5')
+insert into Theater values ('04','远山厅','4x4')
+insert into Theater values ('05','浅湖厅','2x2')
 
 --模板
 /*
@@ -75,15 +78,15 @@ insert into Users values ('2','admin','10086','管理员')
 /*
 	写入电影票
 */
-insert into Ticket values ('01','0',1,1,'01','未购')
-insert into Ticket values ('02','0',1,1,'01','已购')
-insert into Ticket values ('03',NULL,2,2,'02','未购')
-insert into Ticket values ('04',NULL,2,4,'03','未购')
-insert into Ticket values ('05','1',2,2,'04','已购')
-insert into Ticket values ('06',NULL,2,4,'04','未购')
-insert into Ticket values ('06',NULL,2,6,'04','未购')
+insert into Ticket values ('01','0',1,1,'01','未售')
+insert into Ticket values ('02','0',1,1,'01','已售')
+insert into Ticket values ('03',NULL,2,2,'02','未售')
+insert into Ticket values ('04',NULL,2,4,'03','未售')
+insert into Ticket values ('05','1',2,2,'04','已售')
+insert into Ticket values ('06',NULL,2,4,'04','未售')
+insert into Ticket values ('07',NULL,2,6,'04','未售')
 
 --模板
 /*
-insert into Ticket values ('票ID','用户ID',行,列,'计划ID','未购')
+insert into Ticket values ('票ID','用户ID',行,列,'计划ID','未售')
 */

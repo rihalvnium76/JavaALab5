@@ -108,9 +108,10 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
-        cmbTkIDOperation = new javax.swing.JComboBox<String>();
-        cmbSchIDOperation = new javax.swing.JComboBox<String>();
-        cmbThOperation = new javax.swing.JComboBox<String>();
+        cmbTkIDOperation = new javax.swing.JComboBox<>();
+        cmbSchIDOperation = new javax.swing.JComboBox<>();
+        cmbThOperation = new javax.swing.JComboBox<>();
+        btnBatchFill = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbTicketList = new javax.swing.JTable();
@@ -200,9 +201,10 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        lbThCapacity.setText("放映厅容量");
+        lbThCapacity.setText("放映厅规格");
 
         tfThCapacity.setEditable(false);
+        tfThCapacity.setToolTipText("格式：<最大行数>x<最大列数>");
         tfThCapacity.setEnabled(false);
 
         btnSave.setText("保存");
@@ -223,11 +225,6 @@ public class frmManager extends javax.swing.JFrame {
                 btnDeleteMouseClicked(evt);
             }
         });
-        btnDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteActionPerformed(evt);
-            }
-        });
 
         btnReload.setText("刷新列表");
         btnReload.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -242,7 +239,7 @@ public class frmManager extends javax.swing.JFrame {
         jTextArea1.setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText("说明：\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）");
+        jTextArea1.setText("说明：\n新建：勾上后将会在相应的数据库表中添加新的一项，ID需要是数据库没有的ID，否则会添加失败\n（特别说明：新建放映厅填写的信息的格式为：\n  放映厅ID|放映厅名 ）\n放映厅规格：格式：<最大行数>x<最大列数>\n批量填充：在指定放映计划下，会根据当前放映厅规格自动填充空票，已有票不受影响");
         jTextArea1.setBorder(null);
         jScrollPane2.setViewportView(jTextArea1);
 
@@ -272,6 +269,13 @@ public class frmManager extends javax.swing.JFrame {
         cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbThOperationItemStateChanged(evt);
+            }
+        });
+
+        btnBatchFill.setText("批量填充");
+        btnBatchFill.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBatchFillMouseClicked(evt);
             }
         });
 
@@ -321,8 +325,8 @@ public class frmManager extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(lbThCapacity)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(tfThCapacity, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -331,7 +335,9 @@ public class frmManager extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReload)))
+                        .addComponent(btnReload)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBatchFill)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -380,7 +386,8 @@ public class frmManager extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnDelete)
-                    .addComponent(btnReload))
+                    .addComponent(btnReload)
+                    .addComponent(btnBatchFill))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2))
         );
@@ -410,8 +417,11 @@ public class frmManager extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tbTicketList.setColumnSelectionAllowed(true);
+        tbTicketList.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tbTicketList.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbTicketList);
+        tbTicketList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -598,9 +608,11 @@ public class frmManager extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveMouseClicked
 
     private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
-        // 删除
-        ticketManager.deleteItem();
-        ticketManager.loadData();
+        // 电影票管理界面的删除订单
+        if(JOptionPane.showConfirmDialog(null, "确定删除所选记录？", "警告", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)==JOptionPane.YES_OPTION) {
+            ticketManager.deleteTicket();
+            ticketManager.loadData();
+        }
     }//GEN-LAST:event_btnDeleteMouseClicked
 
     private void btnReloadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReloadMouseClicked
@@ -702,10 +714,6 @@ public class frmManager extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cmbTheaterItemStateChanged
 
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnDeleteActionPerformed
-
     private void DeleteTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteTicketActionPerformed
         //删除订单
         DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
@@ -802,6 +810,11 @@ public class frmManager extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_UsersListMouseClicked
 
+    private void btnBatchFillMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBatchFillMouseClicked
+        // 批量填充
+        ticketManager.batchFillTicket();
+    }//GEN-LAST:event_btnBatchFillMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -821,6 +834,7 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JButton ResetPassword;
     private javax.swing.JTable TicketList;
     private javax.swing.JTable UsersList;
+    private javax.swing.JButton btnBatchFill;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnReload;
     private javax.swing.JButton btnSave;
