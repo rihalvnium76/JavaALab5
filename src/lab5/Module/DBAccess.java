@@ -1,7 +1,7 @@
 /*
 Ticket
     TicketID(Primary Key)：票名：ID均为数字编号字符串
-    UserID：用户，未售票该值为0
+    UserID：用户，未售票该值为NULL
     Row(int)：行数
     Col(int)：列数
     ScheduleID：计划ID
