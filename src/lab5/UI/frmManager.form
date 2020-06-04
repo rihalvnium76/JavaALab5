@@ -722,7 +722,6 @@
                     <Property name="text" type="java.lang.String" value="&#x5220;&#x9664;&#x8d26;&#x6237;"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="DeleteAccountMouseClicked"/>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DeleteAccountActionPerformed"/>
                   </Events>
                 </Component>

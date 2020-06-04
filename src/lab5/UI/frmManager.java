@@ -84,21 +84,21 @@ public class frmManager extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        cmbTicketID = new javax.swing.JComboBox<String>();
-        cmbCustomer = new javax.swing.JComboBox<String>();
+        cmbTicketID = new javax.swing.JComboBox<>();
+        cmbCustomer = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         tfRow = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         tfCol = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmbScheduleID = new javax.swing.JComboBox<String>();
+        cmbScheduleID = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         tfScheduleTime = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        cmbTheater = new javax.swing.JComboBox<String>();
-        cmbMovie = new javax.swing.JComboBox<String>();
+        cmbTheater = new javax.swing.JComboBox<>();
+        cmbMovie = new javax.swing.JComboBox<>();
         lbThCapacity = new javax.swing.JLabel();
         tfThCapacity = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
@@ -156,7 +156,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel2.setText("购票人");
 
-        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "无" }));
+        cmbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "无" }));
         cmbCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmbCustomerActionPerformed(evt);
@@ -245,7 +245,7 @@ public class frmManager extends javax.swing.JFrame {
 
         jLabel10.setText("价格");
 
-        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "修改", "新建" }));
+        cmbTkIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "修改", "新建" }));
         cmbTkIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbTkIDOperationItemStateChanged(evt);
@@ -257,14 +257,14 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
+        cmbSchIDOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
         cmbSchIDOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmbSchIDOperationItemStateChanged(evt);
             }
         });
 
-        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "仅选择", "修改", "新建" }));
+        cmbThOperation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "仅选择", "修改", "新建" }));
         cmbThOperation.setEnabled(false);
         cmbThOperation.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -486,11 +486,6 @@ public class frmManager extends javax.swing.JFrame {
         UsersList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         DeleteAccount.setText("删除账户");
-        DeleteAccount.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                DeleteAccountMouseClicked(evt);
-            }
-        });
         DeleteAccount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DeleteAccountActionPerformed(evt);
@@ -765,10 +760,6 @@ public class frmManager extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSaveActionPerformed
-
-    private void DeleteAccountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DeleteAccountMouseClicked
-        
-    }//GEN-LAST:event_DeleteAccountMouseClicked
 
     private void cmbCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCustomerActionPerformed
         // TODO add your handling code here:
