@@ -22,7 +22,9 @@ public class frmMovieInfo extends javax.swing.JFrame {
         initComponents();
         try {
             DBAccess db = new DBAccess();
-            PreparedStatement pst = db.getConnection().prepareStatement("select moviename director mainactors moviePoster movietype price movieinfo from movie where movieid=?");
+            System.out.println("--START");
+            WinCtrl.currentSelectedMovieID = "1";
+            PreparedStatement pst = db.getConnection().prepareStatement("select moviename,director,mainactors,moviePoster,movietype,price,movieinfo from movie where movieid=?");
             pst.setString(1, WinCtrl.currentSelectedMovieID);
             ResultSet rs = pst.executeQuery();
             if(rs.next()){
@@ -63,6 +65,11 @@ public class frmMovieInfo extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jButton1.setText("返回");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -116,13 +123,19 @@ public class frmMovieInfo extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         //返回按钮
-        frmUser.main(null);
         this.dispose(); 
     }//GEN-LAST:event_jButton1ActionPerformed
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {                                   
-        // 窗口关闭
-        destroy();
-    }
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        try {
+            db.close();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */
