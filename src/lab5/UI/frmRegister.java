@@ -73,8 +73,12 @@ public class frmRegister extends javax.swing.JFrame {
 
     // 销毁窗体
     void destroy() {
-        try { db.close(); }
-        catch(SQLException e) { e.printStackTrace(); }
+        try {
+            db.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace(); 
+        }
         this.dispose();
     }
 
@@ -126,6 +130,18 @@ public class frmRegister extends javax.swing.JFrame {
         jLabel3.setText("密码：");
 
         jLabel4.setText("确认密码：");
+
+        pfPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pfPasswordActionPerformed(evt);
+            }
+        });
+
+        pfConfirmPwd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pfConfirmPwdActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -215,6 +231,14 @@ public class frmRegister extends javax.swing.JFrame {
         } else
             JOptionPane.showMessageDialog(this, "密码长度要大于3位而小于20位！", "错误", JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_btnRegisterMouseClicked
+
+    private void pfPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pfPasswordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pfPasswordActionPerformed
+
+    private void pfConfirmPwdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pfConfirmPwdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_pfConfirmPwdActionPerformed
 
     /**
      * @param args the command line arguments

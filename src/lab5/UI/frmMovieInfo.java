@@ -4,15 +4,47 @@
  * and open the template in the editor.
  */
 package lab5.UI;
+import java.io.IOException;
+import lab5.Module.*;
+import java.sql.*;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
 
 /* [5] 电影详细信息显示 */
 public class frmMovieInfo extends javax.swing.JFrame {
-
+    private DBAccess db;
     /**
      * Creates new form frmMovieInfo
      */
     public frmMovieInfo() {
         initComponents();
+        try {
+            DBAccess db = new DBAccess();
+            PreparedStatement pst = db.getConnection().prepareStatement("select moviename director mainactors moviePoster movietype price movieinfo from movie where movieid=?");
+            pst.setString(1, WinCtrl.currentSelectedMovieID);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+                tainfor.setText("电影名:"+rs.getString(1)+"\n导演:"+rs.getString(2)+"\n演员："+rs.getString(3)+"\n电影类型："+rs.getString(5)+"\n价格："+rs.getFloat(6)+"\n电影介绍："+rs.getString(7));
+                WinCtrl.setLabelMoviePoster(lbposter, rs.getString(4));
+            }
+            pst.close();
+            rs.close();
+        } catch(SQLException | ClassNotFoundException | IOException e) {
+            Logger.getLogger(frmMovieInfo.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    void destroy() {
+        try { 
+            db.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace(); 
+        }
+        this.dispose();
     }
 
     /**
@@ -24,21 +56,28 @@ public class frmMovieInfo extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
+        lbposter = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tainfor = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jScrollPane1.setViewportView(jTextPane1);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         jButton1.setText("返回");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        lbposter.setText("jLabel1");
+
+        tainfor.setColumns(20);
+        tainfor.setRows(5);
+        jScrollPane1.setViewportView(tainfor);
+
+        jLabel1.setText("影片详细信息");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -47,28 +86,43 @@ public class frmMovieInfo extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                            .addComponent(lbposter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                        .addComponent(lbposter, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        //返回按钮
+        frmUser.main(null);
+        this.dispose(); 
+    }//GEN-LAST:event_jButton1ActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {                                   
+        // 窗口关闭
+        destroy();
+    }
     /**
      * @param args the command line arguments
      */
@@ -106,9 +160,9 @@ public class frmMovieInfo extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JLabel lbposter;
+    private javax.swing.JTextArea tainfor;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,7 +1,7 @@
 --创建数据库
 create database MovieDB on (
 	name=MovieDB,
-	filename='D:\SQ\MovieDB.mdf', --自己看情况改
+	filename='E:\SQL\MovieDB.mdf', --自己看情况改
 	size=10,
 	maxsize=100,
 	filegrowth=1

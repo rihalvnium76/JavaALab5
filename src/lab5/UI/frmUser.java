@@ -325,6 +325,11 @@ public class frmUser extends javax.swing.JFrame {
                 btnDetailMouseClicked(evt);
             }
         });
+        btnDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetailActionPerformed(evt);
+            }
+        });
 
         taMovieInfo.setEditable(false);
         taMovieInfo.setBackground(new java.awt.Color(240, 240, 240));
@@ -351,8 +356,9 @@ public class frmUser extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnDetail))
             .addComponent(lbPoster, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -568,6 +574,10 @@ public class frmUser extends javax.swing.JFrame {
         WinCtrl.isResetPassword = false;
         frmChangePwd.main(null);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDetailActionPerformed
 
     /**
      * @param args the command line arguments

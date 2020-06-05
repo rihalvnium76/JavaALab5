@@ -130,8 +130,14 @@
     <Component class="javax.swing.JTextField" name="tfUser">
     </Component>
     <Component class="javax.swing.JPasswordField" name="pfPassword">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pfPasswordActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JPasswordField" name="pfConfirmPwd">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pfConfirmPwdActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

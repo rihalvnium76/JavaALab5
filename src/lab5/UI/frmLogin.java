@@ -25,6 +25,15 @@ public class frmLogin extends javax.swing.JFrame {
         }
         currentTryCount = 0;
     }
+    void destroy() {
+        try { 
+            db.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace(); 
+        }
+        this.dispose();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -159,12 +168,7 @@ public class frmLogin extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // 窗口关闭
-        try {
-            db.close();
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        this.dispose();
+        destroy();
     }//GEN-LAST:event_formWindowClosing
 
     /**
