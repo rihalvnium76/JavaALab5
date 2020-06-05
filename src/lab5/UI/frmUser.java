@@ -213,10 +213,10 @@ public class frmUser extends javax.swing.JFrame {
         PreparedStatement pst = db.getConnection().prepareStatement("update Ticket set userid=?, status=? where ticketid=?");
         for(int index : rows) {
             DBItem item = dataList.get(index);
-            if(item.status.equals("未购")) {
+            if(item.status.equals("未售")) {
                 pst.clearParameters();
                 pst.setString(1, findUserIDByName(WinCtrl.currentLoginUser)); // userid
-                pst.setString(2, "已购");
+                pst.setString(2, "已售");
                 pst.setString(3, item.ticketID);
                 pst.executeUpdate();
             }

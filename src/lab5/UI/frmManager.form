@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.6" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.JTextField" name="jTextField1">
       <Properties>
@@ -173,8 +173,8 @@
                               <Group type="102" attributes="0">
                                   <Component id="lbThCapacity" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfThCapacity" min="-2" pref="57" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="tfThCapacity" min="-2" pref="105" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfPrice" min="-2" pref="57" max="-2" attributes="0"/>
@@ -185,6 +185,8 @@
                                   <Component id="btnDelete" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btnReload" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnBatchFill" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -246,6 +248,7 @@
                               <Component id="btnSave" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnReload" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnBatchFill" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jScrollPane2" max="32767" attributes="0"/>
@@ -378,12 +381,13 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="lbThCapacity">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="&#x653e;&#x6620;&#x5385;&#x5bb9;&#x91cf;"/>
+                    <Property name="text" type="java.lang.String" value="&#x653e;&#x6620;&#x5385;&#x89c4;&#x683c;"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="tfThCapacity">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="toolTipText" type="java.lang.String" value="&#x683c;&#x5f0f;&#xff1a;&lt;&#x6700;&#x5927;&#x884c;&#x6570;&gt;x&lt;&#x6700;&#x5927;&#x5217;&#x6570;&gt;"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
@@ -402,7 +406,6 @@
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnDeleteMouseClicked"/>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnReload">
@@ -432,7 +435,7 @@
                         </Property>
                         <Property name="lineWrap" type="boolean" value="true"/>
                         <Property name="rows" type="int" value="5"/>
-                        <Property name="text" type="java.lang.String" value="&#x8bf4;&#x660e;&#xff1a;&#xa;&#x65b0;&#x5efa;&#xff1a;&#x52fe;&#x4e0a;&#x540e;&#x5c06;&#x4f1a;&#x5728;&#x76f8;&#x5e94;&#x7684;&#x6570;&#x636e;&#x5e93;&#x8868;&#x4e2d;&#x6dfb;&#x52a0;&#x65b0;&#x7684;&#x4e00;&#x9879;&#xff0c;ID&#x9700;&#x8981;&#x662f;&#x6570;&#x636e;&#x5e93;&#x6ca1;&#x6709;&#x7684;ID&#xff0c;&#x5426;&#x5219;&#x4f1a;&#x6dfb;&#x52a0;&#x5931;&#x8d25;&#xa;&#xff08;&#x7279;&#x522b;&#x8bf4;&#x660e;&#xff1a;&#x65b0;&#x5efa;&#x653e;&#x6620;&#x5385;&#x586b;&#x5199;&#x7684;&#x4fe1;&#x606f;&#x7684;&#x683c;&#x5f0f;&#x4e3a;&#xff1a;&#xa;  &#x653e;&#x6620;&#x5385;ID|&#x653e;&#x6620;&#x5385;&#x540d; &#xff09;"/>
+                        <Property name="text" type="java.lang.String" value="&#x8bf4;&#x660e;&#xff1a;&#xa;&#x65b0;&#x5efa;&#xff1a;&#x52fe;&#x4e0a;&#x540e;&#x5c06;&#x4f1a;&#x5728;&#x76f8;&#x5e94;&#x7684;&#x6570;&#x636e;&#x5e93;&#x8868;&#x4e2d;&#x6dfb;&#x52a0;&#x65b0;&#x7684;&#x4e00;&#x9879;&#xff0c;ID&#x9700;&#x8981;&#x662f;&#x6570;&#x636e;&#x5e93;&#x6ca1;&#x6709;&#x7684;ID&#xff0c;&#x5426;&#x5219;&#x4f1a;&#x6dfb;&#x52a0;&#x5931;&#x8d25;&#xa;&#xff08;&#x7279;&#x522b;&#x8bf4;&#x660e;&#xff1a;&#x65b0;&#x5efa;&#x653e;&#x6620;&#x5385;&#x586b;&#x5199;&#x7684;&#x4fe1;&#x606f;&#x7684;&#x683c;&#x5f0f;&#x4e3a;&#xff1a;&#xa;  &#x653e;&#x6620;&#x5385;ID|&#x653e;&#x6620;&#x5385;&#x540d; &#xff09;&#xa;&#x653e;&#x6620;&#x5385;&#x89c4;&#x683c;&#xff1a;&#x683c;&#x5f0f;&#xff1a;&lt;&#x6700;&#x5927;&#x884c;&#x6570;&gt;x&lt;&#x6700;&#x5927;&#x5217;&#x6570;&gt;&#xa;&#x6279;&#x91cf;&#x586b;&#x5145;&#xff1a;&#x5728;&#x6307;&#x5b9a;&#x653e;&#x6620;&#x8ba1;&#x5212;&#x4e0b;&#xff0c;&#x4f1a;&#x6839;&#x636e;&#x5f53;&#x524d;&#x653e;&#x6620;&#x5385;&#x89c4;&#x683c;&#x81ea;&#x52a8;&#x586b;&#x5145;&#x7a7a;&#x7968;&#xff0c;&#x5df2;&#x6709;&#x7968;&#x4e0d;&#x53d7;&#x5f71;&#x54cd;"/>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="null"/>
                         </Property>
@@ -499,6 +502,14 @@
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
                 </Component>
+                <Component class="javax.swing.JButton" name="btnBatchFill">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="&#x6279;&#x91cf;&#x586b;&#x5145;"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnBatchFillMouseClicked"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel6">
@@ -544,7 +555,7 @@
                           </Table>
                         </Property>
                         <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                          <TableColumnModel selectionModel="0">
+                          <TableColumnModel selectionModel="3">
                             <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                               <Title/>
                               <Editor/>
@@ -581,6 +592,10 @@
                               <Renderer/>
                             </Column>
                           </TableColumnModel>
+                        </Property>
+                        <Property name="columnSelectionAllowed" type="boolean" value="true"/>
+                        <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
+                          <JTableSelectionModel selectionMode="2"/>
                         </Property>
                         <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                           <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
