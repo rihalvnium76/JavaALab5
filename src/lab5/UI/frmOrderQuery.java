@@ -22,6 +22,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
      */
     public frmOrderQuery() {
         initComponents();
+        this.setTitle("个人订单 - 用户：" + WinCtrl.currentLoginUser);
         try {
             db = new DBAccess();
         } catch(SQLException|ClassNotFoundException e) {

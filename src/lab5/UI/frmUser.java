@@ -9,8 +9,14 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
+import java.awt.*;
+
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -24,8 +30,9 @@ public class frmUser extends javax.swing.JFrame {
         public Timestamp scheduleTime;
         public int row, col;
         public String theaterName;
+        public float price;
 
-        public static final int MAX_INDEX = 7;
+        public static final int MAX_INDEX = 8;
 
         public void setValueByIndex(int index, Object value) throws IndexOutOfBoundsException {
             switch(index) {
@@ -37,14 +44,18 @@ public class frmUser extends javax.swing.JFrame {
                 case 5: row = (Integer)value; break;
                 case 6: col = (Integer)value; break;
                 case 7: theaterName = (String)value; break;
+                case 8: price = (Float)value; break;
                 default: throw new IndexOutOfBoundsException("DBItem无效索引: "+index);
             }
         }
     }
-    ArrayList<DBItem> dataList;
+    private ArrayList<DBItem> dataList;
+    private int[][] seatStatus;
+    private ColorCellRenderer colorCellRenderer;
 
     public frmUser() {
         initComponents();
+        this.setTitle("个人购票大厅 - 用户：" + WinCtrl.currentLoginUser);
         // 初始化
         dataList = new ArrayList<DBItem>();
         try {
@@ -57,6 +68,13 @@ public class frmUser extends javax.swing.JFrame {
             e.printStackTrace();
             System.exit(1); // 退出
         } catch(InterruptedException e) {}
+
+        colorCellRenderer = new ColorCellRenderer();
+        // 去掉表头
+        tbMovieList.getTableHeader().setVisible(false);
+        DefaultTableCellRenderer tbHeadRdr = new DefaultTableCellRenderer();
+        tbHeadRdr.setPreferredSize(new Dimension(0, 0));
+        tbMovieList.getTableHeader().setDefaultRenderer(tbHeadRdr);
     }
 
     private class LoadMovieThread extends Thread {
@@ -67,6 +85,29 @@ public class frmUser extends javax.swing.JFrame {
             } catch(SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+    private class ColorCellRenderer extends DefaultTableCellRenderer {
+        public static final int
+            TICKET_INVALID = 0,
+            TICKET_SOLD = 1,
+            TICKET_UNSOLD = 2;
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+            JLabel lb = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+            try {
+                // 设置单元格背景颜色
+                switch(seatStatus[row][col]) {
+                    case TICKET_INVALID: lb.setBackground(Color.GRAY); break; // 不存在的座位
+                    case TICKET_SOLD: lb.setBackground(Color.RED); break; // 已售
+                    case TICKET_UNSOLD: lb.setBackground(Color.GREEN); break; // 未售
+                }
+            } catch(IllegalArgumentException | NullPointerException e) {
+                System.out.println("[W]ColorCellRdr: "+e.toString());
+            }
+
+            return lb;
         }
     }
 
@@ -94,8 +135,7 @@ public class frmUser extends javax.swing.JFrame {
         pst.close();
     }
     void loadSchedule(DefaultMutableTreeNode movieNode, String movieID) throws SQLException {
-        PreparedStatement pst = db.getConnection().prepareStatement("select theater.theatername,schedule.scheduletime from schedule,theater,ticket where schedule.theaterid=theater.theaterid and schedule.movieid=? and ticket.scheduleid=schedule.scheduleid");
-        // ticket.scheduleid=schedule.scheduleid : 过滤没有实际安排的计划
+        PreparedStatement pst = db.getConnection().prepareStatement("select theater.theatername,schedule.scheduletime from schedule,theater where schedule.theaterid=theater.theaterid and movieid=?");
         pst.setString(1, movieID);
         ResultSet rs = pst.executeQuery();
         while(rs.next())
@@ -108,22 +148,25 @@ public class frmUser extends javax.swing.JFrame {
 
     class LoadDataToTable {
         private String movieName, theaterName, scheduleTime;
+        private boolean scheduleExist;
 
-        public LoadDataToTable(String movieName) throws SQLException {
+        public LoadDataToTable(String movieName) throws SQLException, IllegalArgumentException {
             this(movieName, null, null);
         }
-        public LoadDataToTable(String movieName, String theaterName, String scheduleTime) throws SQLException {
+        public LoadDataToTable(String movieName, String theaterName, String scheduleTime) throws SQLException, IllegalArgumentException {
             this.movieName = movieName;
             this.theaterName = theaterName;
             this.scheduleTime = scheduleTime;
 
+            scheduleExist = theaterName!=null && scheduleTime!=null;
+
             writeArrayList();
-            writeTableFromArray();
+            if(setTableSize())
+                writeTableFromArray();
         }
 
         private void writeArrayList() throws SQLException {
-            boolean scheduleExist = theaterName!=null && scheduleTime!=null;
-            PreparedStatement pst = db.getConnection().prepareStatement("select ticket.ticketid,movie.movieid,movie.moviename,ticket.status,schedule.scheduletime,ticket.row,ticket.col,theater.theaterName from ticket,schedule,movie,theater where ticket.scheduleid=schedule.scheduleid and schedule.movieid=movie.movieid and schedule.theaterid=theater.theaterid and movie.moviename like ?" + (scheduleExist? " and theater.theatername like ? and schedule.scheduletime=?": ""));
+            PreparedStatement pst = db.getConnection().prepareStatement("select ticket.ticketid,movie.movieid,movie.moviename,ticket.status,schedule.scheduletime,ticket.row,ticket.col,theater.theaterName,movie.price from ticket,schedule,movie,theater where ticket.scheduleid=schedule.scheduleid and schedule.movieid=movie.movieid and schedule.theaterid=theater.theaterid and movie.moviename like ?" + (scheduleExist? " and theater.theatername like ? and schedule.scheduletime=?": ""));
             pst.setString(1, "%" + movieName + "%");
             if(scheduleExist) {
                 pst.setString(2, theaterName);
@@ -141,20 +184,51 @@ public class frmUser extends javax.swing.JFrame {
         }
         private void writeTableFromArray() throws SQLException {
             DefaultTableModel model = (DefaultTableModel)tbMovieList.getModel();
-            model.setRowCount(0); // 清空table
-            for(DBItem d : dataList)
-                model.addRow(new Object[] {
-                    d.movieName,
-                    d.theaterName,
-                    d.scheduleTime.toString(),
-                    d.row + "-" + d.col,
-                    d.status
-                });
+            int rc = model.getRowCount(), cc = model.getColumnCount();
+            for(DBItem d : dataList) {
+                int r = d.row - 1, c = d.col - 1; // 座位号从1起
+                if(r>=0 && r<rc && c>=0 && c<cc)
+                    seatStatus[r][c] = d.status.equals("已售")? ColorCellRenderer.TICKET_SOLD: ColorCellRenderer.TICKET_UNSOLD;
+                //System.out.println("[D]wrTb: r= "+r+"; c= "+c+"; sS= "+seatStatus[r][c]+"; status= "+d.status);
+            }
+        }
+
+        private boolean setTableSize() throws SQLException, IllegalArgumentException {
+            DefaultTableModel dtm = (DefaultTableModel)tbMovieList.getModel();
+            // 重置表
+            dtm.setRowCount(0);
+            dtm.setColumnCount(0);
+            if(!scheduleExist) return false; // 未知放映厅则返回
+            // 获取放映厅规格
+            PreparedStatement pst  = db.getConnection().prepareStatement("select capacity from theater where theatername=?");
+            pst.setString(1, theaterName);
+            ResultSet rs = pst.executeQuery();
+            int r, c; // 行 列
+            if(rs.next()) {
+                String[] s = rs.getString(1).split("x", 2);
+                if(s.length!=2) throw new IllegalArgumentException();
+                r = Integer.parseInt(s[0]);
+                c = Integer.parseInt(s[1]);
+                dtm.setRowCount(r);
+                dtm.setColumnCount(c);
+            } else return false; // 未知放映厅则返回
+            // 设置单元格渲染器
+            Enumeration<TableColumn> e = tbMovieList.getColumnModel().getColumns();
+            while(e.hasMoreElements())
+                e.nextElement().setCellRenderer(colorCellRenderer);
+            // 填充默认数据
+            seatStatus = new int[r][c];
+            for(int i=0; i<r; ++i)
+                for(int j=0; j<c; ++j) {
+                    seatStatus[i][j] = ColorCellRenderer.TICKET_INVALID;
+                    dtm.setValueAt((i+1) + "-" + (j+1), i, j);
+                }
+            return true;
         }
     }
     // 根据Tree选择添加数据到Table
     // 返回值：电影名
-    String loadDataToTable() throws SQLException {
+    String loadDataToTable() throws SQLException, IllegalArgumentException {
         LoadDataToTable loadData;
         DefaultMutableTreeNode selNode = WinCtrl.getSelectedTreeNode(treeNavi);
         String nodeStr = (String)selNode.getUserObject();
@@ -205,23 +279,36 @@ public class frmUser extends javax.swing.JFrame {
     }
 
     // 电影票订票
-    void bookTicket() throws SQLException {
-        int[] rows = tbMovieList.getSelectedRows();
-        if(rows.length==0) return;
+    void bookTicket() throws SQLException, IllegalArgumentException {
+        // 根据选中项的Index生成座位
+        int r = tbMovieList.getSelectedRow() + 1, c = tbMovieList.getSelectedColumn() + 1;
+        if(r==0 || c==0) return;
+        DBItem item = null;
+        for(DBItem d : dataList)
+            if(d.row==r && d.col==c) // find seat
+                item = d;
+        if(item==null) throw new IllegalArgumentException("未知座位: " + r + "+" + c);
 
-        // index(rows)->ArrayList->ticketID->Status
+        // index->ArrayList->ticketID->Status
         PreparedStatement pst = db.getConnection().prepareStatement("update Ticket set userid=?, status=? where ticketid=?");
-        for(int index : rows) {
-            DBItem item = dataList.get(index);
-            if(item.status.equals("未售")) {
-                pst.clearParameters();
-                pst.setString(1, findUserIDByName(WinCtrl.currentLoginUser)); // userid
-                pst.setString(2, "已售");
-                pst.setString(3, item.ticketID);
-                pst.executeUpdate();
-            }
+        if(item.status.equals("未售")) {
+            pst.setString(1, findUserIDByName(WinCtrl.currentLoginUser)); // userid
+            pst.setString(2, "已售");
+            pst.setString(3, item.ticketID);
+            pst.executeUpdate();
         }
         pst.close();
+    }
+    // 询问购票
+    boolean askTicket() {
+        if(dataList.isEmpty())
+            return false;
+        else {
+            if(JOptionPane.showConfirmDialog(this, "确定购买电影票？\n总计：" + String.format("%.2f元", dataList.get(0).price), "购买", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+                return true;
+            else
+                return false;
+        }
     }
 
     // =========== CUSTOM CODE END =========== //
@@ -251,6 +338,7 @@ public class frmUser extends javax.swing.JFrame {
         tbMovieList = new javax.swing.JTable();
         btnBook = new javax.swing.JButton();
         btnCancelSel = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -325,11 +413,6 @@ public class frmUser extends javax.swing.JFrame {
                 btnDetailMouseClicked(evt);
             }
         });
-        btnDetail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDetailActionPerformed(evt);
-            }
-        });
 
         taMovieInfo.setEditable(false);
         taMovieInfo.setBackground(new java.awt.Color(240, 240, 240));
@@ -373,7 +456,7 @@ public class frmUser extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(treeNavi);
 
-        tbMovieList.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
+        tbMovieList.setFont(new java.awt.Font("宋体", 0, 20)); // NOI18N
         tbMovieList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -397,8 +480,11 @@ public class frmUser extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tbMovieList.setColumnSelectionAllowed(true);
+        tbMovieList.setRowHeight(22);
         tbMovieList.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tbMovieList);
+        tbMovieList.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         btnBook.setText("订票");
         btnBook.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -413,6 +499,8 @@ public class frmUser extends javax.swing.JFrame {
                 btnCancelSelMouseClicked(evt);
             }
         });
+
+        jLabel1.setText("灰色:不可用 | 绿色:未售 | 红色:已售 | 单选");
 
         jMenu1.setText("系统");
 
@@ -459,12 +547,13 @@ public class frmUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnBook)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelSel))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -476,7 +565,8 @@ public class frmUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBook)
-                    .addComponent(btnCancelSel))
+                    .addComponent(btnCancelSel)
+                    .addComponent(jLabel1))
                 .addGap(2, 2, 2))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -519,9 +609,9 @@ public class frmUser extends javax.swing.JFrame {
 
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         // 详细信息
-        int i = tbMovieList.getSelectedRow();
-        if(i<0) return;
-        WinCtrl.currentSelectedMovieID = dataList.get(i).movieID;
+        //int i = tbMovieList.getSelectedRow();
+        if(dataList.isEmpty()) return;
+        WinCtrl.currentSelectedMovieID = dataList.get(0).movieID;
         // 显示frmMovieInfo
         frmMovieInfo.main(null);
     }//GEN-LAST:event_btnDetailMouseClicked
@@ -529,13 +619,14 @@ public class frmUser extends javax.swing.JFrame {
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
         // 订票
         try {
-            bookTicket();
-            loadDataToTable();
-            JOptionPane.showMessageDialog(this, "订票完成");
-        } catch(SQLException e) {
+            if(askTicket()) {
+                bookTicket();
+                loadDataToTable();
+                JOptionPane.showMessageDialog(this, "订票完成");
+            }
+        } catch(SQLException | IllegalArgumentException e) {
             e.printStackTrace();
         }
-
     }//GEN-LAST:event_btnBookMouseClicked
 
     private void btnCancelSelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelSelMouseClicked
@@ -548,7 +639,7 @@ public class frmUser extends javax.swing.JFrame {
         try {
             String movName = loadDataToTable();
             if(movName!=null) writeIntroduction(movName);
-        } catch(SQLException | IOException e) {
+        } catch(SQLException | IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_treeNaviValueChanged
@@ -575,10 +666,6 @@ public class frmUser extends javax.swing.JFrame {
         frmChangePwd.main(null);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
-    private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnDetailActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -598,6 +685,7 @@ public class frmUser extends javax.swing.JFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDetail;
     private javax.swing.JButton btnQuery;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;

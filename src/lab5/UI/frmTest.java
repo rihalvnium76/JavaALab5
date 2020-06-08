@@ -5,20 +5,27 @@
  */
 package lab5.UI;
 
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Random;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -30,12 +37,37 @@ import lab5.Module.*;
  * @author rootpack
  */
 public class frmTest extends javax.swing.JFrame {
-
-    /**
-     * Creates new form frmTest
-     */
+    //
+    
     public frmTest() {
         initComponents();
+    }
+    
+    private String getArgs() {
+        return taArgs.getText().toString();
+    }
+    private class MyCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+
+            //Cells are by default rendered as a JLabel.
+            JLabel lb = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+
+            //Get the status for the current row.
+            DefaultTableModel dtm = (DefaultTableModel)table.getModel();
+            try {
+                switch(Integer.parseInt(dtm.getValueAt(row, col).toString())) {
+                    case 0: lb.setBackground(Color.GRAY); break;
+                    case 1: lb.setBackground(Color.RED); break;
+                    case 2: lb.setBackground(Color.GREEN); break;
+                }
+            } catch(IllegalArgumentException|NullPointerException e) {
+                System.out.println("[W]MyCellRdr: "+e.toString());
+            }
+
+            //Return the JLabel which renders the cell.
+            return lb;
+        }
     }
 
     /**
@@ -65,15 +97,21 @@ public class frmTest extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tbSeat = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        TestjTable = new javax.swing.JTable();
-        TestjTextField1 = new javax.swing.JTextField();
-        TestjTextField2 = new javax.swing.JTextField();
-        TestjTextField3 = new javax.swing.JTextField();
-        TestjTextField4 = new javax.swing.JTextField();
-        add = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
+        taArgs = new javax.swing.JTextArea();
+        btnSetRC = new javax.swing.JButton();
+        btnSetCC = new javax.swing.JButton();
+        btnFillNumber = new javax.swing.JButton();
+        btnGetPos = new javax.swing.JButton();
+        btnSetColor = new javax.swing.JButton();
+        btnSetDefRdr = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -237,8 +275,8 @@ public class frmTest extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("tab1", jPanel1);
 
-        TestjTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        TestjTable.setModel(new javax.swing.table.DefaultTableModel(
+        tbSeat.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
+        tbSeat.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -249,81 +287,122 @@ public class frmTest extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        TestjTable.setColumnSelectionAllowed(true);
-        TestjTable.getTableHeader().setReorderingAllowed(false);
-        TestjTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TestjTableMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(TestjTable);
-        TestjTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tbSeat.setColumnSelectionAllowed(true);
+        tbSeat.setRowHeight(20);
+        jScrollPane4.setViewportView(tbSeat);
+        tbSeat.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        TestjTextField2.setText(" ");
+        jLabel2.setText("Instruction:");
 
-        add.setText("添加");
-        add.addActionListener(new java.awt.event.ActionListener() {
+        jLabel3.setText("Arguments:");
+
+        taArgs.setColumns(20);
+        taArgs.setRows(5);
+        jScrollPane3.setViewportView(taArgs);
+
+        btnSetRC.setText("setRowCount");
+        btnSetRC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addActionPerformed(evt);
+                btnSetRCActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        btnSetCC.setText("setColCount");
+        btnSetCC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSetCCActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(80, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(TestjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TestjTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TestjTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TestjTextField4)))
-                    .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(133, 133, 133))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(TestjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(TestjTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(TestjTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(TestjTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        btnFillNumber.setText("fill 0/1/2");
+        btnFillNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFillNumberActionPerformed(evt);
+            }
+        });
+
+        btnGetPos.setText("getPos");
+        btnGetPos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGetPosActionPerformed(evt);
+            }
+        });
+
+        btnSetColor.setText("color");
+        btnSetColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSetColorActionPerformed(evt);
+            }
+        });
+
+        btnSetDefRdr.setText("setDefaultRenderer");
+        btnSetDefRdr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSetDefRdrActionPerformed(evt);
+            }
+        });
+
+        jTextArea2.setEditable(false);
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jTextArea2.setText("NOTICE:\nsetCount -> setRdr -> loadData\nRowHeight\nfont\n");
+        jScrollPane5.setViewportView(jTextArea2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(add)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(83, 83, 83))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(78, 78, 78)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(btnSetRC)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnSetCC))
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(btnFillNumber)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnSetColor))
+                                    .addComponent(btnGetPos)
+                                    .addComponent(btnSetDefRdr))
+                                .addGap(0, 151, Short.MAX_VALUE)))
+                        .addContainerGap())))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSetRC)
+                    .addComponent(btnSetCC))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnFillNumber)
+                    .addComponent(btnSetColor))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnGetPos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSetDefRdr)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addGap(5, 5, 5)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("tab2", jPanel2);
+        jTabbedPane1.addTab("tab2", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -459,23 +538,6 @@ public class frmTest extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void TestjTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TestjTableMouseClicked
-        
-    }//GEN-LAST:event_TestjTableMouseClicked
-
-    private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
-        DefaultTableModel dtm = (DefaultTableModel) TestjTable.getModel();
-        boolean flag = true;
-        int row = 0;
-        ButtonModel bm1=this.add.getModel();
-        Vector v = new Vector();
-        v.add(this.TestjTextField1.getText());
-        v.add(this.TestjTextField2.getText());
-        v.add(this.TestjTextField3.getText());
-        v.add(this.TestjTextField4.getText());
-        dtm.addRow(v);
-    }//GEN-LAST:event_addActionPerformed
-
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         Integer rt = 0;
         class MyOnClickListener {
@@ -493,6 +555,56 @@ public class frmTest extends javax.swing.JFrame {
         jTextArea1.setText(rt.toString());
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void btnSetRCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetRCActionPerformed
+        ((DefaultTableModel)tbSeat.getModel()).setRowCount(Integer.parseInt(getArgs()));
+    }//GEN-LAST:event_btnSetRCActionPerformed
+
+    private void btnSetCCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetCCActionPerformed
+        ((DefaultTableModel)tbSeat.getModel()).setColumnCount(Integer.parseInt(getArgs()));
+    }//GEN-LAST:event_btnSetCCActionPerformed
+
+    private void btnFillNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFillNumberActionPerformed
+        DefaultTableModel dtm = (DefaultTableModel)tbSeat.getModel();
+        int rc = dtm.getRowCount(), cc = dtm.getColumnCount();
+        Random rnd = new Random();
+        for(int i=0; i<rc; ++i)
+            for(int j=0; j<cc; ++j)
+                dtm.setValueAt(rnd.nextInt(3), i, j);
+    }//GEN-LAST:event_btnFillNumberActionPerformed
+
+    private void btnSetColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetColorActionPerformed
+        /*DefaultTableCellRenderer dtcr;
+        DefaultTableModel dtm = (DefaultTableModel)tbSeat.getModel();
+        int rc = dtm.getRowCount(), cc = dtm.getColumnCount();
+        for(int i=0; i<rc; ++i)
+            for(int j=0; j<cc; ++j) {
+                dtcr = (DefaultTableCellRenderer)tbSeat.getCellRenderer(i, j);
+                switch(Integer.parseInt(dtm.getValueAt(i, j).toString())) {
+                    case 0: dtcr.setForeground(Color.BLACK); break;
+                    case 1: dtcr.setForeground(Color.RED); break;
+                    case 2: dtcr.setForeground(Color.GREEN); break;
+                }
+                dtcr.updateUI();
+            }*/
+
+    }//GEN-LAST:event_btnSetColorActionPerformed
+
+    private void btnGetPosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetPosActionPerformed
+        System.out.println("x= "+tbSeat.getSelectedRow()+", y= "+tbSeat.getSelectedColumn());
+    }//GEN-LAST:event_btnGetPosActionPerformed
+
+    private void btnSetDefRdrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetDefRdrActionPerformed
+        // 设置表模型
+        Enumeration<TableColumn> e = tbSeat.getColumnModel().getColumns();
+        while(e.hasMoreElements())
+            e.nextElement().setCellRenderer(new MyCellRenderer());
+        // 去掉表头
+        tbSeat.getTableHeader().setVisible(false);
+        DefaultTableCellRenderer tbHeaderRdr = new DefaultTableCellRenderer();
+        tbHeaderRdr.setPreferredSize(new Dimension(0, 0));
+        tbSeat.getTableHeader().setDefaultRenderer(tbHeaderRdr);
+    }//GEN-LAST:event_btnSetDefRdrActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -507,12 +619,12 @@ public class frmTest extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable TestjTable;
-    private javax.swing.JTextField TestjTextField1;
-    private javax.swing.JTextField TestjTextField2;
-    private javax.swing.JTextField TestjTextField3;
-    private javax.swing.JTextField TestjTextField4;
-    private javax.swing.JButton add;
+    private javax.swing.JButton btnFillNumber;
+    private javax.swing.JButton btnGetPos;
+    private javax.swing.JButton btnSetCC;
+    private javax.swing.JButton btnSetColor;
+    private javax.swing.JButton btnSetDefRdr;
+    private javax.swing.JButton btnSetRC;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -523,16 +635,22 @@ public class frmTest extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTree jTree1;
+    private javax.swing.JTextArea taArgs;
+    private javax.swing.JTable tbSeat;
     // End of variables declaration//GEN-END:variables
 }

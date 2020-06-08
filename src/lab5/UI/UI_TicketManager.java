@@ -417,7 +417,7 @@ public class UI_TicketManager {
         try {
             processTheater();
             processSchedule();
-            if(isTheaterFull())
+            if(cmbTicketID.getSelectedIndex()==1 && isTheaterFull())
                 if(JOptionPane.showConfirmDialog(null, "该放映厅安排已满，是否强行添加？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
                     return;
             processTicket();
