@@ -151,7 +151,6 @@ public class frmChangePwd extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(this, "原密码错误！", "标题", JOptionPane.ERROR_MESSAGE);
                         } 
                         sta.close();
-                        db.close();
             }catch(SQLException  | ClassNotFoundException e) {
                     JOptionPane.showMessageDialog(this, "密码长度要大于3位而小于20位", "标题", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();

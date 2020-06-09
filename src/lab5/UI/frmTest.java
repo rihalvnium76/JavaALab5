@@ -62,7 +62,7 @@ public class frmTest extends javax.swing.JFrame {
                     case 2: lb.setBackground(Color.GREEN); break;
                 }
             } catch(IllegalArgumentException|NullPointerException e) {
-                System.out.println("[W]MyCellRdr: "+e.toString());
+                System.err.println("[W]MyCellRdr: "+e.toString());
             }
 
             //Return the JLabel which renders the cell.

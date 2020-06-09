@@ -59,12 +59,7 @@ public class frmManager extends javax.swing.JFrame {
                 } 
                 rs.close();
                 sta.close();
-                db.close();
-
-            } catch (Exception ex) {
-
-
-            }
+            } catch (Exception ex) {}
     }
 
     /**
