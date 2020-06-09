@@ -71,7 +71,12 @@ public class frmOrderQuery extends javax.swing.JFrame {
         TicketList = new javax.swing.JTable();
         Unsubscribe = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         TicketList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -162,6 +167,16 @@ public class frmOrderQuery extends javax.swing.JFrame {
         }
         dtm.removeRow(r);
     }//GEN-LAST:event_UnsubscribeActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        try { 
+            db.close();
+        } catch(SQLException e) {
+            e.printStackTrace(); 
+        }
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
