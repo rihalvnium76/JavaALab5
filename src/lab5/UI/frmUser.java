@@ -663,6 +663,7 @@ public class frmUser extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // 修改密码
         WinCtrl.isResetPassword = false;
+        WinCtrl.resetPwdUser = WinCtrl.currentLoginUser;
         frmChangePwd.main(null);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 

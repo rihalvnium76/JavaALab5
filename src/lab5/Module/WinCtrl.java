@@ -37,6 +37,8 @@ public class WinCtrl {
     public static int registerUserType;
     // 是否为重设新密码
     public static boolean isResetPassword;
+    // 重置密码的用户
+    public static String resetPwdUser;
 
     // 当前登录用户名
     public static String currentLoginUser;

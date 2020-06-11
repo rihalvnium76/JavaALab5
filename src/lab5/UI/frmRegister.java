@@ -216,6 +216,7 @@ public class frmRegister extends javax.swing.JFrame {
             new String(pfPassword.getPassword()), // 密码
             new String(pfConfirmPwd.getPassword()) // 确定密码
         };
+        if(input[0]==null || input[0].isEmpty()) return; // 空用户名
         if(input[1].equals(input[2]) && input[1].length()>3 && input[1].length()<20) {
             try {
                 boolean rt = registerUser(input[0], input[1]);
