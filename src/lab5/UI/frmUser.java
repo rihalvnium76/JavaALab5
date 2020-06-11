@@ -279,10 +279,11 @@ public class frmUser extends javax.swing.JFrame {
     }
 
     // 电影票订票
-    void bookTicket() throws SQLException, IllegalArgumentException {
+    // 返回值：成功购票数
+    int bookTicket() throws SQLException, IllegalArgumentException {
         // 根据选中项的Index生成座位
         int r = tbMovieList.getSelectedRow() + 1, c = tbMovieList.getSelectedColumn() + 1;
-        if(r==0 || c==0) return;
+        if(r==0 || c==0) return 0;
         DBItem item = null;
         for(DBItem d : dataList)
             if(d.row==r && d.col==c) // find seat
@@ -290,21 +291,24 @@ public class frmUser extends javax.swing.JFrame {
         if(item==null) throw new IllegalArgumentException("未知座位: " + r + "+" + c);
 
         // index->ArrayList->ticketID->Status
+        int rt = 0;
         PreparedStatement pst = db.getConnection().prepareStatement("update Ticket set userid=?, status=? where ticketid=?");
         if(item.status.equals("未售")) {
             pst.setString(1, findUserIDByName(WinCtrl.currentLoginUser)); // userid
             pst.setString(2, "已售");
             pst.setString(3, item.ticketID);
-            pst.executeUpdate();
+            rt = pst.executeUpdate();
         }
         pst.close();
+        return rt;
     }
     // 询问购票
     boolean askTicket() {
         if(dataList.isEmpty())
             return false;
         else {
-            if(JOptionPane.showConfirmDialog(this, "确定购买电影票？\n总计：" + String.format("%.2f元", dataList.get(0).price), "购买", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+            if(JOptionPane.showConfirmDialog(this, "确定购买电影票？", "购买", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+            //if(JOptionPane.showConfirmDialog(this, "确定购买电影票？\n总计：" + String.format("%.2f元", dataList.get(0).price), "购买", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
                 return true;
             else
                 return false;
@@ -620,9 +624,8 @@ public class frmUser extends javax.swing.JFrame {
         // 订票
         try {
             if(askTicket()) {
-                bookTicket();
+                JOptionPane.showMessageDialog(this, "订票完成\n成功订票张数：" + bookTicket());
                 loadDataToTable();
-                JOptionPane.showMessageDialog(this, "订票完成");
             }
         } catch(SQLException | IllegalArgumentException e) {
             e.printStackTrace();
