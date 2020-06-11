@@ -20,7 +20,17 @@ public class frmChangePwd extends javax.swing.JFrame {
             db = new DBAccess();
         } catch(SQLException | ClassNotFoundException e){ 
             e.printStackTrace();
-            }
+        }
+        pwd1.setEnabled(!WinCtrl.isResetPassword);
+    }
+
+    void destroy() {
+        try {
+            db.close();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        this.dispose();
     }
 
     /**
@@ -43,18 +53,17 @@ public class frmChangePwd extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("修改密码");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel2.setText("原密码：");
 
         jLabel3.setText("新密码：");
 
         jLabel4.setText("确认密码：");
-
-        pwd3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pwd3ActionPerformed(evt);
-            }
-        });
 
         jButton1.setText("修 改");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -120,49 +129,46 @@ public class frmChangePwd extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void pwd3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pwd3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pwd3ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // 修改按钮
-        if(WinCtrl.isResetPassword){
-        String[] Pwd = new String[] {
+        String[] pwd = new String[] {
             new String(pwd1.getPassword()), // 原密码
             new String(pwd2.getPassword()), // 新密码
             new String(pwd3.getPassword()) // 确定密码
-            };
-        try{
-            String sql="update Users set Password='"+Pwd[1]+"'where LoginName='"+WinCtrl.currentLoginUser+"'and Password='"+Pwd[0]+"'";
-            Statement sta=db.getConnection().createStatement();
-            int rs = sta.executeUpdate(sql);
-            
-            if(WinCtrl.verifyLogin(WinCtrl.currentLoginUser, new String(pwd1.getPassword()))!=0){
-                    if(Pwd[1].equals(Pwd[2]) && Pwd[1].length()>3 && Pwd[1].length()<20) {
-                        JOptionPane.showMessageDialog(this, "修改成功", "标题", JOptionPane.INFORMATION_MESSAGE);                         
-                        frmUser.main(null); // 返回
-                        this.dispose();
-                    }
-                    else{
-                            JOptionPane.showMessageDialog(this, "密码长度要大于3位而小于20位", "标题", JOptionPane.ERROR_MESSAGE);                       
-                        }
-                    }
-                    else{
-                            JOptionPane.showMessageDialog(this, "原密码错误！", "标题", JOptionPane.ERROR_MESSAGE);
-                        } 
-                        sta.close();
-            }catch(SQLException  | ClassNotFoundException e) {
-                    JOptionPane.showMessageDialog(this, "密码长度要大于3位而小于20位", "标题", JOptionPane.ERROR_MESSAGE);
-                    e.printStackTrace();
-            }
-        
+        };
+        int len = pwd[1].length();
+        if(!pwd[1].equals(pwd[2])) {
+            JOptionPane.showMessageDialog(this, "两次输入的新密码不相同", "错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else if(len<=3 || len>=20) {
+            JOptionPane.showMessageDialog(this, "新密码长度应大于3位而小于20位", "错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            PreparedStatement pst = db.getConnection().prepareStatement("update users set password=? where loginname=?" +
+                (WinCtrl.isResetPassword? " and password=?": ""));
+            pst.setString(1, pwd[1]);
+            pst.setString(2, WinCtrl.currentLoginUser);
+            if(WinCtrl.isResetPassword) pst.setString(3, pwd[0]); // 原密码
+            int rt = pst.executeUpdate();
+            if(rt==0)
+                JOptionPane.showMessageDialog(this, "原密码输入不正确", "错误", JOptionPane.ERROR_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(this, "修改成功", "消息", JOptionPane.INFORMATION_MESSAGE);
+        } catch(SQLException e) {
+            e.printStackTrace();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backActionPerformed
         // 返回按钮
-        this.dispose();
+        destroy();
     }//GEN-LAST:event_backActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // 窗体关闭
+        destroy();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

@@ -77,9 +77,6 @@ public class WinCtrl {
     public static String avoidNullString(Object str) {
         return str==null? "": (String)str;
     }
-    /*public static String avoidNullString(Object str, String defaultValue) {
-        return str==null? defaultValue: (String)str;
-    }*/
 
     // 登录校验函数
     // 参数： 用户名，密码
