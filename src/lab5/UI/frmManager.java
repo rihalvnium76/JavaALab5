@@ -6,6 +6,7 @@
 package lab5.UI;
 
 import java.awt.event.ItemEvent;
+import java.io.IOException;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +14,9 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
 import lab5.Module.DBAccess;
-
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.*;
 import lab5.Module.*;
 
 // [8]后台管理界面
@@ -23,7 +26,6 @@ public class frmManager extends javax.swing.JFrame {
     
     public frmManager() {
         initComponents();
-        this.initTable();//表格初始化
         this.setTitle("后台管理系统 - 管理员：" + WinCtrl.currentLoginUser);
         try {
             db = new DBAccess();
@@ -40,9 +42,34 @@ public class frmManager extends javax.swing.JFrame {
         ticketManager.initComponents(); // 初始化控件
         ticketManager.loadData(); // 载入数据
         /* 电影票管理 */
+        this.initTable();//表格初始化
+        this.movielist();
     }
     
-    
+    public void movielist(){ 
+        //将数据库中的电影列表显示在表格中
+        DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
+            try {
+                Statement sta=db.getConnection().createStatement();
+                String sql="select movieid,moviename,director,mainactors,movietype,movieinfo,movieposter from movie";
+                ResultSet rs=sta.executeQuery(sql);
+                while(rs.next()){
+                    Vector<String> v=new Vector<String>();
+                    v.add(rs.getString(1));
+                    v.add(rs.getString(2));
+                    v.add(rs.getString(3));
+                    v.add(rs.getString(4));
+                    v.add(rs.getString(5));
+                    v.add(rs.getString(6));
+                    v.add(rs.getString(7));
+                    dtm.addRow(v);
+                } 
+                rs.close();
+                sta.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
     
     public void initTable(){ 
         //将数据库中的用户显示在表格中
@@ -59,7 +86,12 @@ public class frmManager extends javax.swing.JFrame {
                 } 
                 rs.close();
                 sta.close();
-            } catch (Exception ex) {}
+                db.close();
+
+            } catch (Exception ex) {
+
+
+            }
     }
 
     /**
@@ -76,7 +108,7 @@ public class frmManager extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jmovielist = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
@@ -151,7 +183,7 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jmovielist.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -167,7 +199,12 @@ public class frmManager extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane5.setViewportView(jTable1);
+        jmovielist.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jmovielistMouseClicked(evt);
+            }
+        });
+        jScrollPane5.setViewportView(jmovielist);
 
         jLabel11.setText("电影ID：");
 
@@ -193,21 +230,40 @@ public class frmManager extends javax.swing.JFrame {
         jScrollPane6.setViewportView(jinfo);
 
         jposter.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jposter.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jposterMouseClicked(evt);
+            }
+        });
 
         jButton1.setText("保 存 修 改");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("新 增 电 影");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("删 除 电 影");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 738, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -233,14 +289,15 @@ public class frmManager extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jdirector, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(32, 32, 32)
+                        .addComponent(jScrollPane6))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 835, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jposter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE))
-                .addContainerGap(34, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addComponent(jposter, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -249,8 +306,8 @@ public class frmManager extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGap(36, 36, 36)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -281,7 +338,7 @@ public class frmManager extends javax.swing.JFrame {
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("电影信息管理功能", jPanel1);
@@ -563,7 +620,7 @@ public class frmManager extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -684,7 +741,7 @@ public class frmManager extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 871, Short.MAX_VALUE)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(DeleteTicket)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -903,11 +960,8 @@ public class frmManager extends javax.swing.JFrame {
 
     private void ResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResetPasswordActionPerformed
         //重置密码
-        if(UsersList.getSelectedRow()>-1) {
-            WinCtrl.isResetPassword = true;
-            WinCtrl.resetPwdUser = WinCtrl.avoidNullString(((DefaultTableModel)UsersList.getModel()).getValueAt(UsersList.getSelectedRow(), 1)).toString().trim();
-            frmChangePwd.main(null);
-        }
+        WinCtrl.isResetPassword = true;
+        frmChangePwd.main(null);
     }//GEN-LAST:event_ResetPasswordActionPerformed
 
     private void UsersListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsersListMouseClicked
@@ -948,6 +1002,125 @@ public class frmManager extends javax.swing.JFrame {
     private void jmovienameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmovienameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jmovienameActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // 添加电影
+        DefaultTableModel dtm = (DefaultTableModel)jmovielist.getModel();
+        int r = jmovielist.getRowCount();
+        try {
+                PreparedStatement ps = db.getConnection().prepareStatement("Insert into movie values (?,?,?,?,?,?,?,?)");
+                ps.setString(1,"0"+(r+1) );
+                ps.setString(2, " "); 
+                ps.setString(3, " ");                
+                ps.setString(4, " ");                
+                ps.setString(5, " ");                
+                ps.setString(6, " ");                
+                ps.setString(7, " ");                
+                ps.setString(8, " ");                
+                ps.executeUpdate();
+                ps.close();
+            }catch(SQLException e) {
+                e.printStackTrace();
+                return;
+            }
+        Vector v=new Vector();            
+        v.add("0"+(r+1));//电影id不为空
+        dtm.addRow(v);  
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MouseClicked
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // 删除电影
+        DefaultTableModel dtm =(DefaultTableModel)jmovielist.getModel();  
+        int r = jmovielist.getSelectedRow();
+            try {
+                PreparedStatement ps = db.getConnection().prepareStatement("delete from movie where movieid=?");
+                ps.setObject(1, jmovielist.getValueAt(r, 0)); 
+                ps.executeUpdate();
+                ps.close();
+            }catch(SQLException e) {
+                e.printStackTrace();
+                return;
+            }
+            dtm.removeRow(r);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // 保存修改
+        DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
+        int row=jmovielist.getSelectedRow();
+        String u1=jmovieID.getText();
+        String u2=jmoviename.getText();
+        String u3=jdirector.getText();
+        String u4=jmainactor.getText();
+        String u5=jtype.getText();
+        String u6=jinfo.getText();
+        jmovielist.setValueAt(u1, row, 0);//显示在表上
+        jmovielist.setValueAt(u2, row, 1);
+        jmovielist.setValueAt(u3, row, 2);
+        jmovielist.setValueAt(u4, row, 3);
+        jmovielist.setValueAt(u5, row, 4);
+        jmovielist.setValueAt(u6, row, 5);
+        try {
+            PreparedStatement ps = db.getConnection().prepareStatement("update movie set moviename=?,director=?,mainactors=?,movietype=?,movieinfo=? where movieid=?" );
+            ps.setString(1, u2 );
+            ps.setString(2, u3 );
+            ps.setString(3, u4 );
+            ps.setString(4, u5 );
+            ps.setString(5, u6 );
+            ps.setString(6, u1);
+            ps.executeUpdate();
+            ps.close();
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jmovielistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jmovielistMouseClicked
+        // 电影列表:
+        DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
+         int row=jmovielist.getSelectedRow(); 
+         jmovieID.setText(jmovielist.getValueAt(row, 0).toString());//返回选中行的内容
+         jmoviename.setText(jmovielist.getValueAt(row, 1).toString());
+         jdirector.setText(jmovielist.getValueAt(row, 2).toString());
+         jmainactor.setText(jmovielist.getValueAt(row, 3).toString());
+         jtype.setText(jmovielist.getValueAt(row, 4).toString());
+         jinfo.setText(jmovielist.getValueAt(row, 5).toString());
+         try {
+            WinCtrl.setLabelMoviePoster(jposter, dtm.getValueAt(row, 6).toString());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jmovielistMouseClicked
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void jposterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jposterMouseClicked
+        // 添加海报   //复制未完成
+        DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
+        int r=jmovielist.getSelectedRow();
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG  Images", "jpg");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(chooser);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        }
+        try {
+            PreparedStatement ps = db.getConnection().prepareStatement("update movie set movieposter = ? where movieid=?" );
+            ps.setString(1, chooser.getSelectedFile().getName() );
+            ps.setObject(2, jmovielist.getValueAt(r, 0));
+            ps.executeUpdate();
+            ps.close();
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jposterMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1014,13 +1187,13 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jdirector;
     private javax.swing.JTextArea jinfo;
     private javax.swing.JTextField jmainactor;
     private javax.swing.JTextField jmovieID;
+    private javax.swing.JTable jmovielist;
     private javax.swing.JTextField jmoviename;
     private javax.swing.JLabel jposter;
     private javax.swing.JTextField jtype;
