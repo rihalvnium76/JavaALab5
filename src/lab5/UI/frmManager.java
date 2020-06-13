@@ -75,7 +75,6 @@ public class frmManager extends javax.swing.JFrame {
         //将数据库中的用户显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)UsersList.getModel();
             try {
-                DBAccess db=new DBAccess();
                 Statement sta=db.getConnection().createStatement();
                 String sql="select * from Users";
                 ResultSet rs=sta.executeQuery(sql);
@@ -86,12 +85,7 @@ public class frmManager extends javax.swing.JFrame {
                 } 
                 rs.close();
                 sta.close();
-                db.close();
-
-            } catch (Exception ex) {
-
-
-            }
+            } catch (Exception ex) {}
     }
 
     /**
@@ -1019,12 +1013,12 @@ public class frmManager extends javax.swing.JFrame {
                 ps.setString(8, " ");                
                 ps.executeUpdate();
                 ps.close();
-            }catch(SQLException e) {
-                e.printStackTrace();
-                return;
-            }
+        }catch(SQLException e) {
+            e.printStackTrace();
+            return;
+        }
         Vector v=new Vector();            
-        v.add("0"+(r+1));//电影id不为空
+        v.add("0"+(r+1));//在表中显示
         dtm.addRow(v);  
     }//GEN-LAST:event_jButton2ActionPerformed
 
