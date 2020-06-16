@@ -924,10 +924,14 @@ public class frmManager extends javax.swing.JFrame {
         int r = UsersList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该账户？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
-                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Users where LoginName=?");
-                pstDel.setObject(1, UsersList.getValueAt(r, 0)); 
-                pstDel.executeUpdate();
-                pstDel.close();
+                PreparedStatement pstDel1 = db.getConnection().prepareStatement("delete from Ticket where userid in (select userid from users where loginname=?)");
+                pstDel1.setObject(1, UsersList.getValueAt(r, 0)); 
+                pstDel1.executeUpdate();
+                pstDel1.close();
+                PreparedStatement pstDel2 = db.getConnection().prepareStatement("delete from Users where LoginName=?");
+                pstDel2.setObject(1, UsersList.getValueAt(r, 0)); 
+                pstDel2.executeUpdate();
+                pstDel2.close();
             }catch(SQLException e) {
                 //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
