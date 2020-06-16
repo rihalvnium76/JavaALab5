@@ -17,6 +17,7 @@ import lab5.Module.DBAccess;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
+import java.nio.channels.*;
 import lab5.Module.*;
 
 // [8]后台管理界面
@@ -1103,19 +1104,41 @@ public class frmManager extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void jposterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jposterMouseClicked
-        // 添加海报   //复制未完成
+        // 添加海报   
         DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
-        int r=jmovielist.getSelectedRow();
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG  Images", "jpg");
+        int row=jmovielist.getSelectedRow();
+        JFileChooser chooser = new JFileChooser();//文件选择框
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG  Images", "jpg","png");//文件筛选
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(chooser);
+        FileInputStream fi = null;
+        FileOutputStream fo = null;
+        FileChannel in = null;
+        FileChannel out = null;
         if(returnVal == JFileChooser.APPROVE_OPTION) {
+            try {
+            fi = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());//图片的原路径
+            fo = new FileOutputStream("E:\\git\\mai\\JavaALab5\\res\\image\\"+chooser.getSelectedFile().getName());//复制到该路径
+            in = fi.getChannel();//得到对应的文件通道
+            out = fo.getChannel();//得到对应的文件通道
+            in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fi.close();
+                in.close();
+                fo.close();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         }
         try {
             PreparedStatement ps = db.getConnection().prepareStatement("update movie set movieposter = ? where movieid=?" );
             ps.setString(1, chooser.getSelectedFile().getName() );
-            ps.setObject(2, jmovielist.getValueAt(r, 0));
+            ps.setObject(2, jmovielist.getValueAt(row, 0));
             ps.executeUpdate();
             ps.close();
         }catch(SQLException e) {
