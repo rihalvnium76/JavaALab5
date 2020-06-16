@@ -958,8 +958,11 @@ public class frmManager extends javax.swing.JFrame {
 
     private void ResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResetPasswordActionPerformed
         //重置密码
-        WinCtrl.isResetPassword = true;
-        frmChangePwd.main(null);
+        if(UsersList.getSelectedRow()>-1) {
+            WinCtrl.isResetPassword = true;
+            WinCtrl.resetPwdUser = WinCtrl.avoidNullString(((DefaultTableModel)UsersList.getModel()).getValueAt(UsersList.getSelectedRow(), 0)).toString().trim();
+            frmChangePwd.main(null);
+        }
     }//GEN-LAST:event_ResetPasswordActionPerformed
 
     private void UsersListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsersListMouseClicked

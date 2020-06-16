@@ -264,7 +264,7 @@ public class frmUser extends javax.swing.JFrame {
         }
         pst.close();
     }
-
+    //根据用户名找用户ID
     String findUserIDByName(String userName) throws SQLException {
         String ret = null;
         if(userName!=null) {
