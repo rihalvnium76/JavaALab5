@@ -1026,17 +1026,16 @@ public class frmManager extends javax.swing.JFrame {
         // 添加电影
         DefaultTableModel dtm = (DefaultTableModel)jmovielist.getModel();
         int r = jmovielist.getRowCount();
-        int n = r+1;
         try {
                 PreparedStatement ps = db.getConnection().prepareStatement("Insert into movie values (?,?,?,?,?,?,?,?)");
-                ps.setString(1,"0"+n );
-                ps.setString(2, " "); 
-                ps.setString(3, " ");                
-                ps.setString(4, " ");                
-                ps.setString(5, " ");                
-                ps.setString(6, " ");                
-                ps.setString(7, " ");                
-                ps.setString(8, " ");                
+                ps.setString(1, (r+1+"") );
+                ps.setString(2, ""); 
+                ps.setString(3, "");                
+                ps.setString(4, "");                
+                ps.setString(5, "");                
+                ps.setString(6, "");                
+                ps.setString(7, "");                
+                ps.setString(8, "");                
                 ps.executeUpdate();
                 ps.close();
         }catch(SQLException e) {
@@ -1093,7 +1092,12 @@ public class frmManager extends javax.swing.JFrame {
             ps.setString(5, u6 );
             ps.setString(6, u1);
             ps.executeUpdate();
-            ps.close();
+            ps.close();           
+            PreparedStatement ps2 = db.getConnection().prepareStatement("update movie set movieid=? where moviename=?" );
+            ps2.setString(1, u1 );
+            ps2.setString(2, u2 );
+            ps2.executeUpdate();
+            ps2.close(); 
         }catch(SQLException e) {
             e.printStackTrace();
         }
