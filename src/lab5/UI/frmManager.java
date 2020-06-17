@@ -50,6 +50,7 @@ public class frmManager extends javax.swing.JFrame {
     public void movielist(){ 
         //将数据库中的电影列表显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
+        dtm.setRowCount(0);
             try {
                 Statement sta=db.getConnection().createStatement();
                 String sql="select movieid,moviename,director,mainactors,movietype,movieinfo,movieposter from movie";
@@ -121,6 +122,7 @@ public class frmManager extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -252,6 +254,18 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setText("刷 新 列 表");
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -291,7 +305,8 @@ public class frmManager extends javax.swing.JFrame {
                     .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
                     .addComponent(jposter, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -327,12 +342,14 @@ public class frmManager extends javax.swing.JFrame {
                             .addComponent(jScrollPane6)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jposter, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(61, 61, 61)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(52, Short.MAX_VALUE))
         );
 
@@ -1009,9 +1026,10 @@ public class frmManager extends javax.swing.JFrame {
         // 添加电影
         DefaultTableModel dtm = (DefaultTableModel)jmovielist.getModel();
         int r = jmovielist.getRowCount();
+        int n = r+1;
         try {
                 PreparedStatement ps = db.getConnection().prepareStatement("Insert into movie values (?,?,?,?,?,?,?,?)");
-                ps.setString(1,"0"+(r+1) );
+                ps.setString(1,"0"+n );
                 ps.setString(2, " "); 
                 ps.setString(3, " ");                
                 ps.setString(4, " ");                
@@ -1108,7 +1126,7 @@ public class frmManager extends javax.swing.JFrame {
         DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
         int row=jmovielist.getSelectedRow();
         JFileChooser chooser = new JFileChooser();//文件选择框
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG  Images", "jpg","png");//文件筛选
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG && PNG  Images", "jpg","png");//文件筛选
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(chooser);
         FileInputStream fi = null;
@@ -1146,6 +1164,15 @@ public class frmManager extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jposterMouseClicked
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        this.movielist();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -1180,6 +1207,7 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
