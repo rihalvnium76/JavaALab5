@@ -6,6 +6,7 @@
 package lab5.Module;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,10 +14,11 @@ import java.util.Enumeration;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 //import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -101,6 +103,43 @@ public class WinCtrl {
         }
         pst.close();
         return ret;
+    }
+    // 打开图像文件选择框
+    // 参数：是否使用默认的测试图片路径
+    // 返回值：选择的文件的File对象或null
+    public static File openImageFileChooser(boolean useDefaultTestImageDir) throws IOException {
+        JFileChooser fileChooser = useDefaultTestImageDir?
+            new JFileChooser(getResDirPath() + File.separator + "testimage" + File.separator + "test1.png"):
+            new JFileChooser();
+        fileChooser.setDialogTitle("选择电影封面");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("JPG/PNG图像文件", "jpg", "png"));
+        switch(fileChooser.showOpenDialog(null)) {
+            case JFileChooser.APPROVE_OPTION: // 保存
+                return fileChooser.getSelectedFile();
+            default: // 取消或出错
+                return null;
+        }
+    }
+    // 复制文件
+    // 参数：源文件 目标文件
+    public static void copyFile(File src, File dest, boolean allowOverwrite) throws IOException {
+        if(src==null || dest==null) return;
+        if(allowOverwrite && dest.exists())
+            dest.delete(); // 删除
+            
+        FileChannel ic = null, oc = null;
+        FileInputStream fis = new FileInputStream(src);
+        FileOutputStream fos = new FileOutputStream(dest);
+        try {
+            ic = fis.getChannel();
+            oc = fos.getChannel();
+            oc.transferFrom(ic, 0, ic.size());
+        } finally {
+            ic.close();
+            oc.close();
+            fis.close();
+            fos.close();
+        }
     }
 
     /* JTree操作函数 */

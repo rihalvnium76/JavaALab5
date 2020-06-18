@@ -44,7 +44,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 v.add(rs.getString(1));
                 v.add(rs.getString(2));
                 v.add(rs.getString(3));
-                v.add(String.valueOf(rs.getInt(4)));
+                v.add(rs.getString(4));
                 v.add(rs.getInt(5)+ "-" +rs.getInt(6));
                 v.add(String.valueOf(rs.getFloat(7)));
                 v.add(rs.getString(8));
