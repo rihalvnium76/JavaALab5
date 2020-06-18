@@ -939,6 +939,7 @@ public class frmManager extends javax.swing.JFrame {
     private void DeleteAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteAccountActionPerformed
         //删除账户
         DefaultTableModel dtm = (DefaultTableModel) UsersList.getModel();
+        DefaultTableModel dtm2 = (DefaultTableModel) TicketList.getModel();
         int r = UsersList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该账户？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
@@ -950,6 +951,7 @@ public class frmManager extends javax.swing.JFrame {
                 pstDel2.setObject(1, UsersList.getValueAt(r, 0)); 
                 pstDel2.executeUpdate();
                 pstDel2.close();
+                dtm2.setRowCount(0);
             }catch(SQLException e) {
                 //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
