@@ -76,7 +76,7 @@ public class frmManager extends javax.swing.JFrame {
         });
     }
     
-    public void movielist(){ 
+    private void movielist(){ 
         //将数据库中的电影列表显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)jmovielist.getModel();
         // 清空
@@ -107,7 +107,7 @@ public class frmManager extends javax.swing.JFrame {
         }
     }
     
-    public void initTable(){ 
+    private void initTable(){ 
         //将数据库中的用户显示在表格中
         DefaultTableModel dtm=(DefaultTableModel)UsersList.getModel();
             try {
