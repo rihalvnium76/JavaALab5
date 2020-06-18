@@ -963,6 +963,7 @@ public class frmManager extends javax.swing.JFrame {
     private void DeleteAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteAccountActionPerformed
         //删除账户
         DefaultTableModel dtm = (DefaultTableModel) UsersList.getModel();
+        DefaultTableModel dtm2 = (DefaultTableModel) TicketList.getModel();
         int r = UsersList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该账户？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
@@ -974,6 +975,7 @@ public class frmManager extends javax.swing.JFrame {
                 pstDel2.setObject(1, UsersList.getValueAt(r, 0)); 
                 pstDel2.executeUpdate();
                 pstDel2.close();
+                dtm2.setRowCount(0);
             }catch(SQLException e) {
                 //JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
@@ -1001,7 +1003,7 @@ public class frmManager extends javax.swing.JFrame {
         dtm.setRowCount(0); // 清空表
         int r = UsersList.getSelectedRow();
         try {
-            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.TheaterID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
+            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,ScheduleTime,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.TheaterID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
             pstQue.setObject(1, UsersList.getValueAt(r, 0));
             //执行查询 SQL 语句，返回查询的结果集         
             ResultSet rs = pstQue.executeQuery( ); 
@@ -1047,18 +1049,24 @@ public class frmManager extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // 删除电影
-        DefaultTableModel dtm =(DefaultTableModel)jmovielist.getModel();  
-        int r = jmovielist.getSelectedRow();
-            try {
-                PreparedStatement ps = db.getConnection().prepareStatement("delete from movie where movieid=?");
-                ps.setObject(1, jmovielist.getValueAt(r, 0)); 
-                ps.executeUpdate();
-                ps.close();
-            }catch(SQLException e) {
-                e.printStackTrace();
-                return;
+        DefaultTableModel dtm = (DefaultTableModel)jmovielist.getModel();
+        Object mp = dtm.getValueAt(jmovielist.getSelectedRow(), 6);
+        try {
+            // 删除图像文件
+            if(mp!=null) {
+                File f = new File(WinCtrl.getImageDirPath() + File.separator + mp.toString());
+                if(f.exists()) f.delete();
             }
-            dtm.removeRow(r);
+            // 删除数据库项
+            PreparedStatement ps = db.getConnection().prepareStatement("delete from movie where movieid=?");
+            ps.setObject(1, jmovieID.getText()); 
+            ps.executeUpdate();
+            ps.close();
+        }catch(SQLException | IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        movielist();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

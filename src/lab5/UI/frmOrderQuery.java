@@ -22,6 +22,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
      */
     public frmOrderQuery() {
         initComponents();
+        WinCtrl.currentLoginUser = "admin";
         this.setTitle("个人订单 - 用户：" + WinCtrl.currentLoginUser);
         try {
             db = new DBAccess();
@@ -34,8 +35,7 @@ public class frmOrderQuery extends javax.swing.JFrame {
         //显示当前登录用户的订单
         DefaultTableModel dtm = (DefaultTableModel) TicketList.getModel();
         try {
-            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,Capacity,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.TheaterID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
-            WinCtrl.currentLoginUser="???";
+            PreparedStatement pstQue = db.getConnection().prepareStatement("select Ticket.TicketID,Movie.MovieName,Theater.TheaterName,ScheduleTime,Ticket.Row,Ticket.Col,price,Ticket.Status from Ticket,Schedule,Movie,Users,Theater where Theater.TheaterID=Schedule.TheaterID and Ticket.ScheduleID=Schedule.ScheduleID and Schedule.MovieID=Movie.MovieID and Ticket.UserID=Users.UserID and Users.LoginName=?");
             pstQue.setString(1, WinCtrl.currentLoginUser);
             //执行查询 SQL 语句，返回查询的结果集         
             ResultSet rs = pstQue.executeQuery( ); 
@@ -86,16 +86,9 @@ public class frmOrderQuery extends javax.swing.JFrame {
                 "电影票ID", "电影名", "放映厅", "场次", "座位", "价格", "状态"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
