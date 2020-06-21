@@ -249,7 +249,7 @@ public class frmUser extends javax.swing.JFrame {
     */
 
     void writeIntroduction(String movieName) throws SQLException, IOException {
-        PreparedStatement pst = db.getConnection().prepareStatement("select director,mainactors,movietype,price,movieposter from movie where moviename like ?");
+        PreparedStatement pst = db.getConnection().prepareStatement("select director,mainactors,movietype,price,movieposter,movieid from movie where moviename like ?");
         pst.setString(1, movieName);
         ResultSet rs = pst.executeQuery();
         if(rs.next()) {
@@ -260,6 +260,7 @@ public class frmUser extends javax.swing.JFrame {
                 "\n类型：" + rs.getString(3) +
                 "\n价格：" + String.valueOf(rs.getFloat(4)));
             WinCtrl.setLabelMoviePoster(lbPoster, rs.getString(5)); // movie poster
+            WinCtrl.currentSelectedMovieID = rs.getString(6); // movie id
         }
         pst.close();
     }
@@ -619,7 +620,9 @@ public class frmUser extends javax.swing.JFrame {
         //int i = tbMovieList.getSelectedRow();
         /*if(dataList.isEmpty()) return;
         WinCtrl.currentSelectedMovieID = dataList.get(0).movieID;*/
-        DefaultMutableTreeNode node = WinCtrl.getSelectedTreeNode(treeNavi);
+        // 显示frmMovieInfo
+        frmMovieInfo.main(null);
+        /*DefaultMutableTreeNode node = WinCtrl.getSelectedTreeNode(treeNavi);
         if(node!=null) {
             try {
                 PreparedStatement pst = db.getConnection().prepareStatement("select movieid from movie where moviename=?");
@@ -632,12 +635,11 @@ public class frmUser extends javax.swing.JFrame {
                 rs.close();
                 pst.close();
 
-                // 显示frmMovieInfo
-                frmMovieInfo.main(null);
+                
             } catch(SQLException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }//GEN-LAST:event_btnDetailMouseClicked
 
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked
@@ -661,7 +663,7 @@ public class frmUser extends javax.swing.JFrame {
         // 树选择改变
         try {
             String movName = loadDataToTable();
-            if(movName!=null) writeIntroduction(movName);
+            if(movName!=null) writeIntroduction(movName); // current movie id will be changed
         } catch(SQLException | IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
