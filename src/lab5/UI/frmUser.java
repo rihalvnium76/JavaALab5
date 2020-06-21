@@ -76,6 +76,7 @@ public class frmUser extends javax.swing.JFrame {
         tbMovieList.getTableHeader().setDefaultRenderer(tbHeadRdr);
     }
 
+    // 多线程载入数据
     private class LoadMovieThread extends Thread {
         @Override
         public void run() {
