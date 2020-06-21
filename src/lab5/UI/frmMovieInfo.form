@@ -74,6 +74,10 @@
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="lbposter">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="&#x65e0;&#x5c01;&#x9762;"/>
+      </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <AuxValues>

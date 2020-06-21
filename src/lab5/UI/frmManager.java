@@ -158,6 +158,7 @@ public class frmManager extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         btnChangeMovieID = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -294,6 +295,13 @@ public class frmManager extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("修改电影价格");
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -307,24 +315,28 @@ public class frmManager extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel15))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                                .addGap(28, 28, 28)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jmainactor, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jtype, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jtype, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButton5)
+                                        .addGap(6, 6, 6))
+                                    .addComponent(jmainactor)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jmoviename, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jdirector, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jmovieID)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnChangeMovieID)))))
+                                        .addComponent(btnChangeMovieID))
+                                    .addComponent(jmoviename, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jdirector, javax.swing.GroupLayout.Alignment.TRAILING))))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -372,7 +384,8 @@ public class frmManager extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jtype, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addComponent(jtype, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jButton5)))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(174, 174, 174))))))
@@ -944,7 +957,8 @@ public class frmManager extends javax.swing.JFrame {
         int r = TicketList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该订单？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
-                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                //PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                PreparedStatement pstDel = db.getConnection().prepareStatement("update ticket set userid=null,status=\'未售\' where ticketid=?");
                 pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
                 pstDel.executeUpdate();
                 pstDel.close();
@@ -967,7 +981,8 @@ public class frmManager extends javax.swing.JFrame {
         int r = UsersList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该账户？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
-                PreparedStatement pstDel1 = db.getConnection().prepareStatement("delete from Ticket where userid in (select userid from users where loginname=?)");
+                //PreparedStatement pstDel1 = db.getConnection().prepareStatement("delete from Ticket where userid in (select userid from users where loginname=?)");
+                PreparedStatement pstDel1 = db.getConnection().prepareStatement("update ticket set userid=null,status=\'未售\' where userid in (select userid from users where loginname=?)");
                 pstDel1.setObject(1, UsersList.getValueAt(r, 0)); 
                 pstDel1.executeUpdate();
                 pstDel1.close();
@@ -1037,14 +1052,22 @@ public class frmManager extends javax.swing.JFrame {
         try {
             PreparedStatement ps = db.getConnection().prepareStatement("Insert into movie values (?,?,?,?,?,?,?,?)");
             ps.setString(1, JOptionPane.showInputDialog(this, "请输入新电影的ID（新ID与已有ID不能重复）：", "新建电影", JOptionPane.PLAIN_MESSAGE));
-            for(int i=2; i<=8; ++i) ps.setString(i, null);                
+            for(int i=2; i<=8; ++i) ps.setString(i, null);    
+            ps.setFloat(7, Float.valueOf(JOptionPane.showInputDialog(this, "请输入新电影的电影票价格：", "新建电影", JOptionPane.PLAIN_MESSAGE)));
             ps.executeUpdate();
             ps.close();
-        }catch(SQLException e) {
-            e.printStackTrace();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, "新电影ID与已有ID不能重复\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //e.printStackTrace();
+            return;
+        } catch(IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "无效价格\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //e.printStackTrace();
             return;
         }
         movielist(); // 刷新
+        int r = jmovielist.getRowCount() - 1;
+        if(r>-1)jmovielist.setRowSelectionInterval(r, r);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -1085,6 +1108,8 @@ public class frmManager extends javax.swing.JFrame {
             e.printStackTrace();
         }
         movielist(); // 刷新
+        int r = jmovielist.getRowCount() - 1;
+        if(r>-1)jmovielist.setRowSelectionInterval(r, r);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jposterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jposterMouseClicked
@@ -1094,7 +1119,10 @@ public class frmManager extends javax.swing.JFrame {
             File srcImg = WinCtrl.openImageFileChooser(true);
             if(srcImg!=null) {
                 File destImg = new File(WinCtrl.getImageDirPath() + File.separator + srcImg.getName());
-                WinCtrl.copyFile(srcImg, destImg, destImg.exists() && JOptionPane.showConfirmDialog(null, "数据库内已存在同名海报文件，是否覆盖？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION);
+                if(destImg.exists())
+                    if(JOptionPane.showConfirmDialog(null, "数据库内已存在同名海报文件，是否覆盖？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.NO_OPTION)
+                        return;
+                WinCtrl.copyFile(srcImg, destImg, true);
             } else return;
             //写入数据库
             PreparedStatement pst = db.getConnection().prepareStatement("update movie set movieposter = ? where movieid=?");
@@ -1106,7 +1134,7 @@ public class frmManager extends javax.swing.JFrame {
             e.printStackTrace();
         }
         movielist(); // 刷新
-        jmovielist.setRowSelectionInterval(r, r);
+        if(r>-1) jmovielist.setRowSelectionInterval(r, r);
     }//GEN-LAST:event_jposterMouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -1126,12 +1154,46 @@ public class frmManager extends javax.swing.JFrame {
                 pst.executeUpdate();
                 pst.close();
             } catch(SQLException e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "新电影ID与已有ID不能重复\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                //e.printStackTrace();
             }
             movielist();
             jmovielist.setRowSelectionInterval(r, r);
         }
     }//GEN-LAST:event_btnChangeMovieIDMouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // 修改电影价格
+        try {
+            int r = jmovielist.getSelectedRow();
+            if(r<0) return;
+            PreparedStatement pst = db.getConnection().prepareStatement("select price from movie where movieid=?");
+            pst.setString(1, jmovieID.getText());
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()) {
+                Float originPrice = rs.getFloat(1);
+                if(originPrice!=null) {
+                    String newPrice = JOptionPane.showInputDialog(this, "电影：" + jmovieID.getText() + " - " + jmoviename.getText() + "\n旧电影票价格：" + originPrice + "\n\n请输入新电影票价格：", "修改价格", JOptionPane.PLAIN_MESSAGE);
+                    if(newPrice!=null) {
+                        PreparedStatement ps2 = db.getConnection().prepareStatement("update movie set price=? where movieid=?");
+                        ps2.setFloat(1, Float.valueOf(newPrice));
+                        ps2.setString(2, jmovieID.getText());
+                        JOptionPane.showMessageDialog(this, "修改" + (ps2.executeUpdate()==0? "失败": "成功"), "修改价格", JOptionPane.INFORMATION_MESSAGE);
+                        ps2.close();
+                    }
+                }
+            }
+            rs.close();
+            pst.close();
+        } catch(SQLException e) {
+            e.printStackTrace();
+            return;
+        } catch(IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "无效价格\n" + e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            //e.printStackTrace();
+            return;
+        }
+    }//GEN-LAST:event_jButton5MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1169,6 +1231,7 @@ public class frmManager extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

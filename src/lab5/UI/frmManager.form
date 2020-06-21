@@ -74,10 +74,15 @@
                                           <Component id="jLabel14" min="-2" pref="75" max="-2" attributes="0"/>
                                           <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="28" max="32767" attributes="0"/>
+                                      <EmptySpace min="28" pref="28" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jmainactor" min="-2" pref="266" max="-2" attributes="0"/>
-                                          <Component id="jtype" min="-2" pref="266" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <Component id="jtype" pref="129" max="32767" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jButton5" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="jmainactor" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <Group type="102" attributes="0">
@@ -88,15 +93,15 @@
                                           </Group>
                                           <Component id="jLabel12" alignment="1" min="-2" pref="75" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jmoviename" alignment="0" min="-2" pref="266" max="-2" attributes="0"/>
-                                          <Component id="jdirector" alignment="1" min="-2" pref="266" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="1" attributes="0">
                                               <Component id="jmovieID" max="32767" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="btnChangeMovieID" min="-2" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="jmoviename" alignment="1" max="32767" attributes="0"/>
+                                          <Component id="jdirector" alignment="1" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -157,6 +162,7 @@
                                               <Group type="103" groupAlignment="3" attributes="0">
                                                   <Component id="jLabel15" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                                                   <Component id="jtype" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jButton5" alignment="3" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <Group type="102" alignment="1" attributes="0">
@@ -360,6 +366,14 @@
               </Properties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnChangeMovieIDMouseClicked"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButton5">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x4fee;&#x6539;&#x7535;&#x5f71;&#x4ef7;&#x683c;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton5MouseClicked"/>
               </Events>
             </Component>
           </SubComponents>

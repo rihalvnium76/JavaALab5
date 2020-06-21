@@ -10,7 +10,6 @@ import java.sql.*;
 import java.util.*;
 
 import java.awt.*;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -288,7 +287,11 @@ public class frmUser extends javax.swing.JFrame {
         for(DBItem d : dataList)
             if(d.row==r && d.col==c) // find seat
                 item = d;
-        if(item==null) throw new IllegalArgumentException("未知座位: " + r + "+" + c);
+        //if(item==null) throw new IllegalArgumentException("未知座位: " + r + "-" + c);
+        if(item==null) {
+            System.out.println("[W]bookTicket: 无效座位: " + r + "-" + c);
+            return 0;
+        }
 
         // index->ArrayList->ticketID->Status
         int rt = 0;
@@ -614,10 +617,27 @@ public class frmUser extends javax.swing.JFrame {
     private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         // 详细信息
         //int i = tbMovieList.getSelectedRow();
-        if(dataList.isEmpty()) return;
-        WinCtrl.currentSelectedMovieID = dataList.get(0).movieID;
-        // 显示frmMovieInfo
-        frmMovieInfo.main(null);
+        /*if(dataList.isEmpty()) return;
+        WinCtrl.currentSelectedMovieID = dataList.get(0).movieID;*/
+        DefaultMutableTreeNode node = WinCtrl.getSelectedTreeNode(treeNavi);
+        if(node!=null) {
+            try {
+                PreparedStatement pst = db.getConnection().prepareStatement("select movieid from movie where moviename=?");
+                pst.setString(1, node.toString());
+                ResultSet rs = pst.executeQuery();
+                if(rs.next())
+                    WinCtrl.currentSelectedMovieID = rs.getString(1);
+                else
+                    WinCtrl.currentSelectedMovieID = null;
+                rs.close();
+                pst.close();
+
+                // 显示frmMovieInfo
+                frmMovieInfo.main(null);
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }//GEN-LAST:event_btnDetailMouseClicked
 
     private void btnBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBookMouseClicked

@@ -77,6 +77,9 @@ public class frmMovieInfo extends javax.swing.JFrame {
             }
         });
 
+        lbposter.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbposter.setText("无封面");
+
         tainfor.setEditable(false);
         tainfor.setColumns(20);
         tainfor.setLineWrap(true);

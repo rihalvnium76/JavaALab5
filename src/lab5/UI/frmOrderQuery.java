@@ -144,7 +144,8 @@ public class frmOrderQuery extends javax.swing.JFrame {
         int r = TicketList.getSelectedRow();
         if(JOptionPane.showConfirmDialog(null, "是否删除该订单？", "警告", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             try {
-                PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                //PreparedStatement pstDel = db.getConnection().prepareStatement("delete from Ticket where TicketID=?");
+                PreparedStatement pstDel = db.getConnection().prepareStatement("update ticket set userid=null,status=\'未售\' where ticketid=?");
                 pstDel.setObject(1, TicketList.getValueAt(r, 0)); 
                 pstDel.executeUpdate();
                 pstDel.close();
