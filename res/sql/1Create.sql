@@ -14,8 +14,8 @@ go
 use MovieDB
 go
 create table Users (
-	UserID varchar(10) primary key,
-	LoginName varchar(20),
+	UserID varchar(10),
+	LoginName varchar(20) primary key,
 	Password varchar(20),
 	UserType varchar(10) check(UserType='普通用户' or UserType='管理员' or UserType is null)
 )
